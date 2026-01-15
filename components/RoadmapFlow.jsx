@@ -363,7 +363,7 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
       const targetParent = nodeParentMapping[edge.target] || groups[edge.target]?.parentId
       
       // 저장된 type 우선, 없으면 자동 판단
-      const edgeType = edge.type || (sourceParent && sourceParent === targetParent ? 'straight' : 'default')
+      const edgeType = 'default'
       
       flowEdges.push({
         id: edge.id || `edge-${index}`,
@@ -429,21 +429,17 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     setSelectedEdge(edge.id)
   }, [])
 
-  const onConnect = useCallback((connection) => {
-    const sourceParent = nodeParentMapping[connection.source] || defaultGroups[connection.source]?.parentId
-    const targetParent = nodeParentMapping[connection.target] || defaultGroups[connection.target]?.parentId
-    const edgeType = (sourceParent && sourceParent === targetParent) ? 'straight' : 'default'
-    
-    const newEdge = {
-      ...connection,
-      id: `edge-${Date.now()}`,
-      type: edgeType,
-      style: { stroke: '#E65100', strokeWidth: 2 },
-      markerEnd,
-      reconnectable: true,
-    }
-    setEdges((eds) => addEdge(newEdge, eds))
-  }, [setEdges])
+const onConnect = useCallback((connection) => {
+  const newEdge = {
+    ...connection,
+    id: `edge-${Date.now()}`,
+    type: 'default',
+    style: { stroke: '#E65100', strokeWidth: 2 },
+    markerEnd,
+    reconnectable: true,
+  }
+  setEdges((eds) => addEdge(newEdge, eds))
+}, [setEdges])
 
   const onReconnect = useCallback((oldEdge, newConnection) => {
     setEdges((els) => reconnectEdge(oldEdge, newConnection, els))
