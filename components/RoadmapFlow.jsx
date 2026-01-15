@@ -39,7 +39,7 @@ const defaultGroups = {
     section: '고급',
     depth: 0,
     parentId: null,
-    position: { x: 433, y: -7 },
+    position: { x: 393, y: -25 },  // 변경
     size: { width: 950, height: 250 },
   },
   'sec_platform': {
@@ -57,7 +57,7 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 386, y: 50 },
+    position: { x: 394, y: 96 },  // 변경
     size: { width: 300, height: 120 },
   },
   'sec_tools': {
@@ -66,7 +66,7 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 28, y: 259 },
+    position: { x: 23, y: 244 },  // 변경
     size: { width: 900, height: 180 },
   },
   'sec_record': {
@@ -75,7 +75,7 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 147, y: 562 },
+    position: { x: 117, y: 520 },  // 변경
     size: { width: 700, height: 100 },
   },
   'sec_arena': {
@@ -84,7 +84,7 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 171, y: 710 },
+    position: { x: 119, y: 640 },  // 변경
     size: { width: 700, height: 100 },
   },
   'sec_tools_ide': {
@@ -129,7 +129,7 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_adv',
-    position: { x: 94, y: 247 },
+    position: { x: 94, y: 232 },  // 변경
     size: { width: 450, height: 80 },
   },
   'sec_adv_usage': {
@@ -147,7 +147,7 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_adv',
-    position: { x: 92, y: 640 },
+    position: { x: 114, y: 605 },  // 변경
     size: { width: 250, height: 80 },
   },
   'sec_adv_til': {
@@ -156,7 +156,7 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_adv',
-    position: { x: 25, y: 487 },
+    position: { x: 40, y: 452 },  // 변경
     size: { width: 450, height: 80 },
   },
 }
@@ -206,14 +206,14 @@ const nodeParentMapping = {
 // 노드 기본 위치 - JSON 반영
 // ========================================
 const defaultPositions = {
-  'node_intro': { x: 30, y: 30 },
-'node_boj_setup': { x: 50, y: 38 },  // 이전: x: 20
-  'node_boj_usage': { x: 190, y: 38 },
-  'node_koala_setup': { x: 20, y: 78 },
-  'node_koala_usage': { x: 190, y: 78 },
-  'node_solved_link': { x: 25, y: 35 },
-  'node_solved_usage': { x: 24, y: 97 },
-  'node_tools_intro': { x: 248, y: 36 },
+  'node_intro': { x: 25, y: 25 },  // 변경
+  'node_boj_setup': { x: 63, y: 43 },  // 변경
+  'node_boj_usage': { x: 212, y: 43 },  // 변경
+  'node_koala_setup': { x: 35, y: 88 },  // 변경
+  'node_koala_usage': { x: 195, y: 88 },  // 변경
+  'node_solved_link': { x: 19, y: 36 },  // 변경
+  'node_solved_usage': { x: 107, y: 76 },  // 변경
+  'node_tools_intro': { x: 170, y: 43 },  // 변경
   'tool_vscode': { x: 20, y: 37 },
   'tool_pycharm': { x: 20, y: 79 },
   'tool_replit': { x: 20, y: 37 },
@@ -223,23 +223,23 @@ const defaultPositions = {
   'tool_colab': { x: 19, y: 36 },
   'tool_marimo': { x: 20, y: 79 },
   'node_til': { x: 20, y: 40 },
-  'node_join': { x: 160, y: 40 },
-  'node_study': { x: 305, y: 40 },
-  'node_arena': { x: 20, y: 40 },
-  'node_arenajoin': { x: 180, y: 40 },
-  'node_arenacoalla': { x: 340, y: 40 },
+  'node_join': { x: 145, y: 40 },  // 변경
+  'node_study': { x: 275, y: 40 },  // 변경
+  'node_arena': { x: 20, y: 38 },  // 변경
+  'node_arenajoin': { x: 160, y: 38 },  // 변경
+  'node_arenacoalla': { x: 300, y: 38 },  // 변경
   'ext_bjcode': { x: 35, y: 40 },
-  'ext_bojhub': { x: 35, y: 171 },
-  'ext_bojext': { x: 32, y: 84 },
-  'ext_testcase': { x: 35, y: 127 },
+  'ext_bojhub': { x: 35, y: 156 },  // 변경
+  'ext_bojext': { x: 32, y: 79 },  // 변경
+  'ext_testcase': { x: 35, y: 117 },  // 변경
   'adv_boj': { x: 34, y: 36 },
-  'adv_solved': { x: 20, y: 80 },
-  'adv_koala': { x: 22, y: 125 },
+  'adv_solved': { x: 20, y: 75 },  // 변경
+  'adv_koala': { x: 22, y: 115 },  // 변경
   'contest_atcoder': { x: 25, y: 38 },
-  'contest_codeforces': { x: 24, y: 82 },
+  'contest_codeforces': { x: 24, y: 77 },  // 변경
   'draw_io': { x: 21, y: 40 },
-  'excalidraw': { x: 22, y: 84 },
-  'pythontutor': { x: 149, y: 82 },
+  'excalidraw': { x: 22, y: 79 },  // 변경
+  'pythontutor': { x: 136, y: 80 },  // 변경
   'vscode_ext': { x: 131, y: 40 },
 }
 
@@ -247,26 +247,28 @@ const defaultPositions = {
 // 기본 엣지 정의 - JSON 반영
 // ========================================
 const defaultEdges = [
-// defaultEdges에서 수정
-// 기존 edge-0, edge-1 삭제하고 아래로 교체:
-{ id: 'edge-1768456506159', source: 'node_intro', target: 'node_boj_setup', sourceHandle: 'bottom-src', targetHandle: 'left', type: 'default' },
-{ id: 'edge-1768456514767', source: 'node_intro', target: 'node_koala_setup', sourceHandle: 'left-src', targetHandle: 'left', type: 'default' },
-  { id: 'edge-2', source: 'node_boj_setup', target: 'node_boj_usage', sourceHandle: 'right-src', targetHandle: 'left', type: 'straight' },
-  { id: 'edge-3', source: 'node_koala_setup', target: 'node_koala_usage', sourceHandle: 'right-src', targetHandle: 'left', type: 'straight' },
-  { id: 'edge-11', source: 'node_til', target: 'node_join', sourceHandle: 'right-src', targetHandle: 'left', type: 'straight' },
-  { id: 'edge-12', source: 'node_join', target: 'node_study', sourceHandle: 'right-src', targetHandle: 'left', type: 'straight' },
-  { id: 'edge-13', source: 'node_arena', target: 'node_arenajoin', sourceHandle: 'right-src', targetHandle: 'left', type: 'straight' },
-  { id: 'edge-14', source: 'node_arenajoin', target: 'node_arenacoalla', sourceHandle: 'right-src', targetHandle: 'left', type: 'straight' },
-  { id: 'edge-1768454891072', source: 'node_solved_link', target: 'node_solved_usage', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'straight' },
+  { id: 'edge-2', source: 'node_boj_setup', target: 'node_boj_usage', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
+  { id: 'edge-3', source: 'node_koala_setup', target: 'node_koala_usage', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
+  { id: 'edge-11', source: 'node_til', target: 'node_join', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
+  { id: 'edge-12', source: 'node_join', target: 'node_study', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
+  { id: 'edge-13', source: 'node_arena', target: 'node_arenajoin', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
+  { id: 'edge-14', source: 'node_arenajoin', target: 'node_arenacoalla', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
   { id: 'edge-1768455001460', source: 'node_boj_usage', target: 'node_solved_link', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
-  { id: 'edge-1768455012960', source: 'node_solved_usage', target: 'sec_tools', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'default' },
-  { id: 'edge-1768455370002', source: 'node_tools_intro', target: 'sec_tools_ide', sourceHandle: 'left-src', targetHandle: 'top', type: 'straight' },
-  { id: 'edge-1768455379329', source: 'node_tools_intro', target: 'sec_tools_notebook', sourceHandle: 'right-src', targetHandle: 'top', type: 'straight' },
-  { id: 'edge-1768455387422', source: 'node_tools_intro', target: 'sec_tools_online_ide', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'straight' },
-  { id: 'edge-1768455390008', source: 'node_tools_intro', target: 'sec_tools_runner', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'straight' },
-  { id: 'edge-1768455407218', source: 'sec_basic', target: 'sec_adv', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
-  { id: 'edge-1768455704215', source: 'sec_tools', target: 'sec_record', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'straight' },
-  { id: 'edge-1768455719272', source: 'sec_record', target: 'sec_arena', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'straight' },
+  { id: 'edge-1768457260453', source: 'node_intro', target: 'node_boj_setup', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'default' },
+  { id: 'edge-1768457272681', source: 'node_intro', target: 'node_koala_setup', sourceHandle: 'bottom-src', targetHandle: 'left', type: 'default' },
+  { id: 'edge-1768457708909', source: 'sec_platform', target: 'sec_tools', sourceHandle: 'right-src', targetHandle: 'top', type: 'default' },
+  { id: 'edge-1768457839803', source: 'node_tools_intro', target: 'sec_tools_ide', sourceHandle: 'left-src', targetHandle: 'top', type: 'default' },
+  { id: 'edge-1768457846287', source: 'node_tools_intro', target: 'sec_tools_notebook', sourceHandle: 'right-src', targetHandle: 'top', type: 'default' },
+  { id: 'edge-1768457863495', source: 'node_tools_intro', target: 'sec_tools_online_ide', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'default' },
+  { id: 'edge-1768457879417', source: 'node_tools_intro', target: 'sec_tools_runner', sourceHandle: 'right-src', targetHandle: 'top', type: 'default' },
+  { id: 'edge-1768457941643', source: 'sec_tools', target: 'sec_record', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'default' },
+  { id: 'edge-1768457963564', source: 'sec_record', target: 'sec_arena', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'default' },
+  { id: 'edge-1768458027580', source: 'node_solved_link', target: 'node_solved_usage', sourceHandle: 'bottom-src', targetHandle: 'left', type: 'default' },
+  { id: 'edge-1768458251117', source: 'sec_record', target: 'sec_adv_til', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
+  { id: 'edge-1768458255698', source: 'sec_arena', target: 'sec_adv_contest', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
+  { id: 'edge-1768458320929', source: 'sec_basic', target: 'sec_adv', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
+  { id: 'edge-1768458348466', source: 'sec_solved', target: 'sec_adv_usage', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
+  { id: 'edge-1768458351295', source: 'sec_solved', target: 'sec_adv_ext', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
 ]
 
 // ========================================
@@ -458,56 +460,56 @@ const onConnect = useCallback((connection) => {
     }
   }, [selectedEdge, deleteSelectedEdge])
 
-  const exportFullState = useCallback(() => {
-    const nodeData = {}
-    const groupDataExport = {}
-    
-    nodes.forEach((node) => {
-      if (node.type === 'custom') {
-        nodeData[node.id] = {
+const exportFullState = useCallback(() => {
+  const nodeData = {}
+  const groupDataExport = {}
+  
+  nodes.forEach((node) => {
+    if (node.type === 'custom') {
+      nodeData[node.id] = {
+        x: Math.round(node.position.x),
+        y: Math.round(node.position.y),
+      }
+    } else if (node.type === 'group') {
+      groupDataExport[node.id] = {
+        ...defaultGroups[node.id],
+        position: {
           x: Math.round(node.position.x),
           y: Math.round(node.position.y),
-        }
-      } else if (node.type === 'group') {
-        groupDataExport[node.id] = {
-          ...defaultGroups[node.id],
-          position: {
-            x: Math.round(node.position.x),
-            y: Math.round(node.position.y),
-          },
-          size: {
-            width: Math.round(node.style?.width || node.width || 200),
-            height: Math.round(node.style?.height || node.height || 100),
-          },
-        }
+        },
+        size: {
+          width: Math.round(node.measured?.width || node.width || node.style?.width || 200),
+          height: Math.round(node.measured?.height || node.height || node.style?.height || 100),
+        },
       }
-    })
-    
-    const edgeData = edges.map((e) => ({
-      id: e.id,
-      source: e.source,
-      target: e.target,
-      sourceHandle: e.sourceHandle,
-      targetHandle: e.targetHandle,
-      type: e.type,
-    }))
-    
-    const fullState = {
-      positions: nodeData,
-      groups: groupDataExport,
-      edges: edgeData,
     }
-    
-    const dataStr = JSON.stringify(fullState, null, 2)
-    const blob = new Blob([dataStr], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'roadmap-state.json'
-    a.click()
-    URL.revokeObjectURL(url)
-  }, [nodes, edges])
+  })
+  
+  const edgeData = edges.map((e) => ({
+    id: e.id,
+    source: e.source,
+    target: e.target,
+    sourceHandle: e.sourceHandle,
+    targetHandle: e.targetHandle,
+    type: e.type,
+  }))
+  
+  const fullState = {
+    positions: nodeData,
+    groups: groupDataExport,
+    edges: edgeData,
+  }
+  
+  const dataStr = JSON.stringify(fullState, null, 2)
+  const blob = new Blob([dataStr], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'roadmap-state.json'
+  a.click()
+  URL.revokeObjectURL(url)
+}, [nodes, edges])
 
   const styledEdges = edges.map((e) => ({
     ...e,
@@ -541,6 +543,8 @@ const onConnect = useCallback((connection) => {
         defaultViewport={{ x: 0, y: 0, zoom: 0.5 }}
         nodesDraggable={true}
         elementsSelectable={true}
+        nodeOrigin={[0, 0]}
+
       >
         <Background color="#ddd" gap={20} />
         <Controls />
