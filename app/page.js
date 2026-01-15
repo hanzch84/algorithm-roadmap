@@ -1,56 +1,58 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import RoadmapFlow from '../components/RoadmapFlow'
+import dynamic from 'next/dynamic'
+
+// ReactFlow는 클라이언트에서만 로드
+const RoadmapFlow = dynamic(() => import('../components/RoadmapFlow'), {
+  ssr: false,
+  loading: () => <div className="flex items-center justify-center h-full">로딩 중...</div>
+})
 
 // 기본 데이터
-function getDefaultNodes() {
-  return [
-    { id: 'node_intro', name: '🌐 온라인 저지 소개', group: 'intro', section: '기본', link: '' },
-    { id: 'node_boj_setup', name: '백준 가입 및 설정', group: '플랫폼 가입', section: '기본', link: '' },
-    { id: 'node_boj_usage', name: '백준 이용 방법', group: '플랫폼 가입', section: '기본', link: '' },
-    { id: 'node_koala_setup', name: '코알라 OJ 가입 및 설정', group: '플랫폼 가입', section: '기본', link: '' },
-    { id: 'node_koala_usage', name: '코알라 OJ 사용 방법', group: '플랫폼 가입', section: '기본', link: '' },
-    { id: 'node_solved_link', name: 'solved.ac 연동하기', group: 'solved.ac', section: '기본', link: '' },
-    { id: 'node_solved_usage', name: 'solved.ac 이용 방법', group: 'solved.ac', section: '기본', link: '' },
-    { id: 'node_tools_intro', name: '🔧 코딩 도구 선택하기', group: '코딩 도구', section: '기본', link: '' },
-    { id: 'tool_vscode', name: 'VS Code', group: 'IDE', section: '기본', link: '' },
-    { id: 'tool_pycharm', name: 'PyCharm', group: 'IDE', section: '기본', link: '' },
-    { id: 'tool_replit', name: 'Replit', group: '온라인 IDE', section: '기본', link: '' },
-    { id: 'tool_onlinegdb', name: 'OnlineGDB', group: '온라인 IDE', section: '기본', link: '' },
-    { id: 'tool_ideone', name: 'Ideone', group: '온라인 러너', section: '기본', link: '' },
-    { id: 'tool_tio', name: 'TIO', group: '온라인 러너', section: '기본', link: '' },
-    { id: 'tool_colab', name: 'Google Colab', group: '노트북', section: '기본', link: '' },
-    { id: 'tool_marimo', name: 'Marimo', group: '노트북', section: '기본', link: '' },
-    { id: 'node_til', name: 'TIL 작성 방법', group: '스터디 기록', section: '기본', link: '' },
-    { id: 'node_join', name: '스터디 모임 구성', group: '스터디 기록', section: '기본', link: '' },
-    { id: 'node_study', name: '음성채팅 및 화면공유 방법', group: '스터디 기록', section: '기본', link: '' },
-    { id: 'node_arena', name: '백준 대회 정보 얻기', group: '대회 참가', section: '기본', link: '' },
-    { id: 'node_arenajoin', name: '백준 대회 참가 방법', group: '대회 참가', section: '기본', link: '' },
-    { id: 'node_arenacoalla', name: '코알라 대회 참가 방법', group: '대회 참가', section: '기본', link: '' },
-    { id: 'ext_bjcode', name: '백준 코드', group: '크롬 확장', section: '고급', link: '' },
-    { id: 'ext_bojhub', name: '백준 허브', group: '크롬 확장', section: '고급', link: '' },
-    { id: 'ext_bojext', name: 'BOJ Extended', group: '크롬 확장', section: '고급', link: '' },
-    { id: 'ext_testcase', name: 'testcase.ac', group: '크롬 확장', section: '고급', link: '' },
-    { id: 'adv_boj', name: '백준 고급 활용', group: '고급 활용', section: '고급', link: '' },
-    { id: 'adv_solved', name: 'solved.ac 고급 활용', group: '고급 활용', section: '고급', link: '' },
-    { id: 'adv_koala', name: '코알라 OJ 고급 활용', group: '고급 활용', section: '고급', link: '' },
-    { id: 'contest_atcoder', name: 'AtCoder', group: '온라인 콘테스트', section: '고급', link: '' },
-    { id: 'contest_codeforces', name: 'Codeforces', group: '온라인 콘테스트', section: '고급', link: '' },
-    { id: 'draw_io', name: 'draw.io', group: '다이어그램 툴', section: '고급', link: '' },
-    { id: 'excalidraw', name: 'Excalidraw', group: '다이어그램 툴', section: '고급', link: '' },
-    { id: 'pythontutor', name: 'Python Tutor', group: '시각화 도구', section: '고급', link: '' },
-    { id: 'vscode_ext', name: 'VS CODE extension', group: '시각화 도구', section: '고급', link: '' },
-  ]
-}
+const defaultNodes = [
+  { id: 'node_intro', name: '🌐 온라인 저지 소개', group: 'intro', section: '기본', link: '' },
+  { id: 'node_boj_setup', name: '백준 가입 및 설정', group: '플랫폼 가입', section: '기본', link: '' },
+  { id: 'node_boj_usage', name: '백준 이용 방법', group: '플랫폼 가입', section: '기본', link: '' },
+  { id: 'node_koala_setup', name: '코알라 OJ 가입 및 설정', group: '플랫폼 가입', section: '기본', link: '' },
+  { id: 'node_koala_usage', name: '코알라 OJ 사용 방법', group: '플랫폼 가입', section: '기본', link: '' },
+  { id: 'node_solved_link', name: 'solved.ac 연동하기', group: 'solved.ac', section: '기본', link: '' },
+  { id: 'node_solved_usage', name: 'solved.ac 이용 방법', group: 'solved.ac', section: '기본', link: '' },
+  { id: 'node_tools_intro', name: '🔧 코딩 도구 선택하기', group: '코딩 도구', section: '기본', link: '' },
+  { id: 'tool_vscode', name: 'VS Code', group: 'IDE', section: '기본', link: '' },
+  { id: 'tool_pycharm', name: 'PyCharm', group: 'IDE', section: '기본', link: '' },
+  { id: 'tool_replit', name: 'Replit', group: '온라인 IDE', section: '기본', link: '' },
+  { id: 'tool_onlinegdb', name: 'OnlineGDB', group: '온라인 IDE', section: '기본', link: '' },
+  { id: 'tool_ideone', name: 'Ideone', group: '온라인 러너', section: '기본', link: '' },
+  { id: 'tool_tio', name: 'TIO', group: '온라인 러너', section: '기본', link: '' },
+  { id: 'tool_colab', name: 'Google Colab', group: '노트북', section: '기본', link: '' },
+  { id: 'tool_marimo', name: 'Marimo', group: '노트북', section: '기본', link: '' },
+  { id: 'node_til', name: 'TIL 작성 방법', group: '스터디 기록', section: '기본', link: '' },
+  { id: 'node_join', name: '스터디 모임 구성', group: '스터디 기록', section: '기본', link: '' },
+  { id: 'node_study', name: '음성채팅 및 화면공유 방법', group: '스터디 기록', section: '기본', link: '' },
+  { id: 'node_arena', name: '백준 대회 정보 얻기', group: '대회 참가', section: '기본', link: '' },
+  { id: 'node_arenajoin', name: '백준 대회 참가 방법', group: '대회 참가', section: '기본', link: '' },
+  { id: 'node_arenacoalla', name: '코알라 대회 참가 방법', group: '대회 참가', section: '기본', link: '' },
+  { id: 'ext_bjcode', name: '백준 코드', group: '크롬 확장', section: '고급', link: '' },
+  { id: 'ext_bojhub', name: '백준 허브', group: '크롬 확장', section: '고급', link: '' },
+  { id: 'ext_bojext', name: 'BOJ Extended', group: '크롬 확장', section: '고급', link: '' },
+  { id: 'ext_testcase', name: 'testcase.ac', group: '크롬 확장', section: '고급', link: '' },
+  { id: 'adv_boj', name: '백준 고급 활용', group: '고급 활용', section: '고급', link: '' },
+  { id: 'adv_solved', name: 'solved.ac 고급 활용', group: '고급 활용', section: '고급', link: '' },
+  { id: 'adv_koala', name: '코알라 OJ 고급 활용', group: '고급 활용', section: '고급', link: '' },
+  { id: 'contest_atcoder', name: 'AtCoder', group: '온라인 콘테스트', section: '고급', link: '' },
+  { id: 'contest_codeforces', name: 'Codeforces', group: '온라인 콘테스트', section: '고급', link: '' },
+  { id: 'draw_io', name: 'draw.io', group: '다이어그램 툴', section: '고급', link: '' },
+  { id: 'excalidraw', name: 'Excalidraw', group: '다이어그램 툴', section: '고급', link: '' },
+  { id: 'pythontutor', name: 'Python Tutor', group: '시각화 도구', section: '고급', link: '' },
+  { id: 'vscode_ext', name: 'VS CODE extension', group: '시각화 도구', section: '고급', link: '' },
+]
 
 export default function Home() {
-  const [nodes] = useState(getDefaultNodes)  // 바로 초기화
   const [savedPositions, setSavedPositions] = useState(null)
   const [savedEdges, setSavedEdges] = useState(null)
   const fileInputRef = useRef(null)
 
-  // 상태 파일 업로드 핸들러
   const handlePositionUpload = (event) => {
     const file = event.target.files[0]
     if (!file) return
@@ -61,7 +63,7 @@ export default function Home() {
         const state = JSON.parse(e.target.result)
         
         if (state.positions) {
-          setSavedPositions({ nodes: state.positions })
+          setSavedPositions({ nodes: state.positions, groups: state.groups })
           setSavedEdges(state.edges || null)
         } else if (state.nodes) {
           setSavedPositions(state)
@@ -74,6 +76,7 @@ export default function Home() {
         const info = []
         if (state.positions) info.push(`노드 ${Object.keys(state.positions).length}개`)
         else if (state.nodes) info.push(`노드 ${Object.keys(state.nodes).length}개`)
+        if (state.groups) info.push(`그룹 ${Object.keys(state.groups).length}개`)
         if (state.edges) info.push(`엣지 ${state.edges.length}개`)
         alert(`✅ 상태 적용 완료: ${info.join(', ')}`)
       } catch (err) {
@@ -120,7 +123,7 @@ export default function Home() {
 
       <div className="h-[calc(100vh-60px)]">
         <RoadmapFlow 
-          initialNodes={nodes} 
+          initialNodes={defaultNodes} 
           savedPositions={savedPositions}
           savedEdges={savedEdges}
         />
