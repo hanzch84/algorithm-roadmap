@@ -6,7 +6,11 @@ import dynamic from 'next/dynamic'
 // ReactFlow는 클라이언트에서만 로드
 const RoadmapFlow = dynamic(() => import('../components/RoadmapFlow'), {
   ssr: false,
-  loading: () => <div className="flex items-center justify-center h-full">로딩 중...</div>
+  loading: () => (
+    <div className="flex items-center justify-center h-full text-gray-500">
+      로딩 중...
+    </div>
+  )
 })
 
 // 기본 데이터
@@ -54,13 +58,13 @@ export default function Home() {
   const fileInputRef = useRef(null)
 
   const handlePositionUpload = (event) => {
-    const file = event.target.files[0]
+    const file = event.target.files?.[0]
     if (!file) return
     
     const reader = new FileReader()
     reader.onload = (e) => {
       try {
-        const state = JSON.parse(e.target.result)
+        const state = JSON.parse(e.target?.result)
         
         if (state.positions) {
           setSavedPositions({ nodes: state.positions, groups: state.groups })
@@ -85,7 +89,7 @@ export default function Home() {
       }
     }
     reader.readAsText(file)
-    event.target.value = ''
+    if (event.target) event.target.value = ''
   }
 
   return (
