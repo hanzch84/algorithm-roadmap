@@ -142,7 +142,7 @@ function CustomEdge({
                 height: '100%',
                 pointerEvents: 'none',
                 overflow: 'visible',
-                zIndex: 9999,
+                zIndex: 99999,
               }}
             >
               <line
@@ -171,7 +171,7 @@ function CustomEdge({
                 position: 'absolute',
                 transform: `translate(-50%, -50%) translate(${controlPoint.x}px, ${controlPoint.y}px)`,
                 pointerEvents: 'all',
-                zIndex: 10000,
+                zIndex: 100000,
               }}
               className="nodrag nopan"
             >
