@@ -32,15 +32,15 @@ const defaultGroups = {
     depth: 0,
     parentId: null,
     position: { x: -361, y: -29 },
-    size: { width: 720, height: 760 },  // 950→720, 650→760
+    size: { width: 686, height: 765 },
   },
   'sec_adv': {
     label: '🚀 고급 과정',
     section: '고급',
     depth: 0,
     parentId: null,
-    position: { x: 393, y: -25 },
-    size: { width: 580, height: 720 },  // 950→580, 250→720
+    position: { x: 352, y: 40 },
+    size: { width: 336, height: 694 },
   },
   'sec_platform': {
     label: '플랫폼 가입',
@@ -49,7 +49,7 @@ const defaultGroups = {
     isSubgroup: true,
     parentId: 'sec_basic',
     position: { x: 22, y: 83 },
-    size: { width: 350, height: 130 },  // 400→350, 120→130
+    size: { width: 351, height: 145 },
   },
   'sec_solved': {
     label: 'solved.ac',
@@ -58,7 +58,7 @@ const defaultGroups = {
     isSubgroup: true,
     parentId: 'sec_basic',
     position: { x: 394, y: 96 },
-    size: { width: 240, height: 130 },  // 300→240, 120→130
+    size: { width: 254, height: 131 },
   },
   'sec_tools': {
     label: '🔧 코딩 도구',
@@ -67,7 +67,7 @@ const defaultGroups = {
     isSubgroup: true,
     parentId: 'sec_basic',
     position: { x: 23, y: 244 },
-    size: { width: 680, height: 260 },  // 900→680, 180→260
+    size: { width: 638, height: 262 },
   },
   'sec_record': {
     label: '스터디 기록/공유/발표',
@@ -75,8 +75,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 117, y: 520 },
-    size: { width: 440, height: 100 },  // 700→440
+    position: { x: 122, y: 523 },
+    size: { width: 440, height: 100 },
   },
   'sec_arena': {
     label: '대회 참가',
@@ -84,8 +84,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 119, y: 640 },
-    size: { width: 470, height: 100 },  // 700→470
+    position: { x: 107, y: 640 },
+    size: { width: 470, height: 100 },
   },
   'sec_tools_ide': {
     label: 'IDE',
@@ -93,8 +93,8 @@ const defaultGroups = {
     depth: 2,
     isSubgroup: true,
     parentId: 'sec_tools',
-    position: { x: 22, y: 99 },
-    size: { width: 130, height: 140 },  // 180→130, 90→140
+    position: { x: 21, y: 100 },
+    size: { width: 140, height: 140 },
   },
   'sec_tools_online_ide': {
     label: '온라인 IDE',
@@ -103,7 +103,7 @@ const defaultGroups = {
     isSubgroup: true,
     parentId: 'sec_tools',
     position: { x: 171, y: 100 },
-    size: { width: 140, height: 140 },  // 180→140, 90→140
+    size: { width: 140, height: 140 },
   },
   'sec_tools_runner': {
     label: '온라인 러너',
@@ -111,8 +111,8 @@ const defaultGroups = {
     depth: 2,
     isSubgroup: true,
     parentId: 'sec_tools',
-    position: { x: 323, y: 101 },
-    size: { width: 130, height: 140 },  // 180→130, 90→140
+    position: { x: 323, y: 99 },
+    size: { width: 140, height: 139 },
   },
   'sec_tools_notebook': {
     label: '노트북',
@@ -120,8 +120,8 @@ const defaultGroups = {
     depth: 2,
     isSubgroup: true,
     parentId: 'sec_tools',
-    position: { x: 474, y: 102 },
-    size: { width: 140, height: 140 },  // 180→140, 90→140
+    position: { x: 473, y: 99 },
+    size: { width: 140, height: 138 },
   },
   'sec_adv_ext': {
     label: '🧩 크롬 확장 프로그램',
@@ -129,8 +129,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_adv',
-    position: { x: 94, y: 232 },
-    size: { width: 160, height: 220 },  // 450→160, 80→220
+    position: { x: 53, y: 228 },
+    size: { width: 252, height: 134 },
   },
   'sec_adv_usage': {
     label: '⚡ 고급 활용법',
@@ -138,8 +138,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_adv',
-    position: { x: 93, y: 49 },
-    size: { width: 160, height: 175 },  // 450→160, 80→175
+    position: { x: 89, y: 44 },
+    size: { width: 167, height: 176 },
   },
   'sec_adv_contest': {
     label: '🌍 온라인 콘테스트',
@@ -147,8 +147,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_adv',
-    position: { x: 114, y: 605 },
-    size: { width: 150, height: 140 },  // 250→150, 80→140
+    position: { x: 90, y: 533 },
+    size: { width: 150, height: 140 },
   },
   'sec_adv_til': {
     label: '✍️ TIL 고급 작성법',
@@ -156,8 +156,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_adv',
-    position: { x: 40, y: 452 },
-    size: { width: 270, height: 140 },  // 450→270, 80→140
+    position: { x: 27, y: 373 },
+    size: { width: 286, height: 140 },
   },
 }
 
@@ -206,14 +206,14 @@ const nodeParentMapping = {
 // 노드 기본 위치 - JSON 반영
 // ========================================
 const defaultPositions = {
-  'node_intro': { x: 25, y: 25 },  // 변경
-  'node_boj_setup': { x: 63, y: 43 },  // 변경
-  'node_boj_usage': { x: 212, y: 43 },  // 변경
-  'node_koala_setup': { x: 35, y: 88 },  // 변경
-  'node_koala_usage': { x: 195, y: 88 },  // 변경
-  'node_solved_link': { x: 19, y: 36 },  // 변경
-  'node_solved_usage': { x: 107, y: 76 },  // 변경
-  'node_tools_intro': { x: 170, y: 43 },  // 변경
+  'node_intro': { x: 25, y: 25 },
+  'node_boj_setup': { x: 63, y: 43 },
+  'node_boj_usage': { x: 212, y: 43 },
+  'node_koala_setup': { x: 35, y: 88 },
+  'node_koala_usage': { x: 195, y: 88 },
+  'node_solved_link': { x: 19, y: 36 },
+  'node_solved_usage': { x: 107, y: 76 },
+  'node_tools_intro': { x: 170, y: 43 },
   'tool_vscode': { x: 20, y: 37 },
   'tool_pycharm': { x: 20, y: 79 },
   'tool_replit': { x: 20, y: 37 },
@@ -223,23 +223,23 @@ const defaultPositions = {
   'tool_colab': { x: 19, y: 36 },
   'tool_marimo': { x: 20, y: 79 },
   'node_til': { x: 20, y: 40 },
-  'node_join': { x: 145, y: 40 },  // 변경
-  'node_study': { x: 275, y: 40 },  // 변경
-  'node_arena': { x: 20, y: 38 },  // 변경
-  'node_arenajoin': { x: 160, y: 38 },  // 변경
-  'node_arenacoalla': { x: 300, y: 38 },  // 변경
-  'ext_bjcode': { x: 35, y: 40 },
-  'ext_bojhub': { x: 35, y: 156 },  // 변경
-  'ext_bojext': { x: 32, y: 79 },  // 변경
-  'ext_testcase': { x: 35, y: 117 },  // 변경
+  'node_join': { x: 145, y: 40 },
+  'node_study': { x: 275, y: 40 },
+  'node_arena': { x: 20, y: 38 },
+  'node_arenajoin': { x: 160, y: 38 },
+  'node_arenacoalla': { x: 300, y: 38 },
+  'ext_bjcode': { x: 21, y: 36 },
+  'ext_bojhub': { x: 128, y: 77 },
+  'ext_bojext': { x: 127, y: 36 },
+  'ext_testcase': { x: 21, y: 77 },
   'adv_boj': { x: 34, y: 36 },
-  'adv_solved': { x: 20, y: 75 },  // 변경
-  'adv_koala': { x: 22, y: 115 },  // 변경
+  'adv_solved': { x: 20, y: 75 },
+  'adv_koala': { x: 22, y: 115 },
   'contest_atcoder': { x: 25, y: 38 },
-  'contest_codeforces': { x: 24, y: 77 },  // 변경
+  'contest_codeforces': { x: 24, y: 77 },
   'draw_io': { x: 21, y: 40 },
-  'excalidraw': { x: 22, y: 79 },  // 변경
-  'pythontutor': { x: 136, y: 80 },  // 변경
+  'excalidraw': { x: 22, y: 79 },
+  'pythontutor': { x: 136, y: 80 },
   'vscode_ext': { x: 131, y: 40 },
 }
 
@@ -266,9 +266,8 @@ const defaultEdges = [
   { id: 'edge-1768458027580', source: 'node_solved_link', target: 'node_solved_usage', sourceHandle: 'bottom-src', targetHandle: 'left', type: 'default' },
   { id: 'edge-1768458251117', source: 'sec_record', target: 'sec_adv_til', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
   { id: 'edge-1768458255698', source: 'sec_arena', target: 'sec_adv_contest', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
-  { id: 'edge-1768458320929', source: 'sec_basic', target: 'sec_adv', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
-  { id: 'edge-1768458348466', source: 'sec_solved', target: 'sec_adv_usage', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
   { id: 'edge-1768458351295', source: 'sec_solved', target: 'sec_adv_ext', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
+  { id: 'edge-1768459407226', source: 'sec_solved', target: 'sec_adv_usage', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
 ]
 
 // ========================================
@@ -361,19 +360,13 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
     const targetExists = allNodeIds.includes(edge.target)
     
     if (sourceExists && targetExists) {
-      const sourceParent = nodeParentMapping[edge.source] || groups[edge.source]?.parentId
-      const targetParent = nodeParentMapping[edge.target] || groups[edge.target]?.parentId
-      
-      // 저장된 type 우선, 없으면 자동 판단
-      const edgeType = 'default'
-      
       flowEdges.push({
         id: edge.id || `edge-${index}`,
         source: edge.source,
         target: edge.target,
         sourceHandle: edge.sourceHandle || 'bottom-src',
         targetHandle: edge.targetHandle || 'top',
-        type: edgeType,
+        type: 'default',
         style: { stroke: '#E65100', strokeWidth: 2 },
         markerEnd,
         reconnectable: true,
@@ -431,17 +424,17 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     setSelectedEdge(edge.id)
   }, [])
 
-const onConnect = useCallback((connection) => {
-  const newEdge = {
-    ...connection,
-    id: `edge-${Date.now()}`,
-    type: 'default',
-    style: { stroke: '#E65100', strokeWidth: 2 },
-    markerEnd,
-    reconnectable: true,
-  }
-  setEdges((eds) => addEdge(newEdge, eds))
-}, [setEdges])
+  const onConnect = useCallback((connection) => {
+    const newEdge = {
+      ...connection,
+      id: `edge-${Date.now()}`,
+      type: 'default',
+      style: { stroke: '#E65100', strokeWidth: 2 },
+      markerEnd,
+      reconnectable: true,
+    }
+    setEdges((eds) => addEdge(newEdge, eds))
+  }, [setEdges])
 
   const onReconnect = useCallback((oldEdge, newConnection) => {
     setEdges((els) => reconnectEdge(oldEdge, newConnection, els))
@@ -460,56 +453,56 @@ const onConnect = useCallback((connection) => {
     }
   }, [selectedEdge, deleteSelectedEdge])
 
-const exportFullState = useCallback(() => {
-  const nodeData = {}
-  const groupDataExport = {}
-  
-  nodes.forEach((node) => {
-    if (node.type === 'custom') {
-      nodeData[node.id] = {
-        x: Math.round(node.position.x),
-        y: Math.round(node.position.y),
-      }
-    } else if (node.type === 'group') {
-      groupDataExport[node.id] = {
-        ...defaultGroups[node.id],
-        position: {
+  const exportFullState = useCallback(() => {
+    const nodeData = {}
+    const groupDataExport = {}
+    
+    nodes.forEach((node) => {
+      if (node.type === 'custom') {
+        nodeData[node.id] = {
           x: Math.round(node.position.x),
           y: Math.round(node.position.y),
-        },
-        size: {
-          width: Math.round(node.measured?.width || node.width || node.style?.width || 200),
-          height: Math.round(node.measured?.height || node.height || node.style?.height || 100),
-        },
+        }
+      } else if (node.type === 'group') {
+        groupDataExport[node.id] = {
+          ...defaultGroups[node.id],
+          position: {
+            x: Math.round(node.position.x),
+            y: Math.round(node.position.y),
+          },
+          size: {
+            width: Math.round(node.measured?.width || node.width || node.style?.width || 200),
+            height: Math.round(node.measured?.height || node.height || node.style?.height || 100),
+          },
+        }
       }
+    })
+    
+    const edgeData = edges.map((e) => ({
+      id: e.id,
+      source: e.source,
+      target: e.target,
+      sourceHandle: e.sourceHandle,
+      targetHandle: e.targetHandle,
+      type: e.type,
+    }))
+    
+    const fullState = {
+      positions: nodeData,
+      groups: groupDataExport,
+      edges: edgeData,
     }
-  })
-  
-  const edgeData = edges.map((e) => ({
-    id: e.id,
-    source: e.source,
-    target: e.target,
-    sourceHandle: e.sourceHandle,
-    targetHandle: e.targetHandle,
-    type: e.type,
-  }))
-  
-  const fullState = {
-    positions: nodeData,
-    groups: groupDataExport,
-    edges: edgeData,
-  }
-  
-  const dataStr = JSON.stringify(fullState, null, 2)
-  const blob = new Blob([dataStr], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'roadmap-state.json'
-  a.click()
-  URL.revokeObjectURL(url)
-}, [nodes, edges])
+    
+    const dataStr = JSON.stringify(fullState, null, 2)
+    const blob = new Blob([dataStr], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'roadmap-state.json'
+    a.click()
+    URL.revokeObjectURL(url)
+  }, [nodes, edges])
 
   const styledEdges = edges.map((e) => ({
     ...e,
@@ -544,7 +537,6 @@ const exportFullState = useCallback(() => {
         nodesDraggable={true}
         elementsSelectable={true}
         nodeOrigin={[0, 0]}
-
       >
         <Background color="#ddd" gap={20} />
         <Controls />
