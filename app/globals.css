@@ -112,3 +112,19 @@ body {
 .loading {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+/* 핸들 기본 숨김 */
+.react-flow__handle {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* 노드 hover 시 핸들 표시 */
+.react-flow__node:hover .react-flow__handle {
+  opacity: 1;
+}
+
+/* 연결 드래그 중에도 핸들 표시 */
+.react-flow__node.connecting .react-flow__handle {
+  opacity: 1;
+}
