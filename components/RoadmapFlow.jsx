@@ -390,27 +390,34 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
     flowNodes.push(flowNode)
   })
 
-  // 3. 엣지 생성
-  const edgesToUse = savedEdges || defaultEdges
-  const allNodeIds = flowNodes.map(n => n.id)
+// 3. 엣지 생성
+const edgesToUse = savedEdges || defaultEdges
+const allNodeIds = flowNodes.map(n => n.id)
+
+edgesToUse.forEach((edge, index) => {
+  const sourceExists = allNodeIds.includes(edge.source)
+  const targetExists = allNodeIds.includes(edge.target)
   
-  edgesToUse.forEach((edge, index) => {
-    const sourceExists = allNodeIds.includes(edge.source)
-    const targetExists = allNodeIds.includes(edge.target)
+  if (sourceExists && targetExists) {
+    // 소스와 타겟의 부모 그룹 확인
+    const sourceParent = nodeParentMapping[edge.source] || groups[edge.source]?.parentId
+    const targetParent = nodeParentMapping[edge.target] || groups[edge.target]?.parentId
     
-    if (sourceExists && targetExists) {
-      flowEdges.push({
-        id: edge.id || `edge-${index}`,
-        source: edge.source,
-        target: edge.target,
-        sourceHandle: edge.sourceHandle || 'bottom-src',
-        targetHandle: edge.targetHandle || 'top',
-        type: 'smoothstep',
-        style: { stroke: '#E65100', strokeWidth: 3 },
-        reconnectable: true,
-      })
-    }
-  })
+    // 같은 그룹 내면 직선, 다르면 smoothstep
+    const edgeType = edge.type || (sourceParent && sourceParent === targetParent ? 'straight' : 'smoothstep')
+    
+    flowEdges.push({
+      id: edge.id || `edge-${index}`,
+      source: edge.source,
+      target: edge.target,
+      sourceHandle: edge.sourceHandle || 'bottom-src',
+      targetHandle: edge.targetHandle || 'top',
+      type: edgeType,
+      style: { stroke: '#E65100', strokeWidth: 3 },
+      reconnectable: true,
+    })
+  }
+})
 
   return { flowNodes, flowEdges }
 }
