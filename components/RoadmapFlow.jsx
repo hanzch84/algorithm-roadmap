@@ -287,28 +287,32 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
   const flowNodes = []
   const flowEdges = []
   
+  // 방어 코드: 모든 입력값에 기본값 설정
   const groups = groupData || defaultGroups
   const nodes = initialNodes || []
+  const positions = { ...defaultPositions, ...(nodePositions || {}) }
+  const edgesToUse = savedEdges || defaultEdges
 
   // 1. 그룹 노드 생성
-  const groupEntries = Object.entries(groups)
-  groupEntries.sort((a, b) => (a[1].depth || 0) - (b[1].depth || 0))
+  const groupEntries = Object.entries(groups || {})
+  groupEntries.sort((a, b) => ((a[1]?.depth) || 0) - ((b[1]?.depth) || 0))
   
   groupEntries.forEach(([id, group]) => {
+    if (!group) return
     const depth = group.depth || 0
     const node = {
       id,
       type: 'group',
-      position: group.position,
+      position: group.position || { x: 0, y: 0 },
       style: {
         width: group.size?.width || 200,
         height: group.size?.height || 100,
         zIndex: -10 + depth * 5,
       },
       data: {
-        label: group.label,
-        section: group.section,
-        isSubgroup: group.isSubgroup,
+        label: group.label || '',
+        section: group.section || '기본',
+        isSubgroup: group.isSubgroup || false,
         depth: depth,
       },
     }
@@ -322,9 +326,8 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
   })
 
   // 2. 일반 노드 생성
-  const positions = { ...defaultPositions, ...nodePositions }
-  
   nodes.forEach((node, index) => {
+    if (!node) return
     const pos = positions[node.id] || { 
       x: 20 + (index % 4) * 120, 
       y: 40 
@@ -336,10 +339,10 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
       position: pos,
       zIndex: 100,
       data: {
-        label: node.name,
-        link: node.link,
-        section: node.section,
-        group: node.group,
+        label: node.name || '',
+        link: node.link || '',
+        section: node.section || '기본',
+        group: node.group || '',
       },
     }
     
@@ -353,10 +356,10 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
   })
 
   // 3. 엣지 생성
-  const edgesToUse = savedEdges || defaultEdges
   const allNodeIds = flowNodes.map(n => n.id)
   
-  edgesToUse.forEach((edge, index) => {
+  ;(edgesToUse || []).forEach((edge, index) => {
+    if (!edge) return
     const sourceExists = allNodeIds.includes(edge.source)
     const targetExists = allNodeIds.includes(edge.target)
     
@@ -390,7 +393,7 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     
     let mergedGroups = { ...defaultGroups }
     if (groupPos) {
-      Object.keys(groupPos).forEach(key => {
+      Object.keys(groupPos || {}).forEach(key => {
         if (mergedGroups[key]) {
           mergedGroups[key] = { ...mergedGroups[key], ...groupPos[key] }
         }
@@ -458,7 +461,8 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     const nodeData = {}
     const groupDataExport = {}
     
-    nodes.forEach((node) => {
+    ;(nodes || []).forEach((node) => {
+      if (!node) return
       if (node.type === 'custom') {
         nodeData[node.id] = {
           x: Math.round(node.position.x),
@@ -479,7 +483,7 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
       }
     })
     
-    const edgeData = edges.map((e) => ({
+    const edgeData = (edges || []).map((e) => ({
       id: e.id,
       source: e.source,
       target: e.target,
@@ -505,7 +509,7 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     URL.revokeObjectURL(url)
   }, [nodes, edges])
 
-  const styledEdges = edges.map((e) => ({
+  const styledEdges = (edges || []).map((e) => ({
     ...e,
     style: {
       ...e.style,
