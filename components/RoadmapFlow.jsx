@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useState, useEffect } from 'react'
+import { useCallback, useMemo, useState, useEffect, useRef } from 'react'
 import {
   ReactFlow,
   Background,
@@ -11,6 +11,7 @@ import {
   useEdgesState,
   reconnectEdge,
   addEdge,
+  useReactFlow,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 
@@ -167,9 +168,9 @@ const defaultGroups = {
 }
 
 // ========================================
-// 노드-그룹 매핑
+// 노드-그룹 매핑 (동적으로 업데이트됨)
 // ========================================
-const nodeParentMapping = {
+let nodeParentMapping = {
   'node_intro': 'sec_basic',
   'node_tools_intro': 'sec_tools',
   'node_boj_setup': 'sec_platform',
@@ -393,6 +394,7 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
 // ========================================
 export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }) {
   const [selectedEdge, setSelectedEdge] = useState(null)
+  const [newNodeId, setNewNodeId] = useState(null) // 새로 생성된 노드 ID (편집 모드 진입용)
 
   const { nodePositions, groupData } = useMemo(() => {
     const nodePos = savedPositions?.nodes || savedPositions?.positions || {}
@@ -419,6 +421,7 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     setEdges(flowEdges)
   }, [initialNodes, nodePositions, groupData, savedEdges, setNodes, setEdges])
 
+  // 노드 클릭 핸들러
   const onNodeClick = useCallback((event, node) => {
     if (event.shiftKey) return
     if (node.type === 'group') return
@@ -426,6 +429,47 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
       window.open(node.data.link, '_blank')
     }
   }, [])
+
+  // 그룹 더블클릭 시 새 노드 생성
+  const onNodeDoubleClick = useCallback((event, node) => {
+    // 그룹 노드에서만 새 노드 생성 (Shift 없이)
+    if (node.type !== 'group' || event.shiftKey) return
+    
+    event.stopPropagation()
+    
+    const groupId = node.id
+    const groupSection = node.data?.section || '기본'
+    const isAdvanced = groupSection === '고급'
+    
+    // 새 노드 ID 생성
+    const newId = `node_new_${Date.now()}`
+    
+    // 그룹 내 상대 위치 (중앙 근처)
+    const newPosition = { x: 50, y: 50 }
+    
+    // 새 노드 생성
+    const newNode = {
+      id: newId,
+      type: 'custom',
+      position: newPosition,
+      zIndex: 100,
+      parentId: groupId,
+      extent: 'parent',
+      data: {
+        label: '새 노드',
+        link: '',
+        section: groupSection,
+        group: groupId,
+        isNew: true, // 새 노드 표시 (편집 모드 진입용)
+      },
+    }
+    
+    // nodeParentMapping 업데이트
+    nodeParentMapping[newId] = groupId
+    
+    setNodes((nds) => [...nds, newNode])
+    setNewNodeId(newId) // 편집 모드 진입을 위해 저장
+  }, [setNodes])
 
   const onEdgeClick = useCallback((event, edge) => {
     setSelectedEdge(edge.id)
@@ -468,9 +512,11 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     }
   }, [selectedEdge, deleteSelectedEdge])
 
+  // 전체 상태 내보내기 (라벨, 링크 포함)
   const exportFullState = useCallback(() => {
     const nodeData = {}
     const groupDataExport = {}
+    const customNodes = [] // 커스텀 노드 데이터 (라벨, 링크 포함)
     
     ;(nodes || []).forEach((node) => {
       if (!node) return
@@ -479,9 +525,22 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
           x: Math.round(node.position.x),
           y: Math.round(node.position.y),
         }
+        // 노드 데이터 (라벨, 링크 포함)
+        customNodes.push({
+          id: node.id,
+          name: node.data?.label || '',
+          link: node.data?.link || '',
+          section: node.data?.section || '기본',
+          group: node.parentId || node.data?.group || '',
+        })
       } else if (node.type === 'group') {
         groupDataExport[node.id] = {
-          ...defaultGroups[node.id],
+          ...(defaultGroups[node.id] || {}),
+          label: node.data?.label || defaultGroups[node.id]?.label || '',
+          section: node.data?.section || defaultGroups[node.id]?.section || '기본',
+          depth: node.data?.depth ?? defaultGroups[node.id]?.depth ?? 0,
+          isSubgroup: node.data?.isSubgroup ?? defaultGroups[node.id]?.isSubgroup ?? false,
+          parentId: node.parentId || defaultGroups[node.id]?.parentId || null,
           position: {
             x: Math.round(node.position.x),
             y: Math.round(node.position.y),
@@ -508,6 +567,7 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
       positions: nodeData,
       groups: groupDataExport,
       edges: edgeData,
+      nodes: customNodes, // 노드 데이터 추가
     }
     
     const dataStr = JSON.stringify(fullState, null, 2)
@@ -539,6 +599,7 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeClick={onNodeClick}
+        onNodeDoubleClick={onNodeDoubleClick}
         onEdgeClick={onEdgeClick}
         onPaneClick={onPaneClick}
         onConnect={onConnect}
@@ -593,6 +654,10 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
           <div>• 엣지 클릭 → Delete: 삭제</div>
           <div className="mt-1 text-orange-600 font-medium">• 엣지 중간점 드래그: 곡률 조절</div>
           <div className="text-orange-600">• 중간점 더블클릭: 곡률 초기화</div>
+          <div className="mt-1 text-blue-600 font-medium">• 노드 더블클릭: 라벨 편집</div>
+          <div className="text-blue-600">• 노드 우클릭: 링크 편집</div>
+          <div className="text-purple-600">• 그룹 더블클릭: 새 노드 생성</div>
+          <div className="text-purple-600">• Shift + 그룹 더블클릭: 라벨 편집</div>
         </Panel>
       </ReactFlow>
     </div>
