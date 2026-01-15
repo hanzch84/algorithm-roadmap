@@ -51,7 +51,7 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 20, y: 70 },  // 부모 기준 상대좌표
+    position: { x: 20, y: 70 },
     size: { width: 400, height: 120 },
   },
   'sec_solved': {
@@ -98,7 +98,7 @@ const defaultGroups = {
     depth: 2,
     isSubgroup: true,
     parentId: 'sec_tools',
-    position: { x: 20, y: 70 },  // sec_tools 기준 상대좌표
+    position: { x: 20, y: 70 },
     size: { width: 180, height: 90 },
   },
   'sec_tools_online_ide': {
@@ -234,7 +234,7 @@ const nodeParentMapping = {
 const defaultPositions = {
   'node_intro': { x: 400, y: 30 },
   
-  // sec_platform 내부 (상대좌표)
+  // sec_platform 내부
   'node_boj_setup': { x: 20, y: 40 },
   'node_boj_usage': { x: 200, y: 40 },
   'node_koala_setup': { x: 20, y: 80 },
@@ -318,6 +318,16 @@ const defaultEdges = [
 ]
 
 // ========================================
+// 화살표 스타일
+// ========================================
+const markerEnd = {
+  type: 'arrowclosed',
+  color: '#E65100',
+  width: 20,
+  height: 20,
+}
+
+// ========================================
 // 노드/엣지 생성 함수
 // ========================================
 function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
@@ -326,7 +336,7 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
   
   const groups = groupData || defaultGroups
 
-  // 1. 그룹 노드 생성 (depth 순으로 정렬 - 부모가 먼저 생성되어야 함)
+  // 1. 그룹 노드 생성 (depth 순으로 정렬)
   const groupEntries = Object.entries(groups)
   groupEntries.sort((a, b) => (a[1].depth || 0) - (b[1].depth || 0))
   
@@ -352,7 +362,7 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
     // 부모가 있으면 설정
     if (group.parentId) {
       node.parentId = group.parentId
-      node.extent = 'parent'  // 부모 밖으로 못 나감
+      node.extent = 'parent'
     }
     
     flowNodes.push(node)
@@ -390,34 +400,35 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
     flowNodes.push(flowNode)
   })
 
-// 3. 엣지 생성
-const edgesToUse = savedEdges || defaultEdges
-const allNodeIds = flowNodes.map(n => n.id)
-
-edgesToUse.forEach((edge, index) => {
-  const sourceExists = allNodeIds.includes(edge.source)
-  const targetExists = allNodeIds.includes(edge.target)
+  // 3. 엣지 생성
+  const edgesToUse = savedEdges || defaultEdges
+  const allNodeIds = flowNodes.map(n => n.id)
   
-  if (sourceExists && targetExists) {
-    // 소스와 타겟의 부모 그룹 확인
-    const sourceParent = nodeParentMapping[edge.source] || groups[edge.source]?.parentId
-    const targetParent = nodeParentMapping[edge.target] || groups[edge.target]?.parentId
+  edgesToUse.forEach((edge, index) => {
+    const sourceExists = allNodeIds.includes(edge.source)
+    const targetExists = allNodeIds.includes(edge.target)
     
-    // 같은 그룹 내면 직선, 다르면 smoothstep
-    const edgeType = edge.type || (sourceParent && sourceParent === targetParent ? 'straight' : 'smoothstep')
-    
-    flowEdges.push({
-      id: edge.id || `edge-${index}`,
-      source: edge.source,
-      target: edge.target,
-      sourceHandle: edge.sourceHandle || 'bottom-src',
-      targetHandle: edge.targetHandle || 'top',
-      type: edgeType,
-      style: { stroke: '#E65100', strokeWidth: 3 },
-      reconnectable: true,
-    })
-  }
-})
+    if (sourceExists && targetExists) {
+      // 소스와 타겟의 부모 그룹 확인
+      const sourceParent = nodeParentMapping[edge.source] || groups[edge.source]?.parentId
+      const targetParent = nodeParentMapping[edge.target] || groups[edge.target]?.parentId
+      
+      // 같은 그룹 내면 직선, 다르면 smoothstep
+      const edgeType = edge.type || (sourceParent && sourceParent === targetParent ? 'straight' : 'smoothstep')
+      
+      flowEdges.push({
+        id: edge.id || `edge-${index}`,
+        source: edge.source,
+        target: edge.target,
+        sourceHandle: edge.sourceHandle || 'bottom-src',
+        targetHandle: edge.targetHandle || 'top',
+        type: edgeType,
+        style: { stroke: '#E65100', strokeWidth: 3 },
+        markerEnd,
+        reconnectable: true,
+      })
+    }
+  })
 
   return { flowNodes, flowEdges }
 }
@@ -477,11 +488,19 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
 
   // 새 엣지 연결
   const onConnect = useCallback((connection) => {
+    // 소스와 타겟의 부모 그룹 확인
+    const sourceParent = nodeParentMapping[connection.source] || defaultGroups[connection.source]?.parentId
+    const targetParent = nodeParentMapping[connection.target] || defaultGroups[connection.target]?.parentId
+    
+    // 같은 그룹 내면 직선, 다르면 smoothstep
+    const edgeType = (sourceParent && sourceParent === targetParent) ? 'straight' : 'smoothstep'
+    
     const newEdge = {
       ...connection,
       id: `edge-${Date.now()}`,
-      type: 'smoothstep',
+      type: edgeType,
       style: { stroke: '#E65100', strokeWidth: 3 },
+      markerEnd,
       reconnectable: true,
     }
     setEdges((eds) => addEdge(newEdge, eds))
@@ -539,6 +558,7 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
       target: e.target,
       sourceHandle: e.sourceHandle,
       targetHandle: e.targetHandle,
+      type: e.type,
     }))
     
     const fullState = {
@@ -565,6 +585,10 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
       ...e.style,
       stroke: e.id === selectedEdge ? '#ef4444' : '#E65100',
       strokeWidth: e.id === selectedEdge ? 4 : 3,
+    },
+    markerEnd: {
+      ...markerEnd,
+      color: e.id === selectedEdge ? '#ef4444' : '#E65100',
     },
   }))
 
