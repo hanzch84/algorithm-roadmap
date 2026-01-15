@@ -407,8 +407,9 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     return buildFlowData(initialNodes, nodePositions, groupData, savedEdges)
   }, [initialNodes, nodePositions, groupData, savedEdges])
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(flowNodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState(flowEdges)
+// 수정 - 빈 배열로 초기화
+const [nodes, setNodes, onNodesChange] = useNodesState([])
+const [edges, setEdges, onEdgesState] = useEdgesState([])
 
   useEffect(() => {
     const { flowNodes, flowEdges } = buildFlowData(initialNodes, nodePositions, groupData, savedEdges)
