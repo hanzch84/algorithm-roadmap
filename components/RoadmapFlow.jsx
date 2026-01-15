@@ -16,10 +16,15 @@ import '@xyflow/react/dist/style.css'
 
 import CustomNode from './CustomNode'
 import GroupNode from './GroupNode'
+import EditableEdge from './EditableEdge'
 
 const nodeTypes = {
   custom: CustomNode,
   group: GroupNode,
+}
+
+const edgeTypes = {
+  editable: EditableEdge,
 }
 
 // ========================================
@@ -48,8 +53,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 22, y: 83 },
-    size: { width: 358, height: 154 },
+    position: { x: 22, y: 78 },
+    size: { width: 367, height: 151 },
   },
   'sec_solved': {
     label: 'solved.ac',
@@ -57,8 +62,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 394, y: 83 },
-    size: { width: 272, height: 152 },
+    position: { x: 411, y: 78 },
+    size: { width: 255, height: 151 },
   },
   'sec_tools': {
     label: '🔧 코딩 도구',
@@ -210,9 +215,9 @@ const defaultPositions = {
   'node_boj_setup': { x: 63, y: 43 },
   'node_boj_usage': { x: 212, y: 43 },
   'node_koala_setup': { x: 35, y: 88 },
-  'node_koala_usage': { x: 195, y: 88 },
-  'node_solved_link': { x: 19, y: 49 },
-  'node_solved_usage': { x: 107, y: 89 },
+  'node_koala_usage': { x: 205, y: 88 },
+  'node_solved_link': { x: 22, y: 44 },
+  'node_solved_usage': { x: 70, y: 94 },
   'node_tools_intro': { x: 170, y: 43 },
   'tool_vscode': { x: 25, y: 42 },
   'tool_pycharm': { x: 25, y: 89 },
@@ -247,27 +252,27 @@ const defaultPositions = {
 // 기본 엣지 정의
 // ========================================
 const defaultEdges = [
-  { id: 'edge-2', source: 'node_boj_setup', target: 'node_boj_usage', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
-  { id: 'edge-3', source: 'node_koala_setup', target: 'node_koala_usage', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
-  { id: 'edge-11', source: 'node_til', target: 'node_join', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
-  { id: 'edge-12', source: 'node_join', target: 'node_study', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
-  { id: 'edge-13', source: 'node_arena', target: 'node_arenajoin', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
-  { id: 'edge-14', source: 'node_arenajoin', target: 'node_arenacoalla', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
-  { id: 'edge-1768455001460', source: 'node_boj_usage', target: 'node_solved_link', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
-  { id: 'edge-1768457260453', source: 'node_intro', target: 'node_boj_setup', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'default' },
-  { id: 'edge-1768457272681', source: 'node_intro', target: 'node_koala_setup', sourceHandle: 'bottom-src', targetHandle: 'left', type: 'default' },
-  { id: 'edge-1768457708909', source: 'sec_platform', target: 'sec_tools', sourceHandle: 'right-src', targetHandle: 'top', type: 'default' },
-  { id: 'edge-1768457839803', source: 'node_tools_intro', target: 'sec_tools_ide', sourceHandle: 'left-src', targetHandle: 'top', type: 'default' },
-  { id: 'edge-1768457846287', source: 'node_tools_intro', target: 'sec_tools_notebook', sourceHandle: 'right-src', targetHandle: 'top', type: 'default' },
-  { id: 'edge-1768457863495', source: 'node_tools_intro', target: 'sec_tools_online_ide', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'default' },
-  { id: 'edge-1768457879417', source: 'node_tools_intro', target: 'sec_tools_runner', sourceHandle: 'right-src', targetHandle: 'top', type: 'default' },
-  { id: 'edge-1768457941643', source: 'sec_tools', target: 'sec_record', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'default' },
-  { id: 'edge-1768457963564', source: 'sec_record', target: 'sec_arena', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'default' },
-  { id: 'edge-1768458027580', source: 'node_solved_link', target: 'node_solved_usage', sourceHandle: 'bottom-src', targetHandle: 'left', type: 'default' },
-  { id: 'edge-1768458251117', source: 'sec_record', target: 'sec_adv_til', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
-  { id: 'edge-1768458255698', source: 'sec_arena', target: 'sec_adv_contest', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
-  { id: 'edge-1768458351295', source: 'sec_solved', target: 'sec_adv_ext', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
-  { id: 'edge-1768459407226', source: 'sec_solved', target: 'sec_adv_usage', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
+  { id: 'edge-2', source: 'node_boj_setup', target: 'node_boj_usage', sourceHandle: 'right-src', targetHandle: 'left', type: 'editable' },
+  { id: 'edge-3', source: 'node_koala_setup', target: 'node_koala_usage', sourceHandle: 'right-src', targetHandle: 'left', type: 'editable' },
+  { id: 'edge-11', source: 'node_til', target: 'node_join', sourceHandle: 'right-src', targetHandle: 'left', type: 'editable' },
+  { id: 'edge-12', source: 'node_join', target: 'node_study', sourceHandle: 'right-src', targetHandle: 'left', type: 'editable' },
+  { id: 'edge-13', source: 'node_arena', target: 'node_arenajoin', sourceHandle: 'right-src', targetHandle: 'left', type: 'editable' },
+  { id: 'edge-14', source: 'node_arenajoin', target: 'node_arenacoalla', sourceHandle: 'right-src', targetHandle: 'left', type: 'editable' },
+  { id: 'edge-1768455001460', source: 'node_boj_usage', target: 'node_solved_link', sourceHandle: 'right-src', targetHandle: 'left', type: 'editable' },
+  { id: 'edge-1768457260453', source: 'node_intro', target: 'node_boj_setup', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'editable' },
+  { id: 'edge-1768457272681', source: 'node_intro', target: 'node_koala_setup', sourceHandle: 'bottom-src', targetHandle: 'left', type: 'editable' },
+  { id: 'edge-1768457708909', source: 'sec_platform', target: 'sec_tools', sourceHandle: 'right-src', targetHandle: 'top', type: 'editable' },
+  { id: 'edge-1768457839803', source: 'node_tools_intro', target: 'sec_tools_ide', sourceHandle: 'left-src', targetHandle: 'top', type: 'editable' },
+  { id: 'edge-1768457846287', source: 'node_tools_intro', target: 'sec_tools_notebook', sourceHandle: 'right-src', targetHandle: 'top', type: 'editable' },
+  { id: 'edge-1768457863495', source: 'node_tools_intro', target: 'sec_tools_online_ide', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'editable' },
+  { id: 'edge-1768457879417', source: 'node_tools_intro', target: 'sec_tools_runner', sourceHandle: 'right-src', targetHandle: 'top', type: 'editable' },
+  { id: 'edge-1768457941643', source: 'sec_tools', target: 'sec_record', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'editable' },
+  { id: 'edge-1768457963564', source: 'sec_record', target: 'sec_arena', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'editable' },
+  { id: 'edge-1768458251117', source: 'sec_record', target: 'sec_adv_til', sourceHandle: 'right-src', targetHandle: 'left', type: 'editable' },
+  { id: 'edge-1768458255698', source: 'sec_arena', target: 'sec_adv_contest', sourceHandle: 'right-src', targetHandle: 'left', type: 'editable' },
+  { id: 'edge-1768458351295', source: 'sec_solved', target: 'sec_adv_ext', sourceHandle: 'right-src', targetHandle: 'left', type: 'editable' },
+  { id: 'edge-1768459407226', source: 'sec_solved', target: 'sec_adv_usage', sourceHandle: 'right-src', targetHandle: 'left', type: 'editable' },
+  { id: 'edge-1768474975602', source: 'node_solved_link', target: 'node_solved_usage', sourceHandle: 'right-src', targetHandle: 'left', type: 'editable' },
 ]
 
 // ========================================
@@ -369,10 +374,13 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
         target: edge.target,
         sourceHandle: edge.sourceHandle || 'bottom-src',
         targetHandle: edge.targetHandle || 'top',
-        type: 'default',
+        type: 'editable',
         style: { stroke: '#E65100', strokeWidth: 2 },
         markerEnd,
         reconnectable: true,
+        data: {
+          controlPointOffset: edge.controlPointOffset || { x: 0, y: 0 },
+        },
       })
     }
   })
@@ -423,14 +431,21 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     setSelectedEdge(edge.id)
   }, [])
 
+  const onPaneClick = useCallback(() => {
+    setSelectedEdge(null)
+  }, [])
+
   const onConnect = useCallback((connection) => {
     const newEdge = {
       ...connection,
       id: `edge-${Date.now()}`,
-      type: 'default',
+      type: 'editable',
       style: { stroke: '#E65100', strokeWidth: 2 },
       markerEnd,
       reconnectable: true,
+      data: {
+        controlPointOffset: { x: 0, y: 0 },
+      },
     }
     setEdges((eds) => addEdge(newEdge, eds))
   }, [setEdges])
@@ -478,6 +493,7 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
       }
     })
     
+    // 엣지 데이터에 컨트롤 포인트 오프셋 포함
     const edgeData = (edges || []).map((e) => ({
       id: e.id,
       source: e.source,
@@ -485,6 +501,7 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
       sourceHandle: e.sourceHandle,
       targetHandle: e.targetHandle,
       type: e.type,
+      controlPointOffset: e.data?.controlPointOffset || { x: 0, y: 0 },
     }))
     
     const fullState = {
@@ -504,17 +521,10 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     URL.revokeObjectURL(url)
   }, [nodes, edges])
 
+  // 선택된 엣지 스타일 적용
   const styledEdges = (edges || []).map((e) => ({
     ...e,
-    style: {
-      ...e.style,
-      stroke: e.id === selectedEdge ? '#ef4444' : '#E65100',
-      strokeWidth: e.id === selectedEdge ? 3 : 2,
-    },
-    markerEnd: {
-      ...markerEnd,
-      color: e.id === selectedEdge ? '#ef4444' : '#E65100',
-    },
+    selected: e.id === selectedEdge,
   }))
 
   return (
@@ -526,9 +536,11 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
         onEdgesChange={onEdgesChange}
         onNodeClick={onNodeClick}
         onEdgeClick={onEdgeClick}
+        onPaneClick={onPaneClick}
         onConnect={onConnect}
         onReconnect={onReconnect}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         fitView
         fitViewOptions={{ padding: 0.1 }}
         minZoom={0.2}
@@ -574,6 +586,8 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
           <div>• 그룹 선택 → 모서리 드래그: 크기 조절</div>
           <div>• 핸들 드래그 → 다른 노드: 새 엣지</div>
           <div>• 엣지 끝점 드래그: 재연결</div>
+          <div>• <b>엣지 클릭 → 파란 점 드래그: 곡률 조절</b></div>
+          <div>• <b>파란 점 더블클릭: 곡률 리셋</b></div>
           <div>• 엣지 클릭 → Delete: 삭제</div>
         </Panel>
       </ReactFlow>
