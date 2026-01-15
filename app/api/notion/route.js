@@ -28,14 +28,23 @@ export async function GET() {
 
     const nodes = response.results.map((page) => {
       const properties = page.properties
+      
+      // 디버깅: 속성명 확인
+      const propKeys = Object.keys(properties)
+      
+      // 속성명 대소문자 무관하게 찾기
+      const findProp = (name) => {
+        const key = propKeys.find(k => k.toLowerCase() === name.toLowerCase())
+        return key ? properties[key] : null
+      }
 
       return {
-        id: getTextProperty(properties.NodeID) || page.id,
-        name: getTitleProperty(properties.Name) || '제목 없음',
-        link: getUrlProperty(properties.Link) || '',
-        group: getSelectProperty(properties.Group) || '기타',
-        section: getSelectProperty(properties.Section) || '기본',
-        order: getNumberProperty(properties.Order) || 0,
+        id: getTextProperty(findProp('NodeID')) || getTextProperty(findProp('nodeid')) || page.id,
+        name: getTitleProperty(findProp('Name')) || getTitleProperty(findProp('이름')) || '제목 없음',
+        link: getUrlProperty(findProp('Link')) || '',
+        group: getSelectProperty(findProp('Group')) || '기타',
+        section: getSelectProperty(findProp('Section')) || '기본',
+        order: getNumberProperty(findProp('Order')) || 0,
         notionPageId: page.id,
       }
     })
@@ -52,26 +61,41 @@ export async function GET() {
 
 // 속성 값 추출 헬퍼 함수들
 function getTitleProperty(prop) {
-  if (!prop || prop.type !== 'title') return null
-  return prop.title?.[0]?.plain_text || null
+  if (!prop) return null
+  if (prop.type === 'title') {
+    return prop.title?.[0]?.plain_text || null
+  }
+  return null
 }
 
 function getTextProperty(prop) {
-  if (!prop || prop.type !== 'rich_text') return null
-  return prop.rich_text?.[0]?.plain_text || null
+  if (!prop) return null
+  if (prop.type === 'rich_text') {
+    return prop.rich_text?.[0]?.plain_text || null
+  }
+  return null
 }
 
 function getUrlProperty(prop) {
-  if (!prop || prop.type !== 'url') return null
-  return prop.url || null
+  if (!prop) return null
+  if (prop.type === 'url') {
+    return prop.url || null
+  }
+  return null
 }
 
 function getSelectProperty(prop) {
-  if (!prop || prop.type !== 'select') return null
-  return prop.select?.name || null
+  if (!prop) return null
+  if (prop.type === 'select') {
+    return prop.select?.name || null
+  }
+  return null
 }
 
 function getNumberProperty(prop) {
-  if (!prop || prop.type !== 'number') return null
-  return prop.number || 0
+  if (!prop) return null
+  if (prop.type === 'number') {
+    return prop.number || 0
+  }
+  return 0
 }
