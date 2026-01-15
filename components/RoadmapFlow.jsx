@@ -32,15 +32,15 @@ const defaultGroups = {
     depth: 0,
     parentId: null,
     position: { x: -361, y: -29 },
-    size: { width: 950, height: 650 },
+    size: { width: 720, height: 760 },  // 950→720, 650→760
   },
   'sec_adv': {
     label: '🚀 고급 과정',
     section: '고급',
     depth: 0,
     parentId: null,
-    position: { x: 393, y: -25 },  // 변경
-    size: { width: 950, height: 250 },
+    position: { x: 393, y: -25 },
+    size: { width: 580, height: 720 },  // 950→580, 250→720
   },
   'sec_platform': {
     label: '플랫폼 가입',
@@ -49,7 +49,7 @@ const defaultGroups = {
     isSubgroup: true,
     parentId: 'sec_basic',
     position: { x: 22, y: 83 },
-    size: { width: 400, height: 120 },
+    size: { width: 350, height: 130 },  // 400→350, 120→130
   },
   'sec_solved': {
     label: 'solved.ac',
@@ -57,8 +57,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 394, y: 96 },  // 변경
-    size: { width: 300, height: 120 },
+    position: { x: 394, y: 96 },
+    size: { width: 240, height: 130 },  // 300→240, 120→130
   },
   'sec_tools': {
     label: '🔧 코딩 도구',
@@ -66,8 +66,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 23, y: 244 },  // 변경
-    size: { width: 900, height: 180 },
+    position: { x: 23, y: 244 },
+    size: { width: 680, height: 260 },  // 900→680, 180→260
   },
   'sec_record': {
     label: '스터디 기록/공유/발표',
@@ -75,8 +75,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 117, y: 520 },  // 변경
-    size: { width: 700, height: 100 },
+    position: { x: 117, y: 520 },
+    size: { width: 440, height: 100 },  // 700→440
   },
   'sec_arena': {
     label: '대회 참가',
@@ -84,8 +84,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 119, y: 640 },  // 변경
-    size: { width: 700, height: 100 },
+    position: { x: 119, y: 640 },
+    size: { width: 470, height: 100 },  // 700→470
   },
   'sec_tools_ide': {
     label: 'IDE',
@@ -94,7 +94,7 @@ const defaultGroups = {
     isSubgroup: true,
     parentId: 'sec_tools',
     position: { x: 22, y: 99 },
-    size: { width: 180, height: 90 },
+    size: { width: 130, height: 140 },  // 180→130, 90→140
   },
   'sec_tools_online_ide': {
     label: '온라인 IDE',
@@ -103,7 +103,7 @@ const defaultGroups = {
     isSubgroup: true,
     parentId: 'sec_tools',
     position: { x: 171, y: 100 },
-    size: { width: 180, height: 90 },
+    size: { width: 140, height: 140 },  // 180→140, 90→140
   },
   'sec_tools_runner': {
     label: '온라인 러너',
@@ -112,7 +112,7 @@ const defaultGroups = {
     isSubgroup: true,
     parentId: 'sec_tools',
     position: { x: 323, y: 101 },
-    size: { width: 180, height: 90 },
+    size: { width: 130, height: 140 },  // 180→130, 90→140
   },
   'sec_tools_notebook': {
     label: '노트북',
@@ -121,7 +121,7 @@ const defaultGroups = {
     isSubgroup: true,
     parentId: 'sec_tools',
     position: { x: 474, y: 102 },
-    size: { width: 180, height: 90 },
+    size: { width: 140, height: 140 },  // 180→140, 90→140
   },
   'sec_adv_ext': {
     label: '🧩 크롬 확장 프로그램',
@@ -129,8 +129,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_adv',
-    position: { x: 94, y: 232 },  // 변경
-    size: { width: 450, height: 80 },
+    position: { x: 94, y: 232 },
+    size: { width: 160, height: 220 },  // 450→160, 80→220
   },
   'sec_adv_usage': {
     label: '⚡ 고급 활용법',
@@ -139,7 +139,7 @@ const defaultGroups = {
     isSubgroup: true,
     parentId: 'sec_adv',
     position: { x: 93, y: 49 },
-    size: { width: 450, height: 80 },
+    size: { width: 160, height: 175 },  // 450→160, 80→175
   },
   'sec_adv_contest': {
     label: '🌍 온라인 콘테스트',
@@ -147,8 +147,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_adv',
-    position: { x: 114, y: 605 },  // 변경
-    size: { width: 250, height: 80 },
+    position: { x: 114, y: 605 },
+    size: { width: 150, height: 140 },  // 250→150, 80→140
   },
   'sec_adv_til': {
     label: '✍️ TIL 고급 작성법',
@@ -156,8 +156,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_adv',
-    position: { x: 40, y: 452 },  // 변경
-    size: { width: 450, height: 80 },
+    position: { x: 40, y: 452 },
+    size: { width: 270, height: 140 },  // 450→270, 80→140
   },
 }
 
