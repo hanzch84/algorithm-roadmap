@@ -23,10 +23,9 @@ const nodeTypes = {
 }
 
 // ========================================
-// 서브그래프(그룹) 정의 - 부모-자식 관계 포함
+// 서브그래프(그룹) 정의
 // ========================================
 const defaultGroups = {
-  // 최상위 섹션 (depth: 0) - 부모 없음
   'sec_basic': {
     label: '📘 기본 과정',
     section: '기본',
@@ -43,8 +42,6 @@ const defaultGroups = {
     position: { x: 0, y: 670 },
     size: { width: 950, height: 250 },
   },
-  
-  // 기본 과정 하위 (depth: 1) - sec_basic의 자식
   'sec_platform': {
     label: '플랫폼 가입',
     section: '기본',
@@ -90,8 +87,6 @@ const defaultGroups = {
     position: { x: 20, y: 530 },
     size: { width: 700, height: 100 },
   },
-  
-  // 코딩 도구 하위 (depth: 2) - sec_tools의 자식
   'sec_tools_ide': {
     label: 'IDE',
     section: '기본',
@@ -128,8 +123,6 @@ const defaultGroups = {
     position: { x: 620, y: 70 },
     size: { width: 180, height: 90 },
   },
-  
-  // 고급 과정 하위 (depth: 1) - sec_adv의 자식
   'sec_adv_ext': {
     label: '🧩 크롬 확장 프로그램',
     section: '고급',
@@ -169,24 +162,17 @@ const defaultGroups = {
 }
 
 // ========================================
-// 노드-그룹 매핑 (어느 그룹에 속하는지)
+// 노드-그룹 매핑
 // ========================================
 const nodeParentMapping = {
-  // sec_basic 직속
   'node_intro': 'sec_basic',
   'node_tools_intro': 'sec_tools',
-  
-  // sec_platform 소속
   'node_boj_setup': 'sec_platform',
   'node_boj_usage': 'sec_platform',
   'node_koala_setup': 'sec_platform',
   'node_koala_usage': 'sec_platform',
-  
-  // sec_solved 소속
   'node_solved_link': 'sec_solved',
   'node_solved_usage': 'sec_solved',
-  
-  // sec_tools_xxx 소속
   'tool_vscode': 'sec_tools_ide',
   'tool_pycharm': 'sec_tools_ide',
   'tool_replit': 'sec_tools_online_ide',
@@ -195,33 +181,21 @@ const nodeParentMapping = {
   'tool_tio': 'sec_tools_runner',
   'tool_colab': 'sec_tools_notebook',
   'tool_marimo': 'sec_tools_notebook',
-  
-  // sec_record 소속
   'node_til': 'sec_record',
   'node_join': 'sec_record',
   'node_study': 'sec_record',
-  
-  // sec_arena 소속
   'node_arena': 'sec_arena',
   'node_arenajoin': 'sec_arena',
   'node_arenacoalla': 'sec_arena',
-  
-  // sec_adv_ext 소속
   'ext_bjcode': 'sec_adv_ext',
   'ext_bojhub': 'sec_adv_ext',
   'ext_bojext': 'sec_adv_ext',
   'ext_testcase': 'sec_adv_ext',
-  
-  // sec_adv_usage 소속
   'adv_boj': 'sec_adv_usage',
   'adv_solved': 'sec_adv_usage',
   'adv_koala': 'sec_adv_usage',
-  
-  // sec_adv_contest 소속
   'contest_atcoder': 'sec_adv_contest',
   'contest_codeforces': 'sec_adv_contest',
-  
-  // sec_adv_til 소속
   'draw_io': 'sec_adv_til',
   'excalidraw': 'sec_adv_til',
   'pythontutor': 'sec_adv_til',
@@ -229,66 +203,40 @@ const nodeParentMapping = {
 }
 
 // ========================================
-// 노드 기본 위치 (부모 그룹 기준 상대좌표)
+// 노드 기본 위치
 // ========================================
 const defaultPositions = {
   'node_intro': { x: 400, y: 30 },
-  
-  // sec_platform 내부
   'node_boj_setup': { x: 20, y: 40 },
   'node_boj_usage': { x: 200, y: 40 },
   'node_koala_setup': { x: 20, y: 80 },
   'node_koala_usage': { x: 200, y: 80 },
-  
-  // sec_solved 내부
   'node_solved_link': { x: 20, y: 50 },
   'node_solved_usage': { x: 160, y: 50 },
-  
-  // sec_tools 직속
   'node_tools_intro': { x: 380, y: 30 },
-  
-  // sec_tools_ide 내부
   'tool_vscode': { x: 20, y: 40 },
   'tool_pycharm': { x: 100, y: 40 },
-  
-  // sec_tools_online_ide 내부
   'tool_replit': { x: 20, y: 40 },
   'tool_onlinegdb': { x: 100, y: 40 },
-  
-  // sec_tools_runner 내부
   'tool_ideone': { x: 20, y: 40 },
   'tool_tio': { x: 100, y: 40 },
-  
-  // sec_tools_notebook 내부
   'tool_colab': { x: 20, y: 40 },
   'tool_marimo': { x: 100, y: 40 },
-  
-  // sec_record 내부
   'node_til': { x: 20, y: 40 },
   'node_join': { x: 250, y: 40 },
   'node_study': { x: 480, y: 40 },
-  
-  // sec_arena 내부
   'node_arena': { x: 20, y: 40 },
   'node_arenajoin': { x: 250, y: 40 },
   'node_arenacoalla': { x: 480, y: 40 },
-  
-  // sec_adv_ext 내부
   'ext_bjcode': { x: 20, y: 35 },
   'ext_bojhub': { x: 130, y: 35 },
   'ext_bojext': { x: 240, y: 35 },
   'ext_testcase': { x: 350, y: 35 },
-  
-  // sec_adv_usage 내부
   'adv_boj': { x: 20, y: 35 },
   'adv_solved': { x: 160, y: 35 },
   'adv_koala': { x: 300, y: 35 },
-  
-  // sec_adv_contest 내부
   'contest_atcoder': { x: 20, y: 35 },
   'contest_codeforces': { x: 130, y: 35 },
-  
-  // sec_adv_til 내부
   'draw_io': { x: 20, y: 35 },
   'excalidraw': { x: 130, y: 35 },
   'pythontutor': { x: 260, y: 35 },
@@ -318,13 +266,13 @@ const defaultEdges = [
 ]
 
 // ========================================
-// 화살표 스타일
+// 화살표 스타일 (크기 줄임)
 // ========================================
 const markerEnd = {
   type: 'arrowclosed',
   color: '#E65100',
-  width: 20,
-  height: 20,
+  width: 12,
+  height: 12,
 }
 
 // ========================================
@@ -336,7 +284,7 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
   
   const groups = groupData || defaultGroups
 
-  // 1. 그룹 노드 생성 (depth 순으로 정렬)
+  // 1. 그룹 노드 생성
   const groupEntries = Object.entries(groups)
   groupEntries.sort((a, b) => (a[1].depth || 0) - (b[1].depth || 0))
   
@@ -359,7 +307,6 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
       },
     }
     
-    // 부모가 있으면 설정
     if (group.parentId) {
       node.parentId = group.parentId
       node.extent = 'parent'
@@ -390,7 +337,6 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
       },
     }
     
-    // 노드가 속한 그룹 설정
     const parentGroupId = nodeParentMapping[node.id]
     if (parentGroupId && groups[parentGroupId]) {
       flowNode.parentId = parentGroupId
@@ -409,12 +355,11 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
     const targetExists = allNodeIds.includes(edge.target)
     
     if (sourceExists && targetExists) {
-      // 소스와 타겟의 부모 그룹 확인
       const sourceParent = nodeParentMapping[edge.source] || groups[edge.source]?.parentId
       const targetParent = nodeParentMapping[edge.target] || groups[edge.target]?.parentId
       
-      // 같은 그룹 내면 직선, 다르면 smoothstep
-      const edgeType = edge.type || (sourceParent && sourceParent === targetParent ? 'straight' : 'smoothstep')
+      // 같은 그룹 = 직선, 다른 그룹 = 베지어 곡선
+      const edgeType = edge.type || (sourceParent && sourceParent === targetParent ? 'straight' : 'default')
       
       flowEdges.push({
         id: edge.id || `edge-${index}`,
@@ -423,7 +368,7 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
         sourceHandle: edge.sourceHandle || 'bottom-src',
         targetHandle: edge.targetHandle || 'top',
         type: edgeType,
-        style: { stroke: '#E65100', strokeWidth: 3 },
+        style: { stroke: '#E65100', strokeWidth: 2 },
         markerEnd,
         reconnectable: true,
       })
@@ -439,12 +384,10 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
 export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }) {
   const [selectedEdge, setSelectedEdge] = useState(null)
 
-  // 저장된 위치 파싱
   const { nodePositions, groupData } = useMemo(() => {
     const nodePos = savedPositions?.nodes || savedPositions?.positions || {}
     const groupPos = savedPositions?.groups || null
     
-    // 저장된 그룹 데이터가 있으면 기본값과 병합
     let mergedGroups = { ...defaultGroups }
     if (groupPos) {
       Object.keys(groupPos).forEach(key => {
@@ -457,7 +400,6 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     return { nodePositions: nodePos, groupData: mergedGroups }
   }, [savedPositions])
 
-  // 초기 데이터 생성
   const { flowNodes, flowEdges } = useMemo(() => {
     return buildFlowData(initialNodes, nodePositions, groupData, savedEdges)
   }, [initialNodes, nodePositions, groupData, savedEdges])
@@ -465,14 +407,12 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
   const [nodes, setNodes, onNodesChange] = useNodesState(flowNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(flowEdges)
 
-  // 데이터 변경 시 업데이트
   useEffect(() => {
     const { flowNodes, flowEdges } = buildFlowData(initialNodes, nodePositions, groupData, savedEdges)
     setNodes(flowNodes)
     setEdges(flowEdges)
   }, [initialNodes, nodePositions, groupData, savedEdges, setNodes, setEdges])
 
-  // 노드 클릭 → 링크 열기 (그룹 제외)
   const onNodeClick = useCallback((event, node) => {
     if (event.shiftKey) return
     if (node.type === 'group') return
@@ -481,37 +421,32 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     }
   }, [])
 
-  // 엣지 클릭 → 선택
   const onEdgeClick = useCallback((event, edge) => {
     setSelectedEdge(edge.id)
   }, [])
 
-  // 새 엣지 연결
   const onConnect = useCallback((connection) => {
-    // 소스와 타겟의 부모 그룹 확인
     const sourceParent = nodeParentMapping[connection.source] || defaultGroups[connection.source]?.parentId
     const targetParent = nodeParentMapping[connection.target] || defaultGroups[connection.target]?.parentId
     
-    // 같은 그룹 내면 직선, 다르면 smoothstep
-    const edgeType = (sourceParent && sourceParent === targetParent) ? 'straight' : 'smoothstep'
+    // 같은 그룹 = 직선, 다른 그룹 = 베지어 곡선
+    const edgeType = (sourceParent && sourceParent === targetParent) ? 'straight' : 'default'
     
     const newEdge = {
       ...connection,
       id: `edge-${Date.now()}`,
       type: edgeType,
-      style: { stroke: '#E65100', strokeWidth: 3 },
+      style: { stroke: '#E65100', strokeWidth: 2 },
       markerEnd,
       reconnectable: true,
     }
     setEdges((eds) => addEdge(newEdge, eds))
   }, [setEdges])
 
-  // 엣지 재연결
   const onReconnect = useCallback((oldEdge, newConnection) => {
     setEdges((els) => reconnectEdge(oldEdge, newConnection, els))
   }, [setEdges])
 
-  // 선택된 엣지 삭제
   const deleteSelectedEdge = useCallback(() => {
     if (selectedEdge) {
       setEdges((eds) => eds.filter((e) => e.id !== selectedEdge))
@@ -519,14 +454,12 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     }
   }, [selectedEdge, setEdges])
 
-  // 키보드 Delete 처리
   const onKeyDown = useCallback((event) => {
     if (event.key === 'Delete' && selectedEdge) {
       deleteSelectedEdge()
     }
   }, [selectedEdge, deleteSelectedEdge])
 
-  // 전체 상태 내보내기
   const exportFullState = useCallback(() => {
     const nodeData = {}
     const groupDataExport = {}
@@ -578,13 +511,12 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     URL.revokeObjectURL(url)
   }, [nodes, edges])
 
-  // 선택된 엣지 스타일 적용
   const styledEdges = edges.map((e) => ({
     ...e,
     style: {
       ...e.style,
       stroke: e.id === selectedEdge ? '#ef4444' : '#E65100',
-      strokeWidth: e.id === selectedEdge ? 4 : 3,
+      strokeWidth: e.id === selectedEdge ? 3 : 2,
     },
     markerEnd: {
       ...markerEnd,
