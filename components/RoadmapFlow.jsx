@@ -23,7 +23,7 @@ const nodeTypes = {
 }
 
 // ========================================
-// 서브그래프(그룹) 정의
+// 서브그래프(그룹) 정의 - JSON 반영
 // ========================================
 const defaultGroups = {
   'sec_basic': {
@@ -31,7 +31,7 @@ const defaultGroups = {
     section: '기본',
     depth: 0,
     parentId: null,
-    position: { x: 0, y: 0 },
+    position: { x: -361, y: -29 },
     size: { width: 950, height: 650 },
   },
   'sec_adv': {
@@ -39,7 +39,7 @@ const defaultGroups = {
     section: '고급',
     depth: 0,
     parentId: null,
-    position: { x: 0, y: 670 },
+    position: { x: 433, y: -7 },
     size: { width: 950, height: 250 },
   },
   'sec_platform': {
@@ -48,7 +48,7 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 20, y: 70 },
+    position: { x: 22, y: 83 },
     size: { width: 400, height: 120 },
   },
   'sec_solved': {
@@ -57,7 +57,7 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 440, y: 70 },
+    position: { x: 386, y: 50 },
     size: { width: 300, height: 120 },
   },
   'sec_tools': {
@@ -66,7 +66,7 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 20, y: 210 },
+    position: { x: 28, y: 259 },
     size: { width: 900, height: 180 },
   },
   'sec_record': {
@@ -75,7 +75,7 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 20, y: 410 },
+    position: { x: 147, y: 562 },
     size: { width: 700, height: 100 },
   },
   'sec_arena': {
@@ -84,7 +84,7 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 20, y: 530 },
+    position: { x: 171, y: 710 },
     size: { width: 700, height: 100 },
   },
   'sec_tools_ide': {
@@ -93,7 +93,7 @@ const defaultGroups = {
     depth: 2,
     isSubgroup: true,
     parentId: 'sec_tools',
-    position: { x: 20, y: 70 },
+    position: { x: 22, y: 99 },
     size: { width: 180, height: 90 },
   },
   'sec_tools_online_ide': {
@@ -102,7 +102,7 @@ const defaultGroups = {
     depth: 2,
     isSubgroup: true,
     parentId: 'sec_tools',
-    position: { x: 220, y: 70 },
+    position: { x: 171, y: 100 },
     size: { width: 180, height: 90 },
   },
   'sec_tools_runner': {
@@ -111,7 +111,7 @@ const defaultGroups = {
     depth: 2,
     isSubgroup: true,
     parentId: 'sec_tools',
-    position: { x: 420, y: 70 },
+    position: { x: 323, y: 101 },
     size: { width: 180, height: 90 },
   },
   'sec_tools_notebook': {
@@ -120,7 +120,7 @@ const defaultGroups = {
     depth: 2,
     isSubgroup: true,
     parentId: 'sec_tools',
-    position: { x: 620, y: 70 },
+    position: { x: 474, y: 102 },
     size: { width: 180, height: 90 },
   },
   'sec_adv_ext': {
@@ -129,7 +129,7 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_adv',
-    position: { x: 20, y: 50 },
+    position: { x: 94, y: 247 },
     size: { width: 450, height: 80 },
   },
   'sec_adv_usage': {
@@ -138,7 +138,7 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_adv',
-    position: { x: 480, y: 50 },
+    position: { x: 93, y: 49 },
     size: { width: 450, height: 80 },
   },
   'sec_adv_contest': {
@@ -147,7 +147,7 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_adv',
-    position: { x: 20, y: 150 },
+    position: { x: 92, y: 640 },
     size: { width: 250, height: 80 },
   },
   'sec_adv_til': {
@@ -156,7 +156,7 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_adv',
-    position: { x: 280, y: 150 },
+    position: { x: 25, y: 487 },
     size: { width: 450, height: 80 },
   },
 }
@@ -203,70 +203,72 @@ const nodeParentMapping = {
 }
 
 // ========================================
-// 노드 기본 위치
+// 노드 기본 위치 - JSON 반영
 // ========================================
 const defaultPositions = {
-  'node_intro': { x: 400, y: 30 },
-  'node_boj_setup': { x: 20, y: 40 },
-  'node_boj_usage': { x: 200, y: 40 },
-  'node_koala_setup': { x: 20, y: 80 },
-  'node_koala_usage': { x: 200, y: 80 },
-  'node_solved_link': { x: 20, y: 50 },
-  'node_solved_usage': { x: 160, y: 50 },
-  'node_tools_intro': { x: 380, y: 30 },
-  'tool_vscode': { x: 20, y: 40 },
-  'tool_pycharm': { x: 100, y: 40 },
-  'tool_replit': { x: 20, y: 40 },
-  'tool_onlinegdb': { x: 100, y: 40 },
+  'node_intro': { x: 30, y: 30 },
+  'node_boj_setup': { x: 20, y: 38 },
+  'node_boj_usage': { x: 190, y: 38 },
+  'node_koala_setup': { x: 20, y: 78 },
+  'node_koala_usage': { x: 190, y: 78 },
+  'node_solved_link': { x: 25, y: 35 },
+  'node_solved_usage': { x: 24, y: 97 },
+  'node_tools_intro': { x: 248, y: 36 },
+  'tool_vscode': { x: 20, y: 37 },
+  'tool_pycharm': { x: 20, y: 79 },
+  'tool_replit': { x: 20, y: 37 },
+  'tool_onlinegdb': { x: 21, y: 79 },
   'tool_ideone': { x: 20, y: 40 },
-  'tool_tio': { x: 100, y: 40 },
-  'tool_colab': { x: 20, y: 40 },
-  'tool_marimo': { x: 100, y: 40 },
+  'tool_tio': { x: 20, y: 82 },
+  'tool_colab': { x: 19, y: 36 },
+  'tool_marimo': { x: 20, y: 79 },
   'node_til': { x: 20, y: 40 },
-  'node_join': { x: 250, y: 40 },
-  'node_study': { x: 480, y: 40 },
+  'node_join': { x: 160, y: 40 },
+  'node_study': { x: 305, y: 40 },
   'node_arena': { x: 20, y: 40 },
-  'node_arenajoin': { x: 250, y: 40 },
-  'node_arenacoalla': { x: 480, y: 40 },
-  'ext_bjcode': { x: 20, y: 35 },
-  'ext_bojhub': { x: 130, y: 35 },
-  'ext_bojext': { x: 240, y: 35 },
-  'ext_testcase': { x: 350, y: 35 },
-  'adv_boj': { x: 20, y: 35 },
-  'adv_solved': { x: 160, y: 35 },
-  'adv_koala': { x: 300, y: 35 },
-  'contest_atcoder': { x: 20, y: 35 },
-  'contest_codeforces': { x: 130, y: 35 },
-  'draw_io': { x: 20, y: 35 },
-  'excalidraw': { x: 130, y: 35 },
-  'pythontutor': { x: 260, y: 35 },
-  'vscode_ext': { x: 360, y: 35 },
+  'node_arenajoin': { x: 180, y: 40 },
+  'node_arenacoalla': { x: 340, y: 40 },
+  'ext_bjcode': { x: 35, y: 40 },
+  'ext_bojhub': { x: 35, y: 171 },
+  'ext_bojext': { x: 32, y: 84 },
+  'ext_testcase': { x: 35, y: 127 },
+  'adv_boj': { x: 34, y: 36 },
+  'adv_solved': { x: 20, y: 80 },
+  'adv_koala': { x: 22, y: 125 },
+  'contest_atcoder': { x: 25, y: 38 },
+  'contest_codeforces': { x: 24, y: 82 },
+  'draw_io': { x: 21, y: 40 },
+  'excalidraw': { x: 22, y: 84 },
+  'pythontutor': { x: 149, y: 82 },
+  'vscode_ext': { x: 131, y: 40 },
 }
 
 // ========================================
-// 기본 엣지 정의
+// 기본 엣지 정의 - JSON 반영
 // ========================================
 const defaultEdges = [
-  { source: 'node_intro', target: 'node_boj_setup', sourceHandle: 'bottom-src', targetHandle: 'top' },
-  { source: 'node_intro', target: 'node_koala_setup', sourceHandle: 'bottom-src', targetHandle: 'top' },
-  { source: 'node_boj_setup', target: 'node_boj_usage', sourceHandle: 'right-src', targetHandle: 'left' },
-  { source: 'node_koala_setup', target: 'node_koala_usage', sourceHandle: 'right-src', targetHandle: 'left' },
-  { source: 'node_boj_usage', target: 'node_solved_link', sourceHandle: 'right-src', targetHandle: 'left' },
-  { source: 'node_solved_link', target: 'node_solved_usage', sourceHandle: 'right-src', targetHandle: 'left' },
-  { source: 'node_solved_usage', target: 'node_tools_intro', sourceHandle: 'bottom-src', targetHandle: 'top' },
-  { source: 'node_tools_intro', target: 'tool_vscode', sourceHandle: 'bottom-src', targetHandle: 'top' },
-  { source: 'node_tools_intro', target: 'tool_replit', sourceHandle: 'bottom-src', targetHandle: 'top' },
-  { source: 'node_tools_intro', target: 'tool_ideone', sourceHandle: 'bottom-src', targetHandle: 'top' },
-  { source: 'node_tools_intro', target: 'tool_colab', sourceHandle: 'bottom-src', targetHandle: 'top' },
-  { source: 'node_til', target: 'node_join', sourceHandle: 'right-src', targetHandle: 'left' },
-  { source: 'node_join', target: 'node_study', sourceHandle: 'right-src', targetHandle: 'left' },
-  { source: 'node_arena', target: 'node_arenajoin', sourceHandle: 'right-src', targetHandle: 'left' },
-  { source: 'node_arenajoin', target: 'node_arenacoalla', sourceHandle: 'right-src', targetHandle: 'left' },
-  { source: 'sec_basic', target: 'sec_adv', sourceHandle: 'bottom-src', targetHandle: 'top' },
+  { id: 'edge-0', source: 'node_intro', target: 'node_boj_setup', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'default' },
+  { id: 'edge-1', source: 'node_intro', target: 'node_koala_setup', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'default' },
+  { id: 'edge-2', source: 'node_boj_setup', target: 'node_boj_usage', sourceHandle: 'right-src', targetHandle: 'left', type: 'straight' },
+  { id: 'edge-3', source: 'node_koala_setup', target: 'node_koala_usage', sourceHandle: 'right-src', targetHandle: 'left', type: 'straight' },
+  { id: 'edge-11', source: 'node_til', target: 'node_join', sourceHandle: 'right-src', targetHandle: 'left', type: 'straight' },
+  { id: 'edge-12', source: 'node_join', target: 'node_study', sourceHandle: 'right-src', targetHandle: 'left', type: 'straight' },
+  { id: 'edge-13', source: 'node_arena', target: 'node_arenajoin', sourceHandle: 'right-src', targetHandle: 'left', type: 'straight' },
+  { id: 'edge-14', source: 'node_arenajoin', target: 'node_arenacoalla', sourceHandle: 'right-src', targetHandle: 'left', type: 'straight' },
+  { id: 'edge-1768454891072', source: 'node_solved_link', target: 'node_solved_usage', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'straight' },
+  { id: 'edge-1768455001460', source: 'node_boj_usage', target: 'node_solved_link', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
+  { id: 'edge-1768455012960', source: 'node_solved_usage', target: 'sec_tools', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'default' },
+  { id: 'edge-1768455370002', source: 'node_tools_intro', target: 'sec_tools_ide', sourceHandle: 'left-src', targetHandle: 'top', type: 'straight' },
+  { id: 'edge-1768455379329', source: 'node_tools_intro', target: 'sec_tools_notebook', sourceHandle: 'right-src', targetHandle: 'top', type: 'straight' },
+  { id: 'edge-1768455387422', source: 'node_tools_intro', target: 'sec_tools_online_ide', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'straight' },
+  { id: 'edge-1768455390008', source: 'node_tools_intro', target: 'sec_tools_runner', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'straight' },
+  { id: 'edge-1768455407218', source: 'sec_basic', target: 'sec_adv', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
+  { id: 'edge-1768455704215', source: 'sec_tools', target: 'sec_record', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'straight' },
+  { id: 'edge-1768455719272', source: 'sec_record', target: 'sec_arena', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'straight' },
 ]
 
 // ========================================
-// 화살표 스타일 (크기 줄임)
+// 화살표 스타일
 // ========================================
 const markerEnd = {
   type: 'arrowclosed',
@@ -358,7 +360,7 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
       const sourceParent = nodeParentMapping[edge.source] || groups[edge.source]?.parentId
       const targetParent = nodeParentMapping[edge.target] || groups[edge.target]?.parentId
       
-      // 같은 그룹 = 직선, 다른 그룹 = 베지어 곡선
+      // 저장된 type 우선, 없으면 자동 판단
       const edgeType = edge.type || (sourceParent && sourceParent === targetParent ? 'straight' : 'default')
       
       flowEdges.push({
@@ -428,8 +430,6 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
   const onConnect = useCallback((connection) => {
     const sourceParent = nodeParentMapping[connection.source] || defaultGroups[connection.source]?.parentId
     const targetParent = nodeParentMapping[connection.target] || defaultGroups[connection.target]?.parentId
-    
-    // 같은 그룹 = 직선, 다른 그룹 = 베지어 곡선
     const edgeType = (sourceParent && sourceParent === targetParent) ? 'straight' : 'default'
     
     const newEdge = {
