@@ -207,7 +207,7 @@ const nodeParentMapping = {
 // ========================================
 const defaultPositions = {
   'node_intro': { x: 30, y: 30 },
-  'node_boj_setup': { x: 20, y: 38 },
+'node_boj_setup': { x: 50, y: 38 },  // 이전: x: 20
   'node_boj_usage': { x: 190, y: 38 },
   'node_koala_setup': { x: 20, y: 78 },
   'node_koala_usage': { x: 190, y: 78 },
@@ -247,8 +247,10 @@ const defaultPositions = {
 // 기본 엣지 정의 - JSON 반영
 // ========================================
 const defaultEdges = [
-  { id: 'edge-0', source: 'node_intro', target: 'node_boj_setup', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'default' },
-  { id: 'edge-1', source: 'node_intro', target: 'node_koala_setup', sourceHandle: 'bottom-src', targetHandle: 'top', type: 'default' },
+// defaultEdges에서 수정
+// 기존 edge-0, edge-1 삭제하고 아래로 교체:
+{ id: 'edge-1768456506159', source: 'node_intro', target: 'node_boj_setup', sourceHandle: 'bottom-src', targetHandle: 'left', type: 'default' },
+{ id: 'edge-1768456514767', source: 'node_intro', target: 'node_koala_setup', sourceHandle: 'left-src', targetHandle: 'left', type: 'default' },
   { id: 'edge-2', source: 'node_boj_setup', target: 'node_boj_usage', sourceHandle: 'right-src', targetHandle: 'left', type: 'straight' },
   { id: 'edge-3', source: 'node_koala_setup', target: 'node_koala_usage', sourceHandle: 'right-src', targetHandle: 'left', type: 'straight' },
   { id: 'edge-11', source: 'node_til', target: 'node_join', sourceHandle: 'right-src', targetHandle: 'left', type: 'straight' },
