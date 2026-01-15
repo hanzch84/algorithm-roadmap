@@ -10,6 +10,7 @@ import {
   useNodesState,
   useEdgesState,
   reconnectEdge,
+  addEdge,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 
@@ -58,8 +59,8 @@ const defaultPositions = {
   'vscode_ext': { x: 820, y: 880 },
 }
 
-// 엣지 정의 (핸들 ID 포함)
-const edgeDefinitions = [
+// 기본 엣지 정의
+const defaultEdges = [
   { source: 'node_intro', target: 'node_boj_setup', sourceHandle: 'bottom-src', targetHandle: 'top' },
   { source: 'node_intro', target: 'node_koala_setup', sourceHandle: 'bottom-src', targetHandle: 'top' },
   { source: 'node_boj_setup', target: 'node_boj_usage', sourceHandle: 'right-src', targetHandle: 'left' },
@@ -79,8 +80,12 @@ const edgeDefinitions = [
 ]
 
 export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }) {
+  const [selectedEdge, setSelectedEdge] = useState(null)
+
+  // 위치 데이터 추출 (page.js에서 { nodes: {...} } 형태로 전달됨)
   const positions = useMemo(() => {
-    return { ...defaultPositions, ...savedPositions }
+    const nodePositions = savedPositions?.nodes || savedPositions?.positions || {}
+    return { ...defaultPositions, ...nodePositions }
   }, [savedPositions])
 
   // 노드/엣지 변환
@@ -88,8 +93,12 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     const flowNodes = []
     const flowEdges = []
 
+    // 노드 생성
     initialNodes.forEach((node, index) => {
-      const pos = positions[node.id] || { x: 100 + (index % 5) * 180, y: Math.floor(index / 5) * 100 }
+      const pos = positions[node.id] || { 
+        x: 100 + (index % 5) * 180, 
+        y: Math.floor(index / 5) * 100 
+      }
       flowNodes.push({
         id: node.id,
         type: 'custom',
@@ -103,8 +112,8 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
       })
     })
 
-    // 저장된 엣지가 있으면 사용, 없으면 기본값
-    const edgesToUse = savedEdges || edgeDefinitions
+    // 엣지 생성 (저장된 엣지 우선, 없으면 기본값)
+    const edgesToUse = savedEdges || defaultEdges
     
     edgesToUse.forEach((edge, index) => {
       const sourceExists = initialNodes.some((n) => n.id === edge.source)
@@ -119,7 +128,7 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
           targetHandle: edge.targetHandle || 'top',
           type: 'smoothstep',
           style: { stroke: '#E65100', strokeWidth: 3 },
-          reconnectable: true,  // 재연결 활성화
+          reconnectable: true,
         })
       }
     })
@@ -129,7 +138,6 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
 
   const [nodes, setNodes, onNodesChange] = useNodesState(flowNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(flowEdges)
-  const [selectedEdge, setSelectedEdge] = useState(null)
 
   // 노드 클릭 → 링크 열기
   const onNodeClick = useCallback((event, node) => {
@@ -144,7 +152,19 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     setSelectedEdge(edge.id)
   }, [])
 
-  // 엣지 재연결 핸들러
+  // 새 엣지 연결
+  const onConnect = useCallback((connection) => {
+    const newEdge = {
+      ...connection,
+      id: `edge-${Date.now()}`,
+      type: 'smoothstep',
+      style: { stroke: '#E65100', strokeWidth: 3 },
+      reconnectable: true,
+    }
+    setEdges((eds) => addEdge(newEdge, eds))
+  }, [setEdges])
+
+  // 엣지 재연결
   const onReconnect = useCallback((oldEdge, newConnection) => {
     setEdges((els) => reconnectEdge(oldEdge, newConnection, els))
   }, [setEdges])
@@ -164,7 +184,7 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     }
   }, [selectedEdge, deleteSelectedEdge])
 
-  // 전체 상태 내보내기 (위치 + 엣지)
+  // 전체 상태 내보내기
   const exportFullState = useCallback(() => {
     const posData = {}
     nodes.forEach((node) => {
@@ -200,22 +220,26 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     URL.revokeObjectURL(url)
   }, [nodes, edges])
 
+  // 선택된 엣지 스타일 적용
+  const styledEdges = edges.map((e) => ({
+    ...e,
+    style: {
+      ...e.style,
+      stroke: e.id === selectedEdge ? '#ef4444' : '#E65100',
+      strokeWidth: e.id === selectedEdge ? 4 : 3,
+    },
+  }))
+
   return (
     <div onKeyDown={onKeyDown} tabIndex={0} className="w-full h-full outline-none">
       <ReactFlow
         nodes={nodes}
-        edges={edges.map((e) => ({
-          ...e,
-          style: {
-            ...e.style,
-            stroke: e.id === selectedEdge ? '#ef4444' : '#E65100',
-            strokeWidth: e.id === selectedEdge ? 4 : 3,
-          },
-        }))}
+        edges={styledEdges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeClick={onNodeClick}
         onEdgeClick={onEdgeClick}
+        onConnect={onConnect}
         onReconnect={onReconnect}
         nodeTypes={nodeTypes}
         fitView
@@ -256,7 +280,8 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
         <Panel position="bottom-left" className="bg-white/90 p-3 rounded-lg shadow text-xs">
           <div className="font-bold mb-1">사용법</div>
           <div>• 노드 드래그: 위치 이동</div>
-          <div>• 엣지 끝점 드래그: 다른 노드/핸들로 재연결</div>
+          <div>• 핸들 드래그 → 다른 노드: 새 엣지 추가</div>
+          <div>• 엣지 끝점 드래그: 재연결</div>
           <div>• 엣지 클릭 → Delete: 삭제</div>
         </Panel>
       </ReactFlow>
