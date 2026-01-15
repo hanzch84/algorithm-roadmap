@@ -23,7 +23,7 @@ const nodeTypes = {
 }
 
 // ========================================
-// 서브그래프(그룹) 정의 - JSON 반영
+// 서브그래프(그룹) 정의
 // ========================================
 const defaultGroups = {
   'sec_basic': {
@@ -32,15 +32,15 @@ const defaultGroups = {
     depth: 0,
     parentId: null,
     position: { x: -361, y: -29 },
-    size: { width: 686, height: 765 },
+    size: { width: 693, height: 765 },
   },
   'sec_adv': {
     label: '🚀 고급 과정',
     section: '고급',
     depth: 0,
     parentId: null,
-    position: { x: 352, y: 40 },
-    size: { width: 336, height: 694 },
+    position: { x: 352, y: -28 },
+    size: { width: 334, height: 762 },
   },
   'sec_platform': {
     label: '플랫폼 가입',
@@ -49,7 +49,7 @@ const defaultGroups = {
     isSubgroup: true,
     parentId: 'sec_basic',
     position: { x: 22, y: 83 },
-    size: { width: 351, height: 145 },
+    size: { width: 358, height: 154 },
   },
   'sec_solved': {
     label: 'solved.ac',
@@ -57,8 +57,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 394, y: 96 },
-    size: { width: 254, height: 131 },
+    position: { x: 394, y: 83 },
+    size: { width: 272, height: 152 },
   },
   'sec_tools': {
     label: '🔧 코딩 도구',
@@ -67,7 +67,7 @@ const defaultGroups = {
     isSubgroup: true,
     parentId: 'sec_basic',
     position: { x: 23, y: 244 },
-    size: { width: 638, height: 262 },
+    size: { width: 643, height: 270 },
   },
   'sec_record': {
     label: '스터디 기록/공유/발표',
@@ -75,8 +75,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 122, y: 523 },
-    size: { width: 440, height: 100 },
+    position: { x: 102, y: 528 },
+    size: { width: 485, height: 104 },
   },
   'sec_arena': {
     label: '대회 참가',
@@ -84,7 +84,7 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 107, y: 640 },
+    position: { x: 107, y: 645 },
     size: { width: 470, height: 100 },
   },
   'sec_tools_ide': {
@@ -94,7 +94,7 @@ const defaultGroups = {
     isSubgroup: true,
     parentId: 'sec_tools',
     position: { x: 21, y: 100 },
-    size: { width: 140, height: 140 },
+    size: { width: 140, height: 149 },
   },
   'sec_tools_online_ide': {
     label: '온라인 IDE',
@@ -103,7 +103,7 @@ const defaultGroups = {
     isSubgroup: true,
     parentId: 'sec_tools',
     position: { x: 171, y: 100 },
-    size: { width: 140, height: 140 },
+    size: { width: 141, height: 148 },
   },
   'sec_tools_runner': {
     label: '온라인 러너',
@@ -112,7 +112,7 @@ const defaultGroups = {
     isSubgroup: true,
     parentId: 'sec_tools',
     position: { x: 323, y: 99 },
-    size: { width: 140, height: 139 },
+    size: { width: 139, height: 148 },
   },
   'sec_tools_notebook': {
     label: '노트북',
@@ -121,7 +121,7 @@ const defaultGroups = {
     isSubgroup: true,
     parentId: 'sec_tools',
     position: { x: 473, y: 99 },
-    size: { width: 140, height: 138 },
+    size: { width: 151, height: 147 },
   },
   'sec_adv_ext': {
     label: '🧩 크롬 확장 프로그램',
@@ -129,8 +129,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_adv',
-    position: { x: 53, y: 228 },
-    size: { width: 252, height: 134 },
+    position: { x: 57, y: 259 },
+    size: { width: 250, height: 155 },
   },
   'sec_adv_usage': {
     label: '⚡ 고급 활용법',
@@ -138,26 +138,26 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_adv',
-    position: { x: 89, y: 44 },
-    size: { width: 167, height: 176 },
+    position: { x: 87, y: 49 },
+    size: { width: 187, height: 201 },
   },
   'sec_adv_contest': {
-    label: '🌍 온라인 콘테스트',
+    label: '🌐 온라인 콘테스트',
     section: '고급',
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_adv',
-    position: { x: 90, y: 533 },
-    size: { width: 150, height: 140 },
+    position: { x: 90, y: 591 },
+    size: { width: 150, height: 150 },
   },
   'sec_adv_til': {
-    label: '✍️ TIL 고급 작성법',
+    label: '✏️ TIL 고급 작성법',
     section: '고급',
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_adv',
-    position: { x: 27, y: 373 },
-    size: { width: 286, height: 140 },
+    position: { x: 26, y: 426 },
+    size: { width: 286, height: 159 },
   },
 }
 
@@ -203,7 +203,7 @@ const nodeParentMapping = {
 }
 
 // ========================================
-// 노드 기본 위치 - JSON 반영
+// 노드 기본 위치
 // ========================================
 const defaultPositions = {
   'node_intro': { x: 25, y: 25 },
@@ -211,40 +211,40 @@ const defaultPositions = {
   'node_boj_usage': { x: 212, y: 43 },
   'node_koala_setup': { x: 35, y: 88 },
   'node_koala_usage': { x: 195, y: 88 },
-  'node_solved_link': { x: 19, y: 36 },
-  'node_solved_usage': { x: 107, y: 76 },
+  'node_solved_link': { x: 19, y: 49 },
+  'node_solved_usage': { x: 107, y: 89 },
   'node_tools_intro': { x: 170, y: 43 },
-  'tool_vscode': { x: 20, y: 37 },
-  'tool_pycharm': { x: 20, y: 79 },
-  'tool_replit': { x: 20, y: 37 },
-  'tool_onlinegdb': { x: 21, y: 79 },
-  'tool_ideone': { x: 20, y: 40 },
-  'tool_tio': { x: 20, y: 82 },
-  'tool_colab': { x: 19, y: 36 },
-  'tool_marimo': { x: 20, y: 79 },
+  'tool_vscode': { x: 25, y: 42 },
+  'tool_pycharm': { x: 25, y: 89 },
+  'tool_replit': { x: 30, y: 42 },
+  'tool_onlinegdb': { x: 21, y: 89 },
+  'tool_ideone': { x: 30, y: 45 },
+  'tool_tio': { x: 30, y: 87 },
+  'tool_colab': { x: 19, y: 46 },
+  'tool_marimo': { x: 35, y: 89 },
   'node_til': { x: 20, y: 40 },
   'node_join': { x: 145, y: 40 },
-  'node_study': { x: 275, y: 40 },
+  'node_study': { x: 285, y: 40 },
   'node_arena': { x: 20, y: 38 },
   'node_arenajoin': { x: 160, y: 38 },
   'node_arenacoalla': { x: 300, y: 38 },
-  'ext_bjcode': { x: 21, y: 36 },
-  'ext_bojhub': { x: 128, y: 77 },
-  'ext_bojext': { x: 127, y: 36 },
-  'ext_testcase': { x: 21, y: 77 },
-  'adv_boj': { x: 34, y: 36 },
-  'adv_solved': { x: 20, y: 75 },
-  'adv_koala': { x: 22, y: 115 },
-  'contest_atcoder': { x: 25, y: 38 },
-  'contest_codeforces': { x: 24, y: 77 },
-  'draw_io': { x: 21, y: 40 },
-  'excalidraw': { x: 22, y: 79 },
-  'pythontutor': { x: 136, y: 80 },
-  'vscode_ext': { x: 131, y: 40 },
+  'ext_bjcode': { x: 21, y: 46 },
+  'ext_bojhub': { x: 128, y: 92 },
+  'ext_bojext': { x: 107, y: 46 },
+  'ext_testcase': { x: 21, y: 92 },
+  'adv_boj': { x: 34, y: 41 },
+  'adv_solved': { x: 20, y: 90 },
+  'adv_koala': { x: 22, y: 140 },
+  'contest_atcoder': { x: 25, y: 48 },
+  'contest_codeforces': { x: 24, y: 92 },
+  'draw_io': { x: 21, y: 45 },
+  'excalidraw': { x: 22, y: 94 },
+  'pythontutor': { x: 151, y: 95 },
+  'vscode_ext': { x: 111, y: 45 },
 }
 
 // ========================================
-// 기본 엣지 정의 - JSON 반영
+// 기본 엣지 정의
 // ========================================
 const defaultEdges = [
   { id: 'edge-2', source: 'node_boj_setup', target: 'node_boj_usage', sourceHandle: 'right-src', targetHandle: 'left', type: 'default' },
@@ -287,7 +287,6 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
   const flowNodes = []
   const flowEdges = []
   
-  // 방어 코드: 모든 입력값에 기본값 설정
   const groups = groupData || defaultGroups
   const nodes = initialNodes || []
   const positions = { ...defaultPositions, ...(nodePositions || {}) }
@@ -403,14 +402,8 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     return { nodePositions: nodePos, groupData: mergedGroups }
   }, [savedPositions])
 
-  const { flowNodes, flowEdges } = useMemo(() => {
-    return buildFlowData(initialNodes, nodePositions, groupData, savedEdges)
-  }, [initialNodes, nodePositions, groupData, savedEdges])
-
-// 수정 - 빈 배열로 초기화
-// 올바른 수정
-const [nodes, setNodes, onNodesChange] = useNodesState([])
-const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  const [nodes, setNodes, onNodesChange] = useNodesState([])
+  const [edges, setEdges, onEdgesChange] = useEdgesState([])
 
   useEffect(() => {
     const { flowNodes, flowEdges } = buildFlowData(initialNodes, nodePositions, groupData, savedEdges)
