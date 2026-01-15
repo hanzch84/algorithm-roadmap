@@ -288,6 +288,7 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
   const flowEdges = []
   
   const groups = groupData || defaultGroups
+  const nodes = initialNodes || []
 
   // 1. 그룹 노드 생성
   const groupEntries = Object.entries(groups)
@@ -323,7 +324,7 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
   // 2. 일반 노드 생성
   const positions = { ...defaultPositions, ...nodePositions }
   
-  initialNodes.forEach((node, index) => {
+  nodes.forEach((node, index) => {
     const pos = positions[node.id] || { 
       x: 20 + (index % 4) * 120, 
       y: 40 
