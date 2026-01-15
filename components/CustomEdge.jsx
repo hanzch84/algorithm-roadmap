@@ -125,44 +125,10 @@ function CustomEdge({
       />
       
       <EdgeLabelRenderer>
-        {/* 컨트롤 포인트 핸들 */}
-        <div
-          style={{
-            position: 'absolute',
-            transform: `translate(-50%, -50%) translate(${controlPoint.x}px, ${controlPoint.y}px)`,
-            pointerEvents: 'all',
-          }}
-          className="nodrag nopan"
-        >
-          <div
-            onMouseDown={onControlPointDrag}
-            onDoubleClick={onControlPointReset}
-            style={{
-              width: 12,
-              height: 12,
-              borderRadius: '50%',
-              background: selected ? '#ef4444' : '#E65100',
-              border: '2px solid white',
-              cursor: 'grab',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-              opacity: selected ? 1 : 0.6,
-              transition: 'opacity 0.2s, transform 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.opacity = '1'
-              e.currentTarget.style.transform = 'scale(1.2)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = selected ? '1' : '0.6'
-              e.currentTarget.style.transform = 'scale(1)'
-            }}
-            title="드래그: 곡률 조절 | 더블클릭: 초기화"
-          />
-        </div>
-        
-        {/* 소스-컨트롤 포인트 연결선 (선택 시에만) */}
+        {/* 선택 시에만 컨트롤 포인트와 가이드라인 표시 */}
         {selected && (
           <>
+            {/* 소스-컨트롤 포인트 연결선 */}
             <svg
               style={{
                 position: 'absolute',
@@ -191,6 +157,38 @@ function CustomEdge({
                 strokeDasharray="4"
               />
             </svg>
+            
+            {/* 컨트롤 포인트 핸들 */}
+            <div
+              style={{
+                position: 'absolute',
+                transform: `translate(-50%, -50%) translate(${controlPoint.x}px, ${controlPoint.y}px)`,
+                pointerEvents: 'all',
+              }}
+              className="nodrag nopan"
+            >
+              <div
+                onMouseDown={onControlPointDrag}
+                onDoubleClick={onControlPointReset}
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: '50%',
+                  background: '#ef4444',
+                  border: '2px solid white',
+                  cursor: 'grab',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                  transition: 'transform 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.3)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)'
+                }}
+                title="드래그: 곡률 조절 | 더블클릭: 초기화"
+              />
+            </div>
           </>
         )}
       </EdgeLabelRenderer>
