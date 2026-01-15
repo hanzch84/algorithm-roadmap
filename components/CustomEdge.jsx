@@ -1,7 +1,7 @@
 'use client'
 
 import { memo, useCallback } from 'react'
-import { BaseEdge, EdgeLabelRenderer, getBezierPath, useReactFlow } from '@xyflow/react'
+import { EdgeLabelRenderer, useReactFlow } from '@xyflow/react'
 
 function CustomEdge({
   id,
@@ -16,12 +16,28 @@ function CustomEdge({
   data,
   selected,
 }) {
-  const { setEdges } = useReactFlow()
+  const { setEdges, screenToFlowPosition } = useReactFlow()
   
-  // 컨트롤 포인트 기본값 계산 (소스와 타겟 중간)
+  // 기본 곡률 계산 (직선이 아닌 곡선으로)
+  const midX = (sourceX + targetX) / 2
+  const midY = (sourceY + targetY) / 2
+  
+  // 소스-타겟 방향에 수직인 방향으로 오프셋
+  const dx = targetX - sourceX
+  const dy = targetY - sourceY
+  const distance = Math.sqrt(dx * dx + dy * dy)
+  
+  // 거리에 비례한 곡률 (최소 20, 최대 60)
+  const curvature = Math.min(60, Math.max(20, distance * 0.15))
+  
+  // 수직 방향 벡터 (정규화)
+  const perpX = distance > 0 ? -dy / distance : 0
+  const perpY = distance > 0 ? dx / distance : 1
+  
+  // 기본 컨트롤 포인트 (중간점에서 수직 방향으로 오프셋)
   const defaultControlPoint = {
-    x: (sourceX + targetX) / 2,
-    y: (sourceY + targetY) / 2,
+    x: midX + perpX * curvature,
+    y: midY + perpY * curvature,
   }
   
   const controlPoint = data?.controlPoint || defaultControlPoint
@@ -32,26 +48,16 @@ function CustomEdge({
   // 컨트롤 포인트 드래그 핸들러
   const onControlPointDrag = useCallback((event) => {
     event.stopPropagation()
-    
-    const startX = event.clientX
-    const startY = event.clientY
-    const startControlX = controlPoint.x
-    const startControlY = controlPoint.y
+    event.preventDefault()
     
     const onMouseMove = (moveEvent) => {
-      const dx = moveEvent.clientX - startX
-      const dy = moveEvent.clientY - startY
+      moveEvent.preventDefault()
       
-      // 뷰포트 스케일을 고려한 이동량 계산
-      const flowContainer = document.querySelector('.react-flow__viewport')
-      if (!flowContainer) return
-      
-      const transform = flowContainer.style.transform
-      const scaleMatch = transform.match(/scale\(([\d.]+)\)/)
-      const scale = scaleMatch ? parseFloat(scaleMatch[1]) : 1
-      
-      const newX = startControlX + dx / scale
-      const newY = startControlY + dy / scale
+      // 화면 좌표를 Flow 좌표로 변환
+      const position = screenToFlowPosition({
+        x: moveEvent.clientX,
+        y: moveEvent.clientY,
+      })
       
       setEdges((edges) =>
         edges.map((edge) =>
@@ -60,7 +66,7 @@ function CustomEdge({
                 ...edge,
                 data: {
                   ...edge.data,
-                  controlPoint: { x: newX, y: newY },
+                  controlPoint: { x: position.x, y: position.y },
                 },
               }
             : edge
@@ -75,7 +81,7 @@ function CustomEdge({
     
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
-  }, [id, controlPoint, setEdges])
+  }, [id, setEdges, screenToFlowPosition])
   
   // 컨트롤 포인트 초기화 (더블클릭)
   const onControlPointReset = useCallback((event) => {
@@ -171,13 +177,13 @@ function CustomEdge({
                 onMouseDown={onControlPointDrag}
                 onDoubleClick={onControlPointReset}
                 style={{
-                  width: 12,
-                  height: 12,
+                  width: 14,
+                  height: 14,
                   borderRadius: '50%',
                   background: '#ef4444',
                   border: '2px solid white',
                   cursor: 'grab',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
                   transition: 'transform 0.2s',
                 }}
                 onMouseEnter={(e) => {
