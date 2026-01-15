@@ -11,9 +11,13 @@ export default function Home() {
   const [savedEdges, setSavedEdges] = useState(null)  // 추가
   const fileInputRef = useRef(null)
 
-  useEffect(() => {
-    fetchNodes()
-  }, [])
+useEffect(() => {
+  // 임시: API 호출 없이 기본 데이터 사용
+  setNodes(getDefaultNodes())
+  setLoading(false)
+  
+  // fetchNodes()  // 나중에 노션 연결할 때 활성화
+}, [])
 
   const fetchNodes = async () => {
     try {
