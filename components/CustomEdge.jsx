@@ -18,44 +18,46 @@ function CustomEdge({
 }) {
   const { setEdges, screenToFlowPosition } = useReactFlow()
   
-  // 핸들 크기의 절반 (핸들 중심에서 노드 방향으로 연장)
+  // 핸들 반지름 (핸들 8px, border 2px 고려)
   const handleRadius = 5
   
-  // 소스 좌표 보정 (핸들 중심 → 노드 내부 방향으로)
+  // 소스 좌표 보정 (핸들 바깥쪽 → 노드 외곽선 방향으로)
+  // right 핸들 → 왼쪽으로, left 핸들 → 오른쪽으로
+  // bottom 핸들 → 위로, top 핸들 → 아래로
   let adjustedSourceX = sourceX
   let adjustedSourceY = sourceY
   
   switch (sourcePosition) {
     case 'right':
-      adjustedSourceX = sourceX + handleRadius // 오른쪽으로 더 연장
+      adjustedSourceX = sourceX - handleRadius // 왼쪽으로 (노드 안쪽)
       break
     case 'left':
-      adjustedSourceX = sourceX - handleRadius // 왼쪽으로 더 연장
+      adjustedSourceX = sourceX + handleRadius // 오른쪽으로 (노드 안쪽)
       break
     case 'bottom':
-      adjustedSourceY = sourceY + handleRadius // 아래로 더 연장
+      adjustedSourceY = sourceY - handleRadius // 위로 (노드 안쪽)
       break
     case 'top':
-      adjustedSourceY = sourceY - handleRadius // 위로 더 연장
+      adjustedSourceY = sourceY + handleRadius // 아래로 (노드 안쪽)
       break
   }
   
-  // 타겟 좌표 보정 (핸들 중심 → 노드 내부 방향으로)
+  // 타겟 좌표 보정 (핸들 바깥쪽 → 노드 외곽선 방향으로)
   let adjustedTargetX = targetX
   let adjustedTargetY = targetY
   
   switch (targetPosition) {
     case 'right':
-      adjustedTargetX = targetX + handleRadius // 오른쪽으로 더 연장
+      adjustedTargetX = targetX - handleRadius // 왼쪽으로 (노드 안쪽)
       break
     case 'left':
-      adjustedTargetX = targetX - handleRadius // 왼쪽으로 더 연장
+      adjustedTargetX = targetX + handleRadius // 오른쪽으로 (노드 안쪽)
       break
     case 'bottom':
-      adjustedTargetY = targetY + handleRadius // 아래로 더 연장
+      adjustedTargetY = targetY - handleRadius // 위로 (노드 안쪽)
       break
     case 'top':
-      adjustedTargetY = targetY - handleRadius // 위로 더 연장
+      adjustedTargetY = targetY + handleRadius // 아래로 (노드 안쪽)
       break
   }
   
