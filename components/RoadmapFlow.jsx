@@ -39,6 +39,7 @@ const defaultGroups = {
     parentId: null,
     position: { x: -361, y: -29 },
     size: { width: 693, height: 765 },
+    isSubgroup: false,
   },
   'sec_adv': {
     label: '🚀 고급 과정',
@@ -47,6 +48,7 @@ const defaultGroups = {
     parentId: null,
     position: { x: 352, y: -28 },
     size: { width: 334, height: 762 },
+    isSubgroup: false,
   },
   'sec_platform': {
     label: '플랫폼 가입',
@@ -55,7 +57,7 @@ const defaultGroups = {
     isSubgroup: true,
     parentId: 'sec_basic',
     position: { x: 22, y: 83 },
-    size: { width: 358, height: 154 },
+    size: { width: 331, height: 153 },
   },
   'sec_solved': {
     label: 'solved.ac',
@@ -81,8 +83,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 102, y: 528 },
-    size: { width: 485, height: 104 },
+    position: { x: 77, y: 528 },
+    size: { width: 555, height: 104 },
   },
   'sec_arena': {
     label: '대회 참가',
@@ -90,8 +92,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 107, y: 645 },
-    size: { width: 470, height: 100 },
+    position: { x: 47, y: 645 },
+    size: { width: 530, height: 100 },
   },
   'sec_tools_ide': {
     label: 'IDE',
@@ -213,27 +215,27 @@ let nodeParentMapping = {
 // ========================================
 const defaultPositions = {
   'node_intro': { x: 25, y: 25 },
-  'node_boj_setup': { x: 63, y: 43 },
-  'node_boj_usage': { x: 212, y: 43 },
-  'node_koala_setup': { x: 35, y: 88 },
-  'node_koala_usage': { x: 195, y: 88 },
-  'node_solved_link': { x: 19, y: 49 },
+  'node_boj_setup': { x: 38, y: 43 },
+  'node_boj_usage': { x: 177, y: 43 },
+  'node_koala_setup': { x: 40, y: 88 },
+  'node_koala_usage': { x: 170, y: 88 },
+  'node_solved_link': { x: 19, y: 44 },
   'node_solved_usage': { x: 107, y: 89 },
-  'node_tools_intro': { x: 170, y: 43 },
+  'node_tools_intro': { x: 190, y: 43 },
   'tool_vscode': { x: 25, y: 42 },
   'tool_pycharm': { x: 25, y: 89 },
   'tool_replit': { x: 30, y: 42 },
   'tool_onlinegdb': { x: 21, y: 89 },
   'tool_ideone': { x: 30, y: 45 },
-  'tool_tio': { x: 30, y: 87 },
+  'tool_tio': { x: 31, y: 89 },
   'tool_colab': { x: 19, y: 46 },
   'tool_marimo': { x: 35, y: 89 },
-  'node_til': { x: 20, y: 40 },
-  'node_join': { x: 145, y: 40 },
-  'node_study': { x: 285, y: 40 },
-  'node_arena': { x: 20, y: 38 },
-  'node_arenajoin': { x: 160, y: 38 },
-  'node_arenacoalla': { x: 300, y: 38 },
+  'node_til': { x: 35, y: 45 },
+  'node_join': { x: 192, y: 45 },
+  'node_study': { x: 355, y: 45 },
+  'node_arena': { x: 30, y: 43 },
+  'node_arenajoin': { x: 195, y: 43 },
+  'node_arenacoalla': { x: 360, y: 43 },
   'ext_bjcode': { x: 21, y: 46 },
   'ext_bojhub': { x: 128, y: 92 },
   'ext_bojext': { x: 107, y: 46 },
@@ -253,27 +255,27 @@ const defaultPositions = {
 // 기본 엣지 정의
 // ========================================
 const defaultEdges = [
-  { id: 'edge-2', source: 'node_boj_setup', target: 'node_boj_usage', sourceHandle: 'right-src', targetHandle: 'left' },
-  { id: 'edge-3', source: 'node_koala_setup', target: 'node_koala_usage', sourceHandle: 'right-src', targetHandle: 'left' },
-  { id: 'edge-11', source: 'node_til', target: 'node_join', sourceHandle: 'right-src', targetHandle: 'left' },
-  { id: 'edge-12', source: 'node_join', target: 'node_study', sourceHandle: 'right-src', targetHandle: 'left' },
-  { id: 'edge-13', source: 'node_arena', target: 'node_arenajoin', sourceHandle: 'right-src', targetHandle: 'left' },
-  { id: 'edge-14', source: 'node_arenajoin', target: 'node_arenacoalla', sourceHandle: 'right-src', targetHandle: 'left' },
-  { id: 'edge-1768455001460', source: 'node_boj_usage', target: 'node_solved_link', sourceHandle: 'right-src', targetHandle: 'left' },
-  { id: 'edge-1768457260453', source: 'node_intro', target: 'node_boj_setup', sourceHandle: 'bottom-src', targetHandle: 'top' },
-  { id: 'edge-1768457272681', source: 'node_intro', target: 'node_koala_setup', sourceHandle: 'bottom-src', targetHandle: 'left' },
-  { id: 'edge-1768457708909', source: 'sec_platform', target: 'sec_tools', sourceHandle: 'right-src', targetHandle: 'top' },
-  { id: 'edge-1768457839803', source: 'node_tools_intro', target: 'sec_tools_ide', sourceHandle: 'left-src', targetHandle: 'top' },
-  { id: 'edge-1768457846287', source: 'node_tools_intro', target: 'sec_tools_notebook', sourceHandle: 'right-src', targetHandle: 'top' },
-  { id: 'edge-1768457863495', source: 'node_tools_intro', target: 'sec_tools_online_ide', sourceHandle: 'bottom-src', targetHandle: 'top' },
-  { id: 'edge-1768457879417', source: 'node_tools_intro', target: 'sec_tools_runner', sourceHandle: 'right-src', targetHandle: 'top' },
-  { id: 'edge-1768457941643', source: 'sec_tools', target: 'sec_record', sourceHandle: 'bottom-src', targetHandle: 'top' },
-  { id: 'edge-1768457963564', source: 'sec_record', target: 'sec_arena', sourceHandle: 'bottom-src', targetHandle: 'top' },
-  { id: 'edge-1768458027580', source: 'node_solved_link', target: 'node_solved_usage', sourceHandle: 'bottom-src', targetHandle: 'left' },
-  { id: 'edge-1768458251117', source: 'sec_record', target: 'sec_adv_til', sourceHandle: 'right-src', targetHandle: 'left' },
-  { id: 'edge-1768458255698', source: 'sec_arena', target: 'sec_adv_contest', sourceHandle: 'right-src', targetHandle: 'left' },
-  { id: 'edge-1768458351295', source: 'sec_solved', target: 'sec_adv_ext', sourceHandle: 'right-src', targetHandle: 'left' },
-  { id: 'edge-1768459407226', source: 'sec_solved', target: 'sec_adv_usage', sourceHandle: 'right-src', targetHandle: 'left' },
+  { id: 'edge-2', source: 'node_boj_setup', target: 'node_boj_usage', sourceHandle: 'right-src', targetHandle: 'left', controlPoint: { x: -175.09, y: 118.08 } },
+  { id: 'edge-3', source: 'node_koala_setup', target: 'node_koala_usage', sourceHandle: 'right-src', targetHandle: 'left', controlPoint: { x: -179.04, y: 162.50 } },
+  { id: 'edge-13', source: 'node_arena', target: 'node_arenajoin', sourceHandle: 'right-src', targetHandle: 'left', controlPoint: null },
+  { id: 'edge-14', source: 'node_arenajoin', target: 'node_arenacoalla', sourceHandle: 'right-src', targetHandle: 'left', controlPoint: null },
+  { id: 'edge-1768455001460', source: 'node_boj_usage', target: 'node_solved_link', sourceHandle: 'right-src', targetHandle: 'left', controlPoint: { x: 14.44, y: 115.12 } },
+  { id: 'edge-1768457272681', source: 'node_intro', target: 'node_koala_setup', sourceHandle: 'bottom-src', targetHandle: 'left', controlPoint: { x: -360.66, y: 156.57 } },
+  { id: 'edge-1768457839803', source: 'node_tools_intro', target: 'sec_tools_ide', sourceHandle: 'left-src', targetHandle: 'top', controlPoint: { x: -243.20, y: 284.90 } },
+  { id: 'edge-1768457846287', source: 'node_tools_intro', target: 'sec_tools_notebook', sourceHandle: 'right-src', targetHandle: 'top', controlPoint: { x: 196.06, y: 276.01 } },
+  { id: 'edge-1768457863495', source: 'node_tools_intro', target: 'sec_tools_online_ide', sourceHandle: 'bottom-src', targetHandle: 'top', controlPoint: null },
+  { id: 'edge-1768457879417', source: 'node_tools_intro', target: 'sec_tools_runner', sourceHandle: 'right-src', targetHandle: 'top', controlPoint: { x: 45.04, y: 285.88 } },
+  { id: 'edge-1768457941643', source: 'sec_tools', target: 'sec_record', sourceHandle: 'bottom-src', targetHandle: 'top', controlPoint: { x: -17.15, y: 489.23 } },
+  { id: 'edge-1768457963564', source: 'sec_record', target: 'sec_arena', sourceHandle: 'bottom-src', targetHandle: 'top', controlPoint: { x: -32.95, y: 608.66 } },
+  { id: 'edge-1768458027580', source: 'node_solved_link', target: 'node_solved_usage', sourceHandle: 'bottom-src', targetHandle: 'left', controlPoint: null },
+  { id: 'edge-1768458251117', source: 'sec_record', target: 'sec_adv_til', sourceHandle: 'right-src', targetHandle: 'left', controlPoint: { x: 327.35, y: 483.30 } },
+  { id: 'edge-1768458255698', source: 'sec_arena', target: 'sec_adv_contest', sourceHandle: 'right-src', targetHandle: 'left', controlPoint: { x: 329.32, y: 646.17 } },
+  { id: 'edge-1768528784912', source: 'node_intro', target: 'node_boj_setup', sourceHandle: 'bottom-src', targetHandle: 'left', controlPoint: { x: -359.67, y: 110.18 } },
+  { id: 'edge-1768529007019', source: 'sec_platform', target: 'sec_tools', sourceHandle: 'right-src', targetHandle: 'top', controlPoint: { x: 36.15, y: 131.90 } },
+  { id: 'edge-1768529174088', source: 'sec_solved', target: 'sec_adv_usage', sourceHandle: 'right-src', targetHandle: 'left', controlPoint: { x: 370.78, y: 118.08 } },
+  { id: 'edge-1768529181806', source: 'sec_solved', target: 'sec_adv_ext', sourceHandle: 'right-src', targetHandle: 'left', controlPoint: { x: 365.84, y: 300.69 } },
+  { id: 'edge-1768529253767', source: 'node_til', target: 'node_join', sourceHandle: 'right-src', targetHandle: 'left', controlPoint: { x: -121.78, y: 566.22 } },
+  { id: 'edge-1768529311056', source: 'node_join', target: 'node_study', sourceHandle: 'right-src', targetHandle: 'left', controlPoint: { x: 48.00, y: 565.23 } },
 ]
 
 // ========================================
@@ -624,6 +626,89 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     URL.revokeObjectURL(url)
   }, [nodes, edges])
 
+  // 페이지 생성 (읽기 전용 공유 링크)
+  const [isPublishing, setIsPublishing] = useState(false)
+  const [shareUrl, setShareUrl] = useState(null)
+  
+  const publishRoadmap = useCallback(async () => {
+    setIsPublishing(true)
+    
+    try {
+      const nodeData = {}
+      const groupDataExport = {}
+      const customNodes = []
+      
+      ;(nodes || []).forEach((node) => {
+        if (!node) return
+        if (node.type === 'custom') {
+          nodeData[node.id] = {
+            x: Math.round(node.position.x),
+            y: Math.round(node.position.y),
+          }
+          customNodes.push({
+            id: node.id,
+            name: node.data?.label || '',
+            link: node.data?.link || '',
+            section: node.data?.section || '기본',
+            group: node.data?.group || '',
+          })
+        } else if (node.type === 'group') {
+          groupDataExport[node.id] = {
+            ...defaultGroups[node.id],
+            position: {
+              x: Math.round(node.position.x),
+              y: Math.round(node.position.y),
+            },
+            size: {
+              width: Math.round(node.measured?.width || node.width || node.style?.width || 200),
+              height: Math.round(node.measured?.height || node.height || node.style?.height || 100),
+            },
+          }
+        }
+      })
+      
+      const edgeData = (edges || []).map((e) => ({
+        id: e.id,
+        source: e.source,
+        target: e.target,
+        sourceHandle: e.sourceHandle,
+        targetHandle: e.targetHandle,
+        controlPoint: e.data?.controlPoint || null,
+      }))
+      
+      const response = await fetch('/api/roadmap', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: '🐨 코알라 알고리즘 스터디 로드맵',
+          positions: nodeData,
+          groups: groupDataExport,
+          edges: edgeData,
+          nodes: customNodes,
+        }),
+      })
+      
+      const result = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(result.error || '저장에 실패했습니다')
+      }
+      
+      const fullUrl = `${window.location.origin}${result.url}`
+      setShareUrl(fullUrl)
+      
+      // 클립보드에 복사
+      await navigator.clipboard.writeText(fullUrl)
+      alert(`✅ 페이지가 생성되었습니다!\n\n링크가 클립보드에 복사되었습니다:\n${fullUrl}`)
+      
+    } catch (error) {
+      console.error('Publish error:', error)
+      alert(`❌ 오류: ${error.message}`)
+    } finally {
+      setIsPublishing(false)
+    }
+  }, [nodes, edges])
+
   // 선택 상태를 엣지에 반영
   const styledEdges = (edges || []).map((e) => ({
     ...e,
@@ -670,7 +755,14 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
           maskColor="rgba(0, 0, 0, 0.1)"
         />
         
-        <Panel position="top-right" className="flex gap-2">
+        <Panel position="top-right" className="flex gap-2 flex-wrap">
+          <button
+            onClick={publishRoadmap}
+            disabled={isPublishing}
+            className="bg-green-500 hover:bg-green-600 disabled:bg-green-300 text-white px-4 py-2 rounded-lg shadow-md text-sm font-medium"
+          >
+            {isPublishing ? '⏳ 생성 중...' : '🌐 페이지 생성'}
+          </button>
           <button
             onClick={exportFullState}
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md text-sm font-medium"
