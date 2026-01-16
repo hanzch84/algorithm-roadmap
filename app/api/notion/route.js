@@ -35,7 +35,7 @@ export async function GET() {
     response.results.forEach((page) => {
       const properties = page.properties
       const propKeys = Object.keys(properties)
-      
+
       const findProp = (name) => {
         const key = propKeys.find(k => k.toLowerCase() === name.toLowerCase())
         return key ? properties[key] : null
@@ -43,7 +43,6 @@ export async function GET() {
 
       const nodeId = getTextProperty(findProp('NodeID')) || page.id
 
-      // _layout 레코드는 레이아웃 상태로 분리
       if (nodeId === '_layout') {
         const stateJson = getTextProperty(findProp('StateJSON'))
         if (stateJson) {
@@ -118,8 +117,8 @@ export async function PATCH(request) {
       properties: properties,
     })
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: '노드가 업데이트되었습니다',
       pageId: response.id,
     })
@@ -138,6 +137,7 @@ export async function PATCH(request) {
 // ========================================
 export async function PUT(request) {
   try {
+    // 환경변수 확인
     if (!process.env.NOTION_TOKEN || !process.env.NOTION_DATABASE_ID) {
       return NextResponse.json(
         { error: '노션 환경변수가 설정되지 않았습니다' },
@@ -145,7 +145,17 @@ export async function PUT(request) {
       )
     }
 
-    const body = await request.json()
+    // 요청 본문 파싱
+    let body
+    try {
+      body = await request.json()
+    } catch (e) {
+      return NextResponse.json(
+        { error: '잘못된 JSON 요청입니다' },
+        { status: 400 }
+      )
+    }
+
     const { positions, groups, edges } = body
 
     // _layout 레코드 찾기
@@ -160,33 +170,48 @@ export async function PUT(request) {
     })
 
     if (response.results.length === 0) {
-      return NextResponse.json(
-        { error: '_layout 레코드를 찾을 수 없습니다' },
-        { status: 404 }
-      )
+      return NextResponse.json({
+        error: '_layout 레코드를 찾을 수 없습니다. Notion DB에 다음 레코드를 추가하세요: Name="_레이아웃 상태", NodeID="_layout"',
+      }, { status: 404 })
     }
 
-    const layoutPageId = response.results[0].id
+    const layoutPage = response.results[0]
+    const layoutPageId = layoutPage.id
+
+    // StateJSON 필드 확인
+    const propKeys = Object.keys(layoutPage.properties)
+    const stateJsonKey = propKeys.find(k => k.toLowerCase() === 'statejson')
+
+    if (!stateJsonKey) {
+      return NextResponse.json({
+        error: 'StateJSON 컬럼이 없습니다. Notion DB에 "StateJSON" (Text 타입) 컬럼을 추가하세요.',
+      }, { status: 400 })
+    }
+
+    // JSON 생성
     const stateJson = JSON.stringify({ positions, groups, edges })
 
-    // Notion rich_text는 2000자 제한이 있음
+    // Notion rich_text는 2000자 제한 - 청크로 분할
     const chunks = []
     for (let i = 0; i < stateJson.length; i += 2000) {
       chunks.push({ text: { content: stateJson.slice(i, i + 2000) } })
     }
 
+    // Notion 업데이트
     await notion.pages.update({
       page_id: layoutPageId,
       properties: {
-        StateJSON: {
+        [stateJsonKey]: {
           rich_text: chunks,
         },
       },
     })
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: '레이아웃이 저장되었습니다',
+      dataSize: stateJson.length,
+      chunks: chunks.length,
     })
 
   } catch (error) {

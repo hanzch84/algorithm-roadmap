@@ -665,7 +665,20 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
         }),
       })
 
-      const result = await response.json()
+      // 응답 텍스트로 먼저 받아서 확인
+      const text = await response.text()
+
+      if (!text) {
+        throw new Error('서버 응답이 비어있습니다')
+      }
+
+      let result
+      try {
+        result = JSON.parse(text)
+      } catch (e) {
+        console.error('JSON 파싱 오류:', text)
+        throw new Error(`서버 응답 파싱 오류: ${text.substring(0, 100)}`)
+      }
 
       if (!response.ok) {
         throw new Error(result.error || '저장에 실패했습니다')
@@ -743,7 +756,18 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
         }),
       })
 
-      const result = await response.json()
+      const text = await response.text()
+
+      if (!text) {
+        throw new Error('서버 응답이 비어있습니다')
+      }
+
+      let result
+      try {
+        result = JSON.parse(text)
+      } catch (e) {
+        throw new Error(`서버 응답 파싱 오류: ${text.substring(0, 100)}`)
+      }
 
       if (!response.ok) {
         throw new Error(result.error || '저장에 실패했습니다')
