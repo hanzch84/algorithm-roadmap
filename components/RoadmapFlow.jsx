@@ -294,7 +294,7 @@ const markerEnd = {
 function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
   const flowNodes = []
   const flowEdges = []
-  
+
   const groups = groupData || defaultGroups
   const nodes = initialNodes || []
   const positions = { ...defaultPositions, ...(nodePositions || {}) }
@@ -303,7 +303,7 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
   // 1. 그룹 노드 생성
   const groupEntries = Object.entries(groups || {})
   groupEntries.sort((a, b) => ((a[1]?.depth) || 0) - ((b[1]?.depth) || 0))
-  
+
   groupEntries.forEach(([id, group]) => {
     if (!group) return
     const depth = group.depth || 0
@@ -323,23 +323,23 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
         depth: depth,
       },
     }
-    
+
     if (group.parentId) {
       node.parentId = group.parentId
       node.extent = 'parent'
     }
-    
+
     flowNodes.push(node)
   })
 
   // 2. 일반 노드 생성
   nodes.forEach((node, index) => {
     if (!node) return
-    const pos = positions[node.id] || { 
-      x: 20 + (index % 4) * 120, 
-      y: 40 
+    const pos = positions[node.id] || {
+      x: 20 + (index % 4) * 120,
+      y: 40
     }
-    
+
     const flowNode = {
       id: node.id,
       type: 'custom',
@@ -353,41 +353,41 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
         notionPageId: node.notionPageId || null,
       },
     }
-    
+
     const parentGroupId = nodeParentMapping[node.id]
     if (parentGroupId && groups[parentGroupId]) {
       flowNode.parentId = parentGroupId
       flowNode.extent = 'parent'
     }
-    
+
     flowNodes.push(flowNode)
   })
 
   // 3. 엣지 생성 (커스텀 타입)
   const allNodeIds = flowNodes.map(n => n.id)
-  
-  ;(edgesToUse || []).forEach((edge, index) => {
-    if (!edge) return
-    const sourceExists = allNodeIds.includes(edge.source)
-    const targetExists = allNodeIds.includes(edge.target)
-    
-    if (sourceExists && targetExists) {
-      flowEdges.push({
-        id: edge.id || `edge-${index}`,
-        source: edge.source,
-        target: edge.target,
-        sourceHandle: edge.sourceHandle || 'bottom-src',
-        targetHandle: edge.targetHandle || 'top',
-        type: 'custom',
-        style: { stroke: '#E65100', strokeWidth: 2 },
-        markerEnd,
-        reconnectable: true,
-        data: {
-          controlPoint: edge.controlPoint || null,
-        },
-      })
-    }
-  })
+
+    ; (edgesToUse || []).forEach((edge, index) => {
+      if (!edge) return
+      const sourceExists = allNodeIds.includes(edge.source)
+      const targetExists = allNodeIds.includes(edge.target)
+
+      if (sourceExists && targetExists) {
+        flowEdges.push({
+          id: edge.id || `edge-${index}`,
+          source: edge.source,
+          target: edge.target,
+          sourceHandle: edge.sourceHandle || 'bottom-src',
+          targetHandle: edge.targetHandle || 'top',
+          type: 'custom',
+          style: { stroke: '#E65100', strokeWidth: 2 },
+          markerEnd,
+          reconnectable: true,
+          data: {
+            controlPoint: edge.controlPoint || null,
+          },
+        })
+      }
+    })
 
   return { flowNodes, flowEdges }
 }
@@ -397,13 +397,13 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
 // ========================================
 export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }) {
   const [selectedEdge, setSelectedEdge] = useState(null)
-  const [selectedNode, setSelectedNode] = useState(null) // 선택된 노드 ID
-  const [newNodeId, setNewNodeId] = useState(null) // 새로 생성된 노드 ID (편집 모드 진입용)
+  const [selectedNode, setSelectedNode] = useState(null)
+  const [newNodeId, setNewNodeId] = useState(null)
 
   const { nodePositions, groupData } = useMemo(() => {
     const nodePos = savedPositions?.nodes || savedPositions?.positions || {}
     const groupPos = savedPositions?.groups || null
-    
+
     let mergedGroups = { ...defaultGroups }
     if (groupPos) {
       Object.keys(groupPos || {}).forEach(key => {
@@ -412,7 +412,7 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
         }
       })
     }
-    
+
     return { nodePositions: nodePos, groupData: mergedGroups }
   }, [savedPositions])
 
@@ -425,49 +425,38 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     setEdges(flowEdges)
   }, [initialNodes, nodePositions, groupData, savedEdges, setNodes, setEdges])
 
-  // 노드 클릭 핸들러
   const onNodeClick = useCallback((event, node) => {
-    // Shift+클릭: 선택만 (링크 열지 않음)
     if (event.shiftKey) {
       setSelectedNode(node.id)
       setSelectedEdge(null)
       return
     }
-    
-    // 그룹 노드 클릭: 선택
+
     if (node.type === 'group') {
       setSelectedNode(node.id)
       setSelectedEdge(null)
       return
     }
-    
-    // 일반 노드 클릭: 선택 + 링크 열기
+
     setSelectedNode(node.id)
     setSelectedEdge(null)
-    
+
     if (node.data.link) {
       window.open(node.data.link, '_blank')
     }
   }, [])
 
-  // 그룹 더블클릭 시 새 노드 생성
   const onNodeDoubleClick = useCallback((event, node) => {
-    // 그룹 노드에서만 새 노드 생성 (Shift 없이)
     if (node.type !== 'group' || event.shiftKey) return
-    
+
     event.stopPropagation()
-    
+
     const groupId = node.id
     const groupSection = node.data?.section || '기본'
-    const isAdvanced = groupSection === '고급'
-    
-    // 새 노드 ID 생성
+
     const newId = `node_new_${Date.now()}`
-    
-    // 그룹 내 상대 위치 (중앙 근처)
     const newPosition = { x: 50, y: 50 }
-    
-    // 새 노드 생성
+
     const newNode = {
       id: newId,
       type: 'custom',
@@ -480,15 +469,14 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
         link: '',
         section: groupSection,
         group: groupId,
-        isNew: true, // 새 노드 표시 (편집 모드 진입용)
+        isNew: true,
       },
     }
-    
-    // nodeParentMapping 업데이트
+
     nodeParentMapping[newId] = groupId
-    
+
     setNodes((nds) => [...nds, newNode])
-    setNewNodeId(newId) // 편집 모드 진입을 위해 저장
+    setNewNodeId(newId)
   }, [setNodes])
 
   const onEdgeClick = useCallback((event, edge) => {
@@ -496,7 +484,6 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     setSelectedNode(null)
   }, [])
 
-  // 캔버스 클릭 시 선택 해제
   const onPaneClick = useCallback(() => {
     setSelectedEdge(null)
     setSelectedNode(null)
@@ -528,21 +515,16 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     }
   }, [selectedEdge, setEdges])
 
-  // 선택된 노드 삭제
   const deleteSelectedNode = useCallback(() => {
     if (selectedNode) {
-      // 그룹 노드는 삭제 불가 (하위 노드가 있을 수 있음)
       const nodeToDelete = nodes.find(n => n.id === selectedNode)
       if (nodeToDelete?.type === 'group') {
         alert('그룹은 삭제할 수 없습니다.')
         return
       }
-      
-      // 노드 삭제
+
       setNodes((nds) => nds.filter((n) => n.id !== selectedNode))
-      // 연결된 엣지도 삭제
       setEdges((eds) => eds.filter((e) => e.source !== selectedNode && e.target !== selectedNode))
-      // nodeParentMapping에서도 제거
       delete nodeParentMapping[selectedNode]
       setSelectedNode(null)
     }
@@ -558,88 +540,13 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     }
   }, [selectedEdge, selectedNode, deleteSelectedEdge, deleteSelectedNode])
 
-  // 전체 상태 내보내기 (라벨, 링크 포함)
+  // JSON 다운로드
   const exportFullState = useCallback(() => {
     const nodeData = {}
     const groupDataExport = {}
-    const customNodes = [] // 커스텀 노드 데이터 (라벨, 링크 포함)
-    
-    ;(nodes || []).forEach((node) => {
-      if (!node) return
-      if (node.type === 'custom') {
-        nodeData[node.id] = {
-          x: Math.round(node.position.x),
-          y: Math.round(node.position.y),
-        }
-        // 노드 데이터 (라벨, 링크 포함)
-        customNodes.push({
-          id: node.id,
-          name: node.data?.label || '',
-          link: node.data?.link || '',
-          section: node.data?.section || '기본',
-          group: node.parentId || node.data?.group || '',
-        })
-      } else if (node.type === 'group') {
-        groupDataExport[node.id] = {
-          ...(defaultGroups[node.id] || {}),
-          label: node.data?.label || defaultGroups[node.id]?.label || '',
-          section: node.data?.section || defaultGroups[node.id]?.section || '기본',
-          depth: node.data?.depth ?? defaultGroups[node.id]?.depth ?? 0,
-          isSubgroup: node.data?.isSubgroup ?? defaultGroups[node.id]?.isSubgroup ?? false,
-          parentId: node.parentId || defaultGroups[node.id]?.parentId || null,
-          position: {
-            x: Math.round(node.position.x),
-            y: Math.round(node.position.y),
-          },
-          size: {
-            width: Math.round(node.measured?.width || node.width || node.style?.width || 200),
-            height: Math.round(node.measured?.height || node.height || node.style?.height || 100),
-          },
-        }
-      }
-    })
-    
-    // 엣지 데이터 (controlPoint 포함)
-    const edgeData = (edges || []).map((e) => ({
-      id: e.id,
-      source: e.source,
-      target: e.target,
-      sourceHandle: e.sourceHandle,
-      targetHandle: e.targetHandle,
-      controlPoint: e.data?.controlPoint || null,
-    }))
-    
-    const fullState = {
-      positions: nodeData,
-      groups: groupDataExport,
-      edges: edgeData,
-      nodes: customNodes, // 노드 데이터 추가
-    }
-    
-    const dataStr = JSON.stringify(fullState, null, 2)
-    const blob = new Blob([dataStr], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'roadmap-state.json'
-    a.click()
-    URL.revokeObjectURL(url)
-  }, [nodes, edges])
+    const customNodes = []
 
-  // 페이지 생성 (읽기 전용 공유 링크)
-  const [isPublishing, setIsPublishing] = useState(false)
-  const [shareUrl, setShareUrl] = useState(null)
-  
-  const publishRoadmap = useCallback(async () => {
-    setIsPublishing(true)
-    
-    try {
-      const nodeData = {}
-      const groupDataExport = {}
-      const customNodes = []
-      
-      ;(nodes || []).forEach((node) => {
+      ; (nodes || []).forEach((node) => {
         if (!node) return
         if (node.type === 'custom') {
           nodeData[node.id] = {
@@ -651,11 +558,16 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
             name: node.data?.label || '',
             link: node.data?.link || '',
             section: node.data?.section || '기본',
-            group: node.data?.group || '',
+            group: node.parentId || node.data?.group || '',
           })
         } else if (node.type === 'group') {
           groupDataExport[node.id] = {
-            ...defaultGroups[node.id],
+            ...(defaultGroups[node.id] || {}),
+            label: node.data?.label || defaultGroups[node.id]?.label || '',
+            section: node.data?.section || defaultGroups[node.id]?.section || '기본',
+            depth: node.data?.depth ?? defaultGroups[node.id]?.depth ?? 0,
+            isSubgroup: node.data?.isSubgroup ?? defaultGroups[node.id]?.isSubgroup ?? false,
+            parentId: node.parentId || defaultGroups[node.id]?.parentId || null,
             position: {
               x: Math.round(node.position.x),
               y: Math.round(node.position.y),
@@ -667,7 +579,73 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
           }
         }
       })
-      
+
+    const edgeData = (edges || []).map((e) => ({
+      id: e.id,
+      source: e.source,
+      target: e.target,
+      sourceHandle: e.sourceHandle,
+      targetHandle: e.targetHandle,
+      controlPoint: e.data?.controlPoint || null,
+    }))
+
+    const fullState = {
+      positions: nodeData,
+      groups: groupDataExport,
+      edges: edgeData,
+      nodes: customNodes,
+    }
+
+    const dataStr = JSON.stringify(fullState, null, 2)
+    const blob = new Blob([dataStr], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'roadmap-state.json'
+    a.click()
+    URL.revokeObjectURL(url)
+  }, [nodes, edges])
+
+  // ========================================
+  // Notion에 레이아웃 저장
+  // ========================================
+  const [isSaving, setIsSaving] = useState(false)
+
+  const saveToNotion = useCallback(async () => {
+    setIsSaving(true)
+
+    try {
+      const nodeData = {}
+      const groupDataExport = {}
+
+        ; (nodes || []).forEach((node) => {
+          if (!node) return
+          if (node.type === 'custom') {
+            nodeData[node.id] = {
+              x: Math.round(node.position.x),
+              y: Math.round(node.position.y),
+            }
+          } else if (node.type === 'group') {
+            groupDataExport[node.id] = {
+              ...(defaultGroups[node.id] || {}),
+              label: node.data?.label || defaultGroups[node.id]?.label || '',
+              section: node.data?.section || defaultGroups[node.id]?.section || '기본',
+              depth: node.data?.depth ?? defaultGroups[node.id]?.depth ?? 0,
+              isSubgroup: node.data?.isSubgroup ?? defaultGroups[node.id]?.isSubgroup ?? false,
+              parentId: node.parentId || defaultGroups[node.id]?.parentId || null,
+              position: {
+                x: Math.round(node.position.x),
+                y: Math.round(node.position.y),
+              },
+              size: {
+                width: Math.round(node.measured?.width || node.width || node.style?.width || 200),
+                height: Math.round(node.measured?.height || node.height || node.style?.height || 100),
+              },
+            }
+          }
+        })
+
       const edgeData = (edges || []).map((e) => ({
         id: e.id,
         source: e.source,
@@ -676,7 +654,83 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
         targetHandle: e.targetHandle,
         controlPoint: e.data?.controlPoint || null,
       }))
-      
+
+      const response = await fetch('/api/notion', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          positions: nodeData,
+          groups: groupDataExport,
+          edges: edgeData,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || '저장에 실패했습니다')
+      }
+
+      alert('✅ Notion에 레이아웃이 저장되었습니다!')
+
+    } catch (error) {
+      console.error('Save to Notion error:', error)
+      alert(`❌ 오류: ${error.message}`)
+    } finally {
+      setIsSaving(false)
+    }
+  }, [nodes, edges])
+
+  // 페이지 생성 (Vercel KV)
+  const [isPublishing, setIsPublishing] = useState(false)
+  const [shareUrl, setShareUrl] = useState(null)
+
+  const publishRoadmap = useCallback(async () => {
+    setIsPublishing(true)
+
+    try {
+      const nodeData = {}
+      const groupDataExport = {}
+      const customNodes = []
+
+        ; (nodes || []).forEach((node) => {
+          if (!node) return
+          if (node.type === 'custom') {
+            nodeData[node.id] = {
+              x: Math.round(node.position.x),
+              y: Math.round(node.position.y),
+            }
+            customNodes.push({
+              id: node.id,
+              name: node.data?.label || '',
+              link: node.data?.link || '',
+              section: node.data?.section || '기본',
+              group: node.data?.group || '',
+            })
+          } else if (node.type === 'group') {
+            groupDataExport[node.id] = {
+              ...defaultGroups[node.id],
+              position: {
+                x: Math.round(node.position.x),
+                y: Math.round(node.position.y),
+              },
+              size: {
+                width: Math.round(node.measured?.width || node.width || node.style?.width || 200),
+                height: Math.round(node.measured?.height || node.height || node.style?.height || 100),
+              },
+            }
+          }
+        })
+
+      const edgeData = (edges || []).map((e) => ({
+        id: e.id,
+        source: e.source,
+        target: e.target,
+        sourceHandle: e.sourceHandle,
+        targetHandle: e.targetHandle,
+        controlPoint: e.data?.controlPoint || null,
+      }))
+
       const response = await fetch('/api/roadmap', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -688,20 +742,19 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
           nodes: customNodes,
         }),
       })
-      
+
       const result = await response.json()
-      
+
       if (!response.ok) {
         throw new Error(result.error || '저장에 실패했습니다')
       }
-      
+
       const fullUrl = `${window.location.origin}${result.url}`
       setShareUrl(fullUrl)
-      
-      // 클립보드에 복사
+
       await navigator.clipboard.writeText(fullUrl)
       alert(`✅ 페이지가 생성되었습니다!\n\n링크가 클립보드에 복사되었습니다:\n${fullUrl}`)
-      
+
     } catch (error) {
       console.error('Publish error:', error)
       alert(`❌ 오류: ${error.message}`)
@@ -710,7 +763,6 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     }
   }, [nodes, edges])
 
-  // 선택 상태를 엣지에 반영
   const styledEdges = (edges || []).map((e) => ({
     ...e,
     selected: e.id === selectedEdge,
@@ -746,7 +798,7 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
       >
         <Background color="#ddd" gap={20} />
         <Controls />
-        <MiniMap 
+        <MiniMap
           nodeColor={(node) => {
             if (node.type === 'group') {
               return node.data?.section === '고급' ? '#D1C4E9' : '#B2DFDB'
@@ -755,8 +807,15 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
           }}
           maskColor="rgba(0, 0, 0, 0.1)"
         />
-        
+
         <Panel position="top-right" className="flex gap-2 flex-wrap">
+          <button
+            onClick={saveToNotion}
+            disabled={isSaving}
+            className="bg-purple-500 hover:bg-purple-600 disabled:bg-purple-300 text-white px-4 py-2 rounded-lg shadow-md text-sm font-medium"
+          >
+            {isSaving ? '⏳ 저장 중...' : '💾 Notion에 저장'}
+          </button>
           <button
             onClick={publishRoadmap}
             disabled={isPublishing}
@@ -768,7 +827,7 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
             onClick={exportFullState}
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md text-sm font-medium"
           >
-            📥 전체 상태 저장
+            📥 JSON 다운로드
           </button>
           {selectedNode && (
             <button
@@ -787,7 +846,7 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
             </button>
           )}
         </Panel>
-        
+
         <Panel position="bottom-left" className="bg-white/90 p-3 rounded-lg shadow text-xs">
           <div className="font-bold mb-1">사용법</div>
           <div>• 노드 드래그: 위치 이동 (그룹 내 제한)</div>
