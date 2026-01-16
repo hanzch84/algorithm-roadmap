@@ -394,6 +394,7 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
 // ========================================
 export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }) {
   const [selectedEdge, setSelectedEdge] = useState(null)
+  const [selectedNode, setSelectedNode] = useState(null) // 선택된 노드 ID
   const [newNodeId, setNewNodeId] = useState(null) // 새로 생성된 노드 ID (편집 모드 진입용)
 
   const { nodePositions, groupData } = useMemo(() => {
@@ -423,8 +424,24 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
 
   // 노드 클릭 핸들러
   const onNodeClick = useCallback((event, node) => {
-    if (event.shiftKey) return
-    if (node.type === 'group') return
+    // Shift+클릭: 선택만 (링크 열지 않음)
+    if (event.shiftKey) {
+      setSelectedNode(node.id)
+      setSelectedEdge(null)
+      return
+    }
+    
+    // 그룹 노드 클릭: 선택
+    if (node.type === 'group') {
+      setSelectedNode(node.id)
+      setSelectedEdge(null)
+      return
+    }
+    
+    // 일반 노드 클릭: 선택 + 링크 열기
+    setSelectedNode(node.id)
+    setSelectedEdge(null)
+    
     if (node.data.link) {
       window.open(node.data.link, '_blank')
     }
@@ -473,11 +490,13 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
 
   const onEdgeClick = useCallback((event, edge) => {
     setSelectedEdge(edge.id)
+    setSelectedNode(null)
   }, [])
 
   // 캔버스 클릭 시 선택 해제
   const onPaneClick = useCallback(() => {
     setSelectedEdge(null)
+    setSelectedNode(null)
   }, [])
 
   const onConnect = useCallback((connection) => {
@@ -506,11 +525,35 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
     }
   }, [selectedEdge, setEdges])
 
-  const onKeyDown = useCallback((event) => {
-    if (event.key === 'Delete' && selectedEdge) {
-      deleteSelectedEdge()
+  // 선택된 노드 삭제
+  const deleteSelectedNode = useCallback(() => {
+    if (selectedNode) {
+      // 그룹 노드는 삭제 불가 (하위 노드가 있을 수 있음)
+      const nodeToDelete = nodes.find(n => n.id === selectedNode)
+      if (nodeToDelete?.type === 'group') {
+        alert('그룹은 삭제할 수 없습니다.')
+        return
+      }
+      
+      // 노드 삭제
+      setNodes((nds) => nds.filter((n) => n.id !== selectedNode))
+      // 연결된 엣지도 삭제
+      setEdges((eds) => eds.filter((e) => e.source !== selectedNode && e.target !== selectedNode))
+      // nodeParentMapping에서도 제거
+      delete nodeParentMapping[selectedNode]
+      setSelectedNode(null)
     }
-  }, [selectedEdge, deleteSelectedEdge])
+  }, [selectedNode, nodes, setNodes, setEdges])
+
+  const onKeyDown = useCallback((event) => {
+    if (event.key === 'Delete' || event.key === 'Backspace') {
+      if (selectedEdge) {
+        deleteSelectedEdge()
+      } else if (selectedNode) {
+        deleteSelectedNode()
+      }
+    }
+  }, [selectedEdge, selectedNode, deleteSelectedEdge, deleteSelectedNode])
 
   // 전체 상태 내보내기 (라벨, 링크 포함)
   const exportFullState = useCallback(() => {
@@ -634,12 +677,20 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
           >
             📥 전체 상태 저장
           </button>
+          {selectedNode && (
+            <button
+              onClick={deleteSelectedNode}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md text-sm font-medium"
+            >
+              🗑️ 노드 삭제
+            </button>
+          )}
           {selectedEdge && (
             <button
               onClick={deleteSelectedEdge}
               className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md text-sm font-medium"
             >
-              🗑️ 선택 엣지 삭제
+              🗑️ 엣지 삭제
             </button>
           )}
         </Panel>
@@ -651,13 +702,13 @@ export default function RoadmapFlow({ initialNodes, savedPositions, savedEdges }
           <div>• 그룹 선택 → 모서리 드래그: 크기 조절</div>
           <div>• 핸들 드래그 → 다른 노드: 새 엣지</div>
           <div>• 엣지 끝점 드래그: 재연결</div>
-          <div>• 엣지 클릭 → Delete: 삭제</div>
           <div className="mt-1 text-orange-600 font-medium">• 엣지 중간점 드래그: 곡률 조절</div>
           <div className="text-orange-600">• 중간점 더블클릭: 곡률 초기화</div>
           <div className="mt-1 text-blue-600 font-medium">• 노드 더블클릭: 라벨 편집</div>
           <div className="text-blue-600">• 노드 우클릭: 링크 편집</div>
           <div className="text-purple-600">• 그룹 더블클릭: 새 노드 생성</div>
           <div className="text-purple-600">• Shift + 그룹 더블클릭: 라벨 편집</div>
+          <div className="mt-1 text-red-600 font-medium">• Shift + 클릭 → Delete: 노드/엣지 삭제</div>
         </Panel>
       </ReactFlow>
     </div>
