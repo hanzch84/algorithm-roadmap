@@ -48,6 +48,35 @@ function CustomNode({ id, data, selected }) {
     setIsEditingLink(true)
   }, [])
 
+  // Notion API로 업데이트
+  const updateNotion = useCallback(async (newName, newLink) => {
+    if (!data.notionPageId) {
+      console.warn('notionPageId가 없어서 Notion 동기화 건너뜀')
+      return
+    }
+    
+    try {
+      const response = await fetch('/api/notion', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          notionPageId: data.notionPageId,
+          name: newName,
+          link: newLink,
+        }),
+      })
+      
+      if (!response.ok) {
+        const error = await response.json()
+        console.error('Notion 업데이트 실패:', error)
+      } else {
+        console.log('Notion 동기화 완료')
+      }
+    } catch (error) {
+      console.error('Notion API 호출 실패:', error)
+    }
+  }, [data.notionPageId])
+
   // 라벨 저장
   const saveLabelEdit = useCallback(() => {
     setNodes((nodes) =>
@@ -58,7 +87,10 @@ function CustomNode({ id, data, selected }) {
       )
     )
     setIsEditingLabel(false)
-  }, [id, labelValue, setNodes])
+    
+    // Notion 동기화
+    updateNotion(labelValue, linkValue)
+  }, [id, labelValue, linkValue, setNodes, updateNotion])
 
   // 링크 저장
   const saveLinkEdit = useCallback(() => {
@@ -70,7 +102,10 @@ function CustomNode({ id, data, selected }) {
       )
     )
     setIsEditingLink(false)
-  }, [id, linkValue, setNodes])
+    
+    // Notion 동기화
+    updateNotion(labelValue, linkValue)
+  }, [id, labelValue, linkValue, setNodes, updateNotion])
 
   // 라벨 키보드 이벤트
   const handleLabelKeyDown = useCallback((e) => {
