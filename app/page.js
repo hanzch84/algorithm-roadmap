@@ -18,7 +18,7 @@ const defaultNodes = [
   { id: 'node_intro', name: '🌐 온라인 저지 소개', group: 'intro', section: '기본', link: '' },
   { id: 'node_boj_setup', name: '백준 가입 및 설정', group: '플랫폼 가입', section: '기본', link: '' },
   { id: 'node_boj_usage', name: '백준 이용 방법', group: '플랫폼 가입', section: '기본', link: '' },
-  { id: 'node_koala_setup', name: '코알라 OJ 가입 및 설정', group: '플랫폼 가입', section: '기본', link: '' },
+  { id: 'node_koala_setup', name: '코알라 OJ 가입', group: '플랫폼 가입', section: '기본', link: '' },
   { id: 'node_koala_usage', name: '코알라 OJ 사용 방법', group: '플랫폼 가입', section: '기본', link: '' },
   { id: 'node_solved_link', name: 'solved.ac 연동하기', group: 'solved.ac', section: '기본', link: '' },
   { id: 'node_solved_usage', name: 'solved.ac 이용 방법', group: 'solved.ac', section: '기본', link: '' },
@@ -26,7 +26,7 @@ const defaultNodes = [
   { id: 'tool_vscode', name: 'VS Code', group: 'IDE', section: '기본', link: '' },
   { id: 'tool_pycharm', name: 'PyCharm', group: 'IDE', section: '기본', link: '' },
   { id: 'tool_replit', name: 'Replit', group: '온라인 IDE', section: '기본', link: '' },
-  { id: 'tool_onlinegdb', name: 'OnlineGDB', group: '온라인 IDE', section: '기본', link: '' },
+  { id: 'tool_onlinegdb', name: 'github', group: '온라인 IDE', section: '기본', link: '' },
   { id: 'tool_ideone', name: 'Ideone', group: '온라인 러너', section: '기본', link: '' },
   { id: 'tool_tio', name: 'TIO', group: '온라인 러너', section: '기본', link: '' },
   { id: 'tool_colab', name: 'Google Colab', group: '노트북', section: '기본', link: '' },
@@ -86,12 +86,12 @@ export default function Home() {
   const handlePositionUpload = (event) => {
     const file = event.target.files?.[0]
     if (!file) return
-    
+
     const reader = new FileReader()
     reader.onload = (e) => {
       try {
         const state = JSON.parse(e.target?.result)
-        
+
         if (state.positions) {
           setSavedPositions({ nodes: state.positions, groups: state.groups })
           setSavedEdges(state.edges || null)
@@ -102,7 +102,7 @@ export default function Home() {
           setSavedPositions({ nodes: state })
           setSavedEdges(null)
         }
-        
+
         const info = []
         if (state.positions) info.push(`노드 ${Object.keys(state.positions).length}개`)
         else if (state.nodes) info.push(`노드 ${Object.keys(state.nodes).length}개`)
@@ -155,8 +155,8 @@ export default function Home() {
       </header>
 
       <div className="h-[calc(100vh-60px)]">
-        <RoadmapFlow 
-          initialNodes={nodes} 
+        <RoadmapFlow
+          initialNodes={nodes}
           savedPositions={savedPositions}
           savedEdges={savedEdges}
         />
