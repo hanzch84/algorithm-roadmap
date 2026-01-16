@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 
-const ReadOnlyFlow = dynamic(() => import('../components/ReadOnlyFlow'), {
+const ReadOnlyFlow = dynamic(() => import('../../components/ReadOnlyFlow'), {
   ssr: false,
   loading: () => (
     <div className="flex items-center justify-center h-full text-gray-500">
@@ -23,13 +23,13 @@ export default function SharePage() {
     const fetchData = async () => {
       try {
         const res = await fetch('/api/notion')
-        
+
         if (!res.ok) {
           throw new Error('데이터를 불러올 수 없습니다')
         }
-        
+
         const data = await res.json()
-        
+
         // 노드 데이터
         if (Array.isArray(data.nodes) && data.nodes.length > 0) {
           setNodes(data.nodes)
@@ -41,7 +41,7 @@ export default function SharePage() {
         } else {
           throw new Error('레이아웃 데이터가 없습니다. 먼저 에디터에서 "Notion에 저장"을 클릭하세요.')
         }
-        
+
       } catch (err) {
         console.error('데이터 로드 실패:', err)
         setError(err.message)
@@ -74,7 +74,7 @@ export default function SharePage() {
             <div className="text-6xl mb-4">😢</div>
             <h1 className="text-xl font-bold text-gray-800 mb-2">로드맵을 불러올 수 없습니다</h1>
             <p className="text-gray-600 mb-4">{error}</p>
-            <a 
+            <a
               href="/"
               className="inline-block bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-lg"
             >
@@ -110,11 +110,11 @@ export default function SharePage() {
       </header>
 
       <div className="h-[calc(100vh-60px)]">
-        <ReadOnlyFlow 
-          initialNodes={nodes} 
-          savedPositions={{ 
-            nodes: layoutState?.positions, 
-            groups: layoutState?.groups 
+        <ReadOnlyFlow
+          initialNodes={nodes}
+          savedPositions={{
+            nodes: layoutState?.positions,
+            groups: layoutState?.groups
           }}
           savedEdges={layoutState?.edges}
         />
