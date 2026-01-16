@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 
 // ReactFlow는 클라이언트에서만 로드
@@ -13,7 +13,7 @@ const RoadmapFlow = dynamic(() => import('../components/RoadmapFlow'), {
   )
 })
 
-// 기본 데이터
+// 기본 데이터 (Notion API 실패 시 폴백)
 const defaultNodes = [
   { id: 'node_intro', name: '🌐 온라인 저지 소개', group: 'intro', section: '기본', link: '' },
   { id: 'node_boj_setup', name: '백준 가입 및 설정', group: '플랫폼 가입', section: '기본', link: '' },
@@ -53,9 +53,35 @@ const defaultNodes = [
 ]
 
 export default function Home() {
+  const [nodes, setNodes] = useState(defaultNodes)
+  const [isLoading, setIsLoading] = useState(true)
   const [savedPositions, setSavedPositions] = useState(null)
   const [savedEdges, setSavedEdges] = useState(null)
   const fileInputRef = useRef(null)
+
+  // Notion API에서 노드 데이터 가져오기
+  useEffect(() => {
+    const fetchNodes = async () => {
+      try {
+        const response = await fetch('/api/notion')
+        if (response.ok) {
+          const notionNodes = await response.json()
+          if (Array.isArray(notionNodes) && notionNodes.length > 0) {
+            setNodes(notionNodes)
+            console.log('✅ Notion에서 노드 로드 완료:', notionNodes.length, '개')
+          }
+        } else {
+          console.warn('Notion API 응답 오류, 기본 데이터 사용')
+        }
+      } catch (error) {
+        console.error('Notion API 호출 실패, 기본 데이터 사용:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchNodes()
+  }, [])
 
   const handlePositionUpload = (event) => {
     const file = event.target.files?.[0]
@@ -108,6 +134,9 @@ export default function Home() {
               <span className="w-3 h-3 rounded bg-[#EDE7F6] border-2 border-[#7E57C2]"></span>
               고급
             </span>
+            {isLoading && (
+              <span className="text-xs text-gray-400">Notion 로딩 중...</span>
+            )}
             <input
               type="file"
               ref={fileInputRef}
@@ -127,7 +156,7 @@ export default function Home() {
 
       <div className="h-[calc(100vh-60px)]">
         <RoadmapFlow 
-          initialNodes={defaultNodes} 
+          initialNodes={nodes} 
           savedPositions={savedPositions}
           savedEdges={savedEdges}
         />
