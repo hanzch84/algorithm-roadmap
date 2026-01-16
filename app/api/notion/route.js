@@ -7,6 +7,9 @@ const notion = new Client({
 
 const databaseId = process.env.NOTION_DATABASE_ID
 
+// ========================================
+// GET - 노드 목록 가져오기
+// ========================================
 export async function GET() {
   try {
     if (!process.env.NOTION_TOKEN || !process.env.NOTION_DATABASE_ID) {
@@ -29,10 +32,8 @@ export async function GET() {
     const nodes = response.results.map((page) => {
       const properties = page.properties
       
-      // 디버깅: 속성명 확인
       const propKeys = Object.keys(properties)
       
-      // 속성명 대소문자 무관하게 찾기
       const findProp = (name) => {
         const key = propKeys.find(k => k.toLowerCase() === name.toLowerCase())
         return key ? properties[key] : null
@@ -59,7 +60,73 @@ export async function GET() {
   }
 }
 
-// 속성 값 추출 헬퍼 함수들
+// ========================================
+// PATCH - 노드 업데이트 (이름, 링크)
+// ========================================
+export async function PATCH(request) {
+  try {
+    if (!process.env.NOTION_TOKEN) {
+      return NextResponse.json(
+        { error: '노션 환경변수가 설정되지 않았습니다' },
+        { status: 500 }
+      )
+    }
+
+    const body = await request.json()
+    const { notionPageId, name, link } = body
+
+    if (!notionPageId) {
+      return NextResponse.json(
+        { error: 'notionPageId가 필요합니다' },
+        { status: 400 }
+      )
+    }
+
+    // 업데이트할 속성 구성
+    const properties = {}
+
+    if (name !== undefined) {
+      properties.Name = {
+        title: [
+          {
+            text: {
+              content: name,
+            },
+          },
+        ],
+      }
+    }
+
+    if (link !== undefined) {
+      properties.Link = {
+        url: link || null,
+      }
+    }
+
+    // Notion API로 페이지 업데이트
+    const response = await notion.pages.update({
+      page_id: notionPageId,
+      properties: properties,
+    })
+
+    return NextResponse.json({ 
+      success: true, 
+      message: '노드가 업데이트되었습니다',
+      pageId: response.id,
+    })
+
+  } catch (error) {
+    console.error('Notion Update Error:', error)
+    return NextResponse.json(
+      { error: error.message || '노드 업데이트에 실패했습니다' },
+      { status: 500 }
+    )
+  }
+}
+
+// ========================================
+// 헬퍼 함수들
+// ========================================
 function getTitleProperty(prop) {
   if (!prop) return null
   if (prop.type === 'title') {
