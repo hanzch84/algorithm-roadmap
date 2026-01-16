@@ -15,40 +15,48 @@ function CustomEdge({
   markerEnd,
   data,
   selected,
-  sourceHandleId,
-  targetHandleId,
 }) {
   const { setEdges, screenToFlowPosition } = useReactFlow()
   
-  // 핸들 크기의 절반 (핸들 중심으로 연결하기 위한 보정값)
-  const handleOffset = 4
+  // 핸들 크기의 절반 (핸들 중심에서 노드 방향으로 연장)
+  const handleRadius = 5
   
-  // 소스 좌표 보정 (핸들 중심으로)
+  // 소스 좌표 보정 (핸들 중심 → 노드 내부 방향으로)
   let adjustedSourceX = sourceX
   let adjustedSourceY = sourceY
   
-  if (sourceHandleId?.includes('right')) {
-    adjustedSourceX = sourceX + handleOffset
-  } else if (sourceHandleId?.includes('left')) {
-    adjustedSourceX = sourceX - handleOffset
-  } else if (sourceHandleId?.includes('bottom')) {
-    adjustedSourceY = sourceY + handleOffset
-  } else if (sourceHandleId?.includes('top')) {
-    adjustedSourceY = sourceY - handleOffset
+  switch (sourcePosition) {
+    case 'right':
+      adjustedSourceX = sourceX + handleRadius // 오른쪽으로 더 연장
+      break
+    case 'left':
+      adjustedSourceX = sourceX - handleRadius // 왼쪽으로 더 연장
+      break
+    case 'bottom':
+      adjustedSourceY = sourceY + handleRadius // 아래로 더 연장
+      break
+    case 'top':
+      adjustedSourceY = sourceY - handleRadius // 위로 더 연장
+      break
   }
   
-  // 타겟 좌표 보정 (핸들 중심으로)
+  // 타겟 좌표 보정 (핸들 중심 → 노드 내부 방향으로)
   let adjustedTargetX = targetX
   let adjustedTargetY = targetY
   
-  if (targetHandleId === 'right' || targetHandleId?.includes('right')) {
-    adjustedTargetX = targetX + handleOffset
-  } else if (targetHandleId === 'left') {
-    adjustedTargetX = targetX - handleOffset
-  } else if (targetHandleId === 'bottom') {
-    adjustedTargetY = targetY + handleOffset
-  } else if (targetHandleId === 'top') {
-    adjustedTargetY = targetY - handleOffset
+  switch (targetPosition) {
+    case 'right':
+      adjustedTargetX = targetX + handleRadius // 오른쪽으로 더 연장
+      break
+    case 'left':
+      adjustedTargetX = targetX - handleRadius // 왼쪽으로 더 연장
+      break
+    case 'bottom':
+      adjustedTargetY = targetY + handleRadius // 아래로 더 연장
+      break
+    case 'top':
+      adjustedTargetY = targetY - handleRadius // 위로 더 연장
+      break
   }
   
   // 기본 곡률 계산 (직선이 아닌 곡선으로)
