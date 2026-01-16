@@ -15,16 +15,49 @@ function CustomEdge({
   markerEnd,
   data,
   selected,
+  sourceHandleId,
+  targetHandleId,
 }) {
   const { setEdges, screenToFlowPosition } = useReactFlow()
   
+  // 핸들 크기의 절반 (핸들 중심으로 연결하기 위한 보정값)
+  const handleOffset = 4
+  
+  // 소스 좌표 보정 (핸들 중심으로)
+  let adjustedSourceX = sourceX
+  let adjustedSourceY = sourceY
+  
+  if (sourceHandleId?.includes('right')) {
+    adjustedSourceX = sourceX + handleOffset
+  } else if (sourceHandleId?.includes('left')) {
+    adjustedSourceX = sourceX - handleOffset
+  } else if (sourceHandleId?.includes('bottom')) {
+    adjustedSourceY = sourceY + handleOffset
+  } else if (sourceHandleId?.includes('top')) {
+    adjustedSourceY = sourceY - handleOffset
+  }
+  
+  // 타겟 좌표 보정 (핸들 중심으로)
+  let adjustedTargetX = targetX
+  let adjustedTargetY = targetY
+  
+  if (targetHandleId === 'right' || targetHandleId?.includes('right')) {
+    adjustedTargetX = targetX + handleOffset
+  } else if (targetHandleId === 'left') {
+    adjustedTargetX = targetX - handleOffset
+  } else if (targetHandleId === 'bottom') {
+    adjustedTargetY = targetY + handleOffset
+  } else if (targetHandleId === 'top') {
+    adjustedTargetY = targetY - handleOffset
+  }
+  
   // 기본 곡률 계산 (직선이 아닌 곡선으로)
-  const midX = (sourceX + targetX) / 2
-  const midY = (sourceY + targetY) / 2
+  const midX = (adjustedSourceX + adjustedTargetX) / 2
+  const midY = (adjustedSourceY + adjustedTargetY) / 2
   
   // 소스-타겟 방향에 수직인 방향으로 오프셋
-  const dx = targetX - sourceX
-  const dy = targetY - sourceY
+  const dx = adjustedTargetX - adjustedSourceX
+  const dy = adjustedTargetY - adjustedSourceY
   const distance = Math.sqrt(dx * dx + dy * dy)
   
   // 거리에 비례한 곡률 (최소 20, 최대 60)
@@ -42,8 +75,8 @@ function CustomEdge({
   
   const controlPoint = data?.controlPoint || defaultControlPoint
   
-  // 커스텀 베지어 경로 생성
-  const path = `M ${sourceX} ${sourceY} Q ${controlPoint.x} ${controlPoint.y} ${targetX} ${targetY}`
+  // 커스텀 베지어 경로 생성 (보정된 좌표 사용)
+  const path = `M ${adjustedSourceX} ${adjustedSourceY} Q ${controlPoint.x} ${controlPoint.y} ${adjustedTargetX} ${adjustedTargetY}`
   
   // 컨트롤 포인트 드래그 핸들러
   const onControlPointDrag = useCallback((event) => {
@@ -146,8 +179,8 @@ function CustomEdge({
               }}
             >
               <line
-                x1={sourceX}
-                y1={sourceY}
+                x1={adjustedSourceX}
+                y1={adjustedSourceY}
                 x2={controlPoint.x}
                 y2={controlPoint.y}
                 stroke="#94a3b8"
@@ -157,8 +190,8 @@ function CustomEdge({
               <line
                 x1={controlPoint.x}
                 y1={controlPoint.y}
-                x2={targetX}
-                y2={targetY}
+                x2={adjustedTargetX}
+                y2={adjustedTargetY}
                 stroke="#94a3b8"
                 strokeWidth={1}
                 strokeDasharray="4"
