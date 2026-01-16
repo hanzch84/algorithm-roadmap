@@ -1,60 +1,54 @@
 'use client'
 
-import { useCallback, useMemo, useState, useEffect } from 'react'
+import { useMemo } from 'react'
 import {
   ReactFlow,
   Background,
   Controls,
   MiniMap,
   Panel,
-  useNodesState,
-  useEdgesState,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 
 // ========================================
-// 읽기 전용 노드 컴포넌트 (핸들 숨김)
+// 읽기 전용 노드 컴포넌트
 // ========================================
-import { memo } from 'react'
-
-const ReadOnlyNode = memo(function ReadOnlyNode({ data, selected }) {
+function ReadOnlyNode({ data }) {
   const isAdvanced = data.section === '고급'
-  
-  const baseStyle = {
-    padding: '8px 12px',
+
+  const style = {
+    padding: '6px 12px',
     borderRadius: '8px',
     border: `2px solid ${isAdvanced ? '#7E57C2' : '#00897B'}`,
     backgroundColor: isAdvanced ? '#EDE7F6' : '#E0F2F1',
-    minWidth: '80px',
     fontSize: '12px',
     fontWeight: 500,
     color: isAdvanced ? '#4527A0' : '#004D40',
     cursor: data.link ? 'pointer' : 'default',
-    transition: 'all 0.2s',
-    boxShadow: selected ? '0 0 0 2px #3b82f6' : 'none',
+    minWidth: '80px',
+    textAlign: 'center',
+  }
+
+  const handleClick = () => {
+    if (data.link) {
+      window.open(data.link, '_blank')
+    }
   }
 
   return (
-    <div style={baseStyle}>
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        gap: '4px',
-        justifyContent: 'center',
-      }}>
-        {data.link && <span style={{ fontSize: '10px' }}>🔗</span>}
-        <span>{data.label}</span>
-      </div>
+    <div style={style} onClick={handleClick} title={data.link || ''}>
+      {data.label}
+      {data.link && <span style={{ marginLeft: '4px', fontSize: '10px' }}>🔗</span>}
     </div>
   )
-})
+}
 
 // ========================================
-// 읽기 전용 그룹 노드
+// 읽기 전용 그룹 노드 컴포넌트
 // ========================================
-const ReadOnlyGroupNode = memo(function ReadOnlyGroupNode({ data }) {
+function ReadOnlyGroupNode({ data }) {
   const isAdvanced = data.section === '고급'
-  
+
   const style = {
     padding: '8px',
     borderRadius: '16px',
@@ -66,9 +60,9 @@ const ReadOnlyGroupNode = memo(function ReadOnlyGroupNode({ data }) {
 
   return (
     <div style={style}>
-      <div style={{ 
-        fontSize: '13px', 
-        fontWeight: 700, 
+      <div style={{
+        fontSize: '13px',
+        fontWeight: 700,
         color: isAdvanced ? '#4527A0' : '#004D40',
         marginBottom: '4px'
       }}>
@@ -76,70 +70,15 @@ const ReadOnlyGroupNode = memo(function ReadOnlyGroupNode({ data }) {
       </div>
     </div>
   )
-})
-
-// ========================================
-// 읽기 전용 엣지 (편집 불가)
-// ========================================
-const ReadOnlyEdge = memo(function ReadOnlyEdge({
-  id,
-  sourceX,
-  sourceY,
-  targetX,
-  targetY,
-  style = {},
-  markerEnd,
-  data,
-}) {
-  // 기본 곡률 계산
-  const midX = (sourceX + targetX) / 2
-  const midY = (sourceY + targetY) / 2
-  
-  const dx = targetX - sourceX
-  const dy = targetY - sourceY
-  const distance = Math.sqrt(dx * dx + dy * dy)
-  
-  const curvature = Math.min(60, Math.max(20, distance * 0.15))
-  
-  const perpX = distance > 0 ? -dy / distance : 0
-  const perpY = distance > 0 ? dx / distance : 1
-  
-  const defaultControlPoint = {
-    x: midX + perpX * curvature,
-    y: midY + perpY * curvature,
-  }
-  
-  const controlPoint = data?.controlPoint || defaultControlPoint
-  
-  const path = `M ${sourceX} ${sourceY} Q ${controlPoint.x} ${controlPoint.y} ${targetX} ${targetY}`
-
-  return (
-    <path
-      id={id}
-      className="react-flow__edge-path"
-      d={path}
-      style={{
-        ...style,
-        stroke: style.stroke || '#E65100',
-        strokeWidth: style.strokeWidth || 2,
-        fill: 'none',
-      }}
-      markerEnd={markerEnd}
-    />
-  )
-})
+}
 
 const nodeTypes = {
   custom: ReadOnlyNode,
   group: ReadOnlyGroupNode,
 }
 
-const edgeTypes = {
-  custom: ReadOnlyEdge,
-}
-
 // ========================================
-// 서브그래프(그룹) 정의 (RoadmapFlow와 동일)
+// 기본 그룹 정의
 // ========================================
 const defaultGroups = {
   'sec_basic': {
@@ -165,7 +104,7 @@ const defaultGroups = {
     isSubgroup: true,
     parentId: 'sec_basic',
     position: { x: 22, y: 83 },
-    size: { width: 358, height: 154 },
+    size: { width: 331, height: 153 },
   },
   'sec_solved': {
     label: 'solved.ac',
@@ -191,8 +130,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 102, y: 528 },
-    size: { width: 485, height: 104 },
+    position: { x: 77, y: 528 },
+    size: { width: 555, height: 104 },
   },
   'sec_arena': {
     label: '대회 참가',
@@ -200,8 +139,8 @@ const defaultGroups = {
     depth: 1,
     isSubgroup: true,
     parentId: 'sec_basic',
-    position: { x: 107, y: 645 },
-    size: { width: 470, height: 100 },
+    position: { x: 47, y: 645 },
+    size: { width: 530, height: 100 },
   },
   'sec_tools_ide': {
     label: 'IDE',
@@ -316,55 +255,6 @@ const nodeParentMapping = {
   'vscode_ext': 'sec_adv_til',
 }
 
-// 기본 위치
-const defaultPositions = {
-  'node_intro': { x: 25, y: 25 },
-  'node_boj_setup': { x: 63, y: 43 },
-  'node_boj_usage': { x: 212, y: 43 },
-  'node_koala_setup': { x: 35, y: 88 },
-  'node_koala_usage': { x: 195, y: 88 },
-  'node_solved_link': { x: 19, y: 49 },
-  'node_solved_usage': { x: 107, y: 89 },
-  'node_tools_intro': { x: 170, y: 43 },
-  'tool_vscode': { x: 25, y: 42 },
-  'tool_pycharm': { x: 25, y: 89 },
-  'tool_replit': { x: 30, y: 42 },
-  'tool_onlinegdb': { x: 21, y: 89 },
-  'tool_ideone': { x: 30, y: 45 },
-  'tool_tio': { x: 30, y: 87 },
-  'tool_colab': { x: 19, y: 46 },
-  'tool_marimo': { x: 35, y: 89 },
-  'node_til': { x: 20, y: 40 },
-  'node_join': { x: 145, y: 40 },
-  'node_study': { x: 285, y: 40 },
-  'node_arena': { x: 20, y: 38 },
-  'node_arenajoin': { x: 160, y: 38 },
-  'node_arenacoalla': { x: 300, y: 38 },
-  'ext_bjcode': { x: 21, y: 46 },
-  'ext_bojhub': { x: 128, y: 92 },
-  'ext_bojext': { x: 107, y: 46 },
-  'ext_testcase': { x: 21, y: 92 },
-  'adv_boj': { x: 34, y: 41 },
-  'adv_solved': { x: 20, y: 90 },
-  'adv_koala': { x: 22, y: 140 },
-  'contest_atcoder': { x: 25, y: 48 },
-  'contest_codeforces': { x: 24, y: 92 },
-  'draw_io': { x: 21, y: 45 },
-  'excalidraw': { x: 22, y: 94 },
-  'pythontutor': { x: 151, y: 95 },
-  'vscode_ext': { x: 111, y: 45 },
-}
-
-// 기본 엣지
-const defaultEdges = [
-  { id: 'edge-2', source: 'node_boj_setup', target: 'node_boj_usage', sourceHandle: 'right-src', targetHandle: 'left' },
-  { id: 'edge-3', source: 'node_koala_setup', target: 'node_koala_usage', sourceHandle: 'right-src', targetHandle: 'left' },
-  { id: 'edge-11', source: 'node_til', target: 'node_join', sourceHandle: 'right-src', targetHandle: 'left' },
-  { id: 'edge-12', source: 'node_join', target: 'node_study', sourceHandle: 'right-src', targetHandle: 'left' },
-  { id: 'edge-13', source: 'node_arena', target: 'node_arenajoin', sourceHandle: 'right-src', targetHandle: 'left' },
-  { id: 'edge-14', source: 'node_arenajoin', target: 'node_arenacoalla', sourceHandle: 'right-src', targetHandle: 'left' },
-]
-
 // 화살표 스타일
 const markerEnd = {
   type: 'arrowclosed',
@@ -374,157 +264,117 @@ const markerEnd = {
 }
 
 // ========================================
-// 노드/엣지 생성 함수
+// 메인 컴포넌트
 // ========================================
-function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
-  const flowNodes = []
-  const flowEdges = []
-  
-  const groups = groupData || defaultGroups
-  const nodes = initialNodes || []
-  const positions = { ...defaultPositions, ...(nodePositions || {}) }
-  const edgesToUse = savedEdges || defaultEdges
+export default function ReadOnlyFlow({ nodes: inputNodes, positions, groups: inputGroups, edges: inputEdges }) {
+  const { flowNodes, flowEdges } = useMemo(() => {
+    const flowNodes = []
+    const flowEdges = []
 
-  // 1. 그룹 노드 생성
-  const groupEntries = Object.entries(groups || {})
-  groupEntries.sort((a, b) => ((a[1]?.depth) || 0) - ((b[1]?.depth) || 0))
-  
-  groupEntries.forEach(([id, group]) => {
-    if (!group) return
-    const depth = group.depth || 0
-    const node = {
-      id,
-      type: 'group',
-      position: group.position || { x: 0, y: 0 },
-      style: {
-        width: group.size?.width || 200,
-        height: group.size?.height || 100,
-        zIndex: -10 + depth * 5,
-      },
-      data: {
-        label: group.label || '',
-        section: group.section || '기본',
-        isSubgroup: group.isSubgroup || false,
-        depth: depth,
-      },
-      draggable: false, // 읽기 전용
-      selectable: false, // 선택 불가
-    }
-    
-    if (group.parentId) {
-      node.parentId = group.parentId
-      node.extent = 'parent'
-    }
-    
-    flowNodes.push(node)
-  })
-
-  // 2. 일반 노드 생성
-  nodes.forEach((node, index) => {
-    if (!node) return
-    const pos = positions[node.id] || { 
-      x: 20 + (index % 4) * 120, 
-      y: 40 
-    }
-    
-    const flowNode = {
-      id: node.id,
-      type: 'custom',
-      position: pos,
-      zIndex: 100,
-      data: {
-        label: node.name || '',
-        link: node.link || '',
-        section: node.section || '기본',
-        group: node.group || '',
-      },
-      draggable: false, // 읽기 전용
-      selectable: true, // 클릭 감지용
-    }
-    
-    const parentGroupId = nodeParentMapping[node.id]
-    if (parentGroupId && groups[parentGroupId]) {
-      flowNode.parentId = parentGroupId
-      flowNode.extent = 'parent'
-    }
-    
-    flowNodes.push(flowNode)
-  })
-
-  // 3. 엣지 생성
-  const allNodeIds = flowNodes.map(n => n.id)
-  
-  ;(edgesToUse || []).forEach((edge, index) => {
-    if (!edge) return
-    const sourceExists = allNodeIds.includes(edge.source)
-    const targetExists = allNodeIds.includes(edge.target)
-    
-    if (sourceExists && targetExists) {
-      flowEdges.push({
-        id: edge.id || `edge-${index}`,
-        source: edge.source,
-        target: edge.target,
-        sourceHandle: edge.sourceHandle || 'bottom-src',
-        targetHandle: edge.targetHandle || 'top',
-        type: 'custom',
-        style: { stroke: '#E65100', strokeWidth: 2 },
-        markerEnd,
-        selectable: false, // 선택 불가
-        data: {
-          controlPoint: edge.controlPoint || null,
-        },
-      })
-    }
-  })
-
-  return { flowNodes, flowEdges }
-}
-
-// ========================================
-// 메인 컴포넌트 (읽기 전용)
-// ========================================
-export default function ReadOnlyFlow({ initialNodes, savedPositions, savedEdges }) {
-  const { nodePositions, groupData } = useMemo(() => {
-    const nodePos = savedPositions?.nodes || savedPositions?.positions || {}
-    const groupPos = savedPositions?.groups || null
-    
-    let mergedGroups = { ...defaultGroups }
-    if (groupPos) {
-      Object.keys(groupPos || {}).forEach(key => {
-        if (mergedGroups[key]) {
-          mergedGroups[key] = { ...mergedGroups[key], ...groupPos[key] }
+    // 그룹 데이터 병합
+    const groups = { ...defaultGroups }
+    if (inputGroups) {
+      Object.keys(inputGroups).forEach(key => {
+        if (groups[key]) {
+          groups[key] = { ...groups[key], ...inputGroups[key] }
         }
       })
     }
-    
-    return { nodePositions: nodePos, groupData: mergedGroups }
-  }, [savedPositions])
 
-  const [nodes, setNodes] = useNodesState([])
-  const [edges, setEdges] = useEdgesState([])
+    // 1. 그룹 노드 생성
+    const groupEntries = Object.entries(groups)
+    groupEntries.sort((a, b) => (a[1]?.depth || 0) - (b[1]?.depth || 0))
 
-  useEffect(() => {
-    const { flowNodes, flowEdges } = buildFlowData(initialNodes, nodePositions, groupData, savedEdges)
-    setNodes(flowNodes)
-    setEdges(flowEdges)
-  }, [initialNodes, nodePositions, groupData, savedEdges, setNodes, setEdges])
+    groupEntries.forEach(([id, group]) => {
+      if (!group) return
+      const depth = group.depth || 0
+      const node = {
+        id,
+        type: 'group',
+        position: group.position || { x: 0, y: 0 },
+        style: {
+          width: group.size?.width || 200,
+          height: group.size?.height || 100,
+          zIndex: -10 + depth * 5,
+        },
+        data: {
+          label: group.label || '',
+          section: group.section || '기본',
+        },
+        draggable: false,
+        selectable: false,
+      }
 
-  // 노드 클릭 → 링크 열기
-  const onNodeClick = useCallback((event, node) => {
-    if (node.type === 'group') return
-    if (node.data.link) {
-      window.open(node.data.link, '_blank')
-    }
-  }, [])
+      if (group.parentId) {
+        node.parentId = group.parentId
+        node.extent = 'parent'
+      }
+
+      flowNodes.push(node)
+    })
+
+      // 2. 일반 노드 생성
+      ; (inputNodes || []).forEach((node, index) => {
+        if (!node) return
+        const pos = positions?.[node.id] || { x: 20 + (index % 4) * 120, y: 40 }
+
+        const flowNode = {
+          id: node.id,
+          type: 'custom',
+          position: pos,
+          zIndex: 100,
+          data: {
+            label: node.name || '',
+            link: node.link || '',
+            section: node.section || '기본',
+          },
+          draggable: false,
+          selectable: false,
+        }
+
+        const parentGroupId = nodeParentMapping[node.id]
+        if (parentGroupId && groups[parentGroupId]) {
+          flowNode.parentId = parentGroupId
+          flowNode.extent = 'parent'
+        }
+
+        flowNodes.push(flowNode)
+      })
+
+    // 3. 엣지 생성
+    const allNodeIds = flowNodes.map(n => n.id)
+
+      ; (inputEdges || []).forEach((edge, index) => {
+        if (!edge) return
+        const sourceExists = allNodeIds.includes(edge.source)
+        const targetExists = allNodeIds.includes(edge.target)
+
+        if (sourceExists && targetExists) {
+          // 컨트롤 포인트가 있으면 커브 경로, 없으면 직선
+          const hasControlPoint = edge.controlPoint && edge.controlPoint.x && edge.controlPoint.y
+
+          flowEdges.push({
+            id: edge.id || `edge-${index}`,
+            source: edge.source,
+            target: edge.target,
+            sourceHandle: edge.sourceHandle || 'bottom-src',
+            targetHandle: edge.targetHandle || 'top',
+            type: 'default',
+            style: { stroke: '#E65100', strokeWidth: 2 },
+            markerEnd,
+          })
+        }
+      })
+
+    return { flowNodes, flowEdges }
+  }, [inputNodes, positions, inputGroups, inputEdges])
 
   return (
     <div className="w-full h-full">
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodeClick={onNodeClick}
+        nodes={flowNodes}
+        edges={flowEdges}
         nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
         fitView
         fitViewOptions={{ padding: 0.1 }}
         minZoom={0.2}
@@ -532,16 +382,14 @@ export default function ReadOnlyFlow({ initialNodes, savedPositions, savedEdges 
         defaultViewport={{ x: 0, y: 0, zoom: 0.5 }}
         nodesDraggable={false}
         nodesConnectable={false}
-        elementsSelectable={true}
-        nodeOrigin={[0, 0]}
+        elementsSelectable={false}
         panOnDrag={true}
         zoomOnScroll={true}
-        zoomOnPinch={true}
-        panOnScroll={false}
+        nodeOrigin={[0, 0]}
       >
         <Background color="#ddd" gap={20} />
         <Controls showInteractive={false} />
-        <MiniMap 
+        <MiniMap
           nodeColor={(node) => {
             if (node.type === 'group') {
               return node.data?.section === '고급' ? '#D1C4E9' : '#B2DFDB'
@@ -549,15 +397,13 @@ export default function ReadOnlyFlow({ initialNodes, savedPositions, savedEdges 
             return node.data?.section === '고급' ? '#EDE7F6' : '#E0F2F1'
           }}
           maskColor="rgba(0, 0, 0, 0.1)"
-          pannable={false}
-          zoomable={false}
         />
-        
+
         <Panel position="bottom-left" className="bg-white/90 p-3 rounded-lg shadow text-xs">
           <div className="font-bold mb-1">사용법</div>
-          <div>• 노드 클릭: 링크 열기</div>
           <div>• 마우스 드래그: 화면 이동</div>
           <div>• 스크롤: 확대/축소</div>
+          <div>• 노드 클릭: 링크 열기</div>
         </Panel>
       </ReactFlow>
     </div>
