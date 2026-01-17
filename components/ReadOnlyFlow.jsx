@@ -7,11 +7,13 @@ import {
   Controls,
   MiniMap,
   Panel,
+  Handle,
+  Position,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 
 // ========================================
-// 읽기 전용 노드 컴포넌트
+// 읽기 전용 노드 컴포넌트 (Handle 추가)
 // ========================================
 function ReadOnlyNode({ data }) {
   const isAdvanced = data.section === '고급'
@@ -29,6 +31,13 @@ function ReadOnlyNode({ data }) {
     textAlign: 'center',
   }
 
+  const handleStyle = {
+    width: 6,
+    height: 6,
+    background: isAdvanced ? '#7E57C2' : '#00897B',
+    border: 'none',
+  }
+
   const handleClick = () => {
     if (data.link) {
       window.open(data.link, '_blank')
@@ -37,14 +46,20 @@ function ReadOnlyNode({ data }) {
 
   return (
     <div style={style} onClick={handleClick} title={data.link || ''}>
+      <Handle type="target" position={Position.Top} id="top" style={handleStyle} />
+      <Handle type="target" position={Position.Left} id="left" style={handleStyle} />
+
       {data.label}
       {data.link && <span style={{ marginLeft: '4px', fontSize: '10px' }}>🔗</span>}
+
+      <Handle type="source" position={Position.Right} id="right-src" style={handleStyle} />
+      <Handle type="source" position={Position.Bottom} id="bottom-src" style={handleStyle} />
     </div>
   )
 }
 
 // ========================================
-// 읽기 전용 그룹 노드 컴포넌트
+// 읽기 전용 그룹 노드 컴포넌트 (Handle 추가)
 // ========================================
 function ReadOnlyGroupNode({ data }) {
   const isAdvanced = data.section === '고급'
@@ -58,8 +73,18 @@ function ReadOnlyGroupNode({ data }) {
     height: '100%',
   }
 
+  const handleStyle = {
+    width: 8,
+    height: 8,
+    background: isAdvanced ? '#7E57C2' : '#00897B',
+    border: 'none',
+  }
+
   return (
     <div style={style}>
+      <Handle type="target" position={Position.Top} id="top" style={handleStyle} />
+      <Handle type="target" position={Position.Left} id="left" style={handleStyle} />
+
       <div style={{
         fontSize: '13px',
         fontWeight: 700,
@@ -68,6 +93,9 @@ function ReadOnlyGroupNode({ data }) {
       }}>
         {data.label}
       </div>
+
+      <Handle type="source" position={Position.Right} id="right-src" style={handleStyle} />
+      <Handle type="source" position={Position.Bottom} id="bottom-src" style={handleStyle} />
     </div>
   )
 }
@@ -303,15 +331,7 @@ const markerEnd = {
 // 메인 컴포넌트
 // ========================================
 export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositions, groups: inputGroups, edges: inputEdges }) {
-  // 디버깅: props 확인
-  console.log('=== ReadOnlyFlow Props ===')
-  console.log('inputNodes:', inputNodes?.length, inputNodes)
-  console.log('inputPositions:', inputPositions)
-  console.log('inputGroups:', inputGroups)
-  console.log('inputEdges:', inputEdges)
-
   const { flowNodes, flowEdges } = useMemo(() => {
-    console.log('=== useMemo 시작 ===')
     const flowNodes = []
     const flowEdges = []
 
@@ -360,20 +380,12 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
       flowNodes.push(node)
     })
 
-    console.log('그룹 노드 생성 완료:', flowNodes.length)
-
     // 2. 일반 노드 생성
-    console.log('일반 노드 생성 시작, inputNodes:', inputNodes?.length)
-
     if (inputNodes && inputNodes.length > 0) {
       inputNodes.forEach((node, index) => {
-        if (!node) {
-          console.log('노드가 null:', index)
-          return
-        }
+        if (!node) return
 
         const pos = positions[node.id] || { x: 20 + (index % 4) * 120, y: 40 }
-        console.log(`노드 생성: ${node.id}, 위치:`, pos)
 
         const flowNode = {
           id: node.id,
@@ -397,12 +409,7 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
 
         flowNodes.push(flowNode)
       })
-    } else {
-      console.log('⚠️ inputNodes가 비어있습니다!')
     }
-
-    console.log('일반 노드 생성 후 총 flowNodes:', flowNodes.length)
-    console.log('노드 타입별:', flowNodes.map(n => `${n.id}:${n.type}`))
 
     // 3. 엣지 생성
     const allNodeIds = flowNodes.map(n => n.id)
@@ -426,10 +433,6 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
         })
       }
     })
-
-    console.log('=== useMemo 결과 ===')
-    console.log('총 flowNodes:', flowNodes.length)
-    console.log('총 flowEdges:', flowEdges.length)
 
     return { flowNodes, flowEdges }
   }, [inputNodes, inputPositions, inputGroups, inputEdges])
