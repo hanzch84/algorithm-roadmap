@@ -148,19 +148,20 @@ function ReadOnlyNode({ data }) {
   }
 
   const nodeStyle = {
-    padding: '6px 12px',
+    padding: '8px 12px',
     borderRadius: '8px',
     border: `2px solid ${borderColor}`,
     backgroundColor,
-    fontSize: '12px',
-    fontWeight: 500,
+    fontSize: '14px',
+    fontWeight: 600,
     color: textColor,
     cursor: hasLink ? 'pointer' : 'default',
     minWidth: '80px',
     textAlign: 'center',
+    whiteSpace: 'nowrap',
     transition: 'all 0.2s ease',
     transform: isHovered && hasLink ? 'scale(1.05)' : 'scale(1)',
-    boxShadow: isHovered && hasLink ? '0 4px 12px rgba(0,0,0,0.15)' : 'none',
+    boxShadow: isHovered && hasLink ? '0 4px 12px rgba(0,0,0,0.15)' : '0 1px 2px rgba(0,0,0,0.1)',
   }
 
   return (
