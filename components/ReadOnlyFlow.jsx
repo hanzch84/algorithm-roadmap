@@ -57,26 +57,28 @@ function ReadOnlyEdge({
   markerEnd,
   data,
 }) {
-  const handleRadius = 5
-
+  // 소스: 노드 안쪽으로 (엣지 시작점)
+  const sourceOffset = 5
   let adjustedSourceX = sourceX
   let adjustedSourceY = sourceY
 
   switch (sourcePosition) {
-    case 'right': adjustedSourceX = sourceX - handleRadius; break
-    case 'left': adjustedSourceX = sourceX + handleRadius; break
-    case 'bottom': adjustedSourceY = sourceY - handleRadius; break
-    case 'top': adjustedSourceY = sourceY + handleRadius; break
+    case 'right': adjustedSourceX = sourceX - sourceOffset; break
+    case 'left': adjustedSourceX = sourceX + sourceOffset; break
+    case 'bottom': adjustedSourceY = sourceY - sourceOffset; break
+    case 'top': adjustedSourceY = sourceY + sourceOffset; break
   }
 
+  // 타겟: 노드 바깥쪽으로 (화살표가 노드에 가려지지 않도록)
+  const arrowOffset = 3
   let adjustedTargetX = targetX
   let adjustedTargetY = targetY
 
   switch (targetPosition) {
-    case 'right': adjustedTargetX = targetX - handleRadius; break
-    case 'left': adjustedTargetX = targetX + handleRadius; break
-    case 'bottom': adjustedTargetY = targetY - handleRadius; break
-    case 'top': adjustedTargetY = targetY + handleRadius; break
+    case 'right': adjustedTargetX = targetX + arrowOffset; break  // 오른쪽으로 (노드 바깥)
+    case 'left': adjustedTargetX = targetX - arrowOffset; break   // 왼쪽으로 (노드 바깥)
+    case 'bottom': adjustedTargetY = targetY + arrowOffset; break // 아래로 (노드 바깥)
+    case 'top': adjustedTargetY = targetY - arrowOffset; break    // 위로 (노드 바깥)
   }
 
   const midX = (adjustedSourceX + adjustedTargetX) / 2
@@ -405,7 +407,7 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
       })
     }
 
-    // 엣지
+    // 엣지 (노드보다 zIndex 높게 설정)
     const allNodeIds = flowNodes.map(n => n.id)
     const edgesToUse = inputEdges?.length > 0 ? inputEdges : defaultEdges
     edgesToUse.forEach((edge, i) => {
@@ -415,6 +417,7 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
         source: edge.source, target: edge.target,
         sourceHandle: edge.sourceHandle || 'bottom-src', targetHandle: edge.targetHandle || 'top',
         type: 'custom', style: { stroke: '#E65100', strokeWidth: 2 }, markerEnd,
+        zIndex: 150,  // 노드(100)보다 높게 설정
         data: { controlPoint: edge.controlPoint || null },
       })
     })
