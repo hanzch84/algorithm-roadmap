@@ -296,7 +296,7 @@ const defaultPositions = {
   'node_solved_link': { x: 19, y: 44 }, 'node_solved_usage': { x: 107, y: 89 },
   'node_tools_intro': { x: 190, y: 43 },
   'tool_vscode': { x: 25, y: 42 }, 'tool_pycharm': { x: 25, y: 89 },
-  'tool_replit': { x: 30, y: 42 }, 'tool_onlinegdb': { x: 30, y: 88 },
+  'tool_replit': { x: 30, y: 42 }, 'tool_onlinegdb': { x: 17, y: 87 },
   'tool_ideone': { x: 30, y: 45 }, 'tool_tio': { x: 31, y: 89 },
   'tool_colab': { x: 19, y: 46 }, 'tool_marimo': { x: 35, y: 89 },
   'node_til': { x: 35, y: 45 }, 'node_join': { x: 192, y: 45 }, 'node_study': { x: 355, y: 45 },

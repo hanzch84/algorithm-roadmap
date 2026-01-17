@@ -225,7 +225,7 @@ const defaultPositions = {
   'tool_vscode': { x: 25, y: 42 },
   'tool_pycharm': { x: 25, y: 89 },
   'tool_replit': { x: 30, y: 42 },
-  'tool_onlinegdb': { x: 30, y: 88 },
+  'tool_onlinegdb': { x: 17, y: 87 },
   'tool_ideone': { x: 30, y: 45 },
   'tool_tio': { x: 31, y: 89 },
   'tool_colab': { x: 19, y: 46 },

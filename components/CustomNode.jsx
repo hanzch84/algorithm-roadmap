@@ -6,7 +6,7 @@ import { Handle, Position, useReactFlow } from '@xyflow/react'
 function CustomNode({ id, data, selected }) {
   const { setNodes } = useReactFlow()
   const isAdvanced = data.section === '고급'
-  
+
   const [isEditingLabel, setIsEditingLabel] = useState(false)
   const [isEditingLink, setIsEditingLink] = useState(false)
   const [labelValue, setLabelValue] = useState(data.label || '')
@@ -50,27 +50,38 @@ function CustomNode({ id, data, selected }) {
 
   // Notion API로 업데이트
   const updateNotion = useCallback(async (newName, newLink) => {
+    console.log('=== Notion 업데이트 시도 ===')
+    console.log('notionPageId:', data.notionPageId)
+    console.log('newName:', newName)
+    console.log('newLink:', newLink)
+
     if (!data.notionPageId) {
       console.warn('notionPageId가 없어서 Notion 동기화 건너뜀')
       return
     }
-    
+
     try {
+      const requestBody = {
+        notionPageId: data.notionPageId,
+        name: newName,
+        link: newLink,
+      }
+      console.log('API 요청 본문:', requestBody)
+
       const response = await fetch('/api/notion', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          notionPageId: data.notionPageId,
-          name: newName,
-          link: newLink,
-        }),
+        body: JSON.stringify(requestBody),
       })
-      
+
+      const result = await response.json()
+      console.log('API 응답 상태:', response.status)
+      console.log('API 응답 본문:', result)
+
       if (!response.ok) {
-        const error = await response.json()
-        console.error('Notion 업데이트 실패:', error)
+        console.error('Notion 업데이트 실패:', result)
       } else {
-        console.log('Notion 동기화 완료')
+        console.log('✅ Notion 동기화 완료')
       }
     } catch (error) {
       console.error('Notion API 호출 실패:', error)
@@ -87,7 +98,7 @@ function CustomNode({ id, data, selected }) {
       )
     )
     setIsEditingLabel(false)
-    
+
     // Notion 동기화
     updateNotion(labelValue, linkValue)
   }, [id, labelValue, linkValue, setNodes, updateNotion])
@@ -102,7 +113,7 @@ function CustomNode({ id, data, selected }) {
       )
     )
     setIsEditingLink(false)
-    
+
     // Notion 동기화
     updateNotion(labelValue, linkValue)
   }, [id, labelValue, linkValue, setNodes, updateNotion])
@@ -159,7 +170,7 @@ function CustomNode({ id, data, selected }) {
   }
 
   // 핸들 중심점 위치 설정
-  const handleStyle = { 
+  const handleStyle = {
     width: 8,
     height: 8,
     background: isAdvanced ? '#9333ea' : '#0d9488',
@@ -174,14 +185,14 @@ function CustomNode({ id, data, selected }) {
         id="top"
         style={handleStyle}
       />
-      
+
       <Handle
         type="target"
         position={Position.Left}
         id="left"
         style={handleStyle}
       />
-      
+
       {/* 라벨 영역 */}
       {isEditingLabel ? (
         <input
@@ -258,21 +269,21 @@ function CustomNode({ id, data, selected }) {
           />
         </div>
       )}
-      
+
       <Handle
         type="source"
         position={Position.Right}
         id="right-src"
         style={handleStyle}
       />
-      
+
       <Handle
         type="source"
         position={Position.Bottom}
         id="bottom-src"
         style={handleStyle}
       />
-      
+
       <Handle
         type="source"
         position={Position.Left}
