@@ -173,10 +173,14 @@ function ReadOnlyNode({ data }) {
       {/* 투명 핸들 - 엣지 연결용 */}
       <Handle type="target" position={Position.Top} id="top" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
       <Handle type="target" position={Position.Left} id="left" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
+      <Handle type="target" position={Position.Right} id="right" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
+      <Handle type="target" position={Position.Bottom} id="bottom" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
 
       {data.label}
       {hasLink && <span style={{ marginLeft: '4px', fontSize: '10px' }}>{isVisited ? '✓' : '🔗'}</span>}
 
+      <Handle type="source" position={Position.Top} id="top-src" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
+      <Handle type="source" position={Position.Left} id="left-src" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
       <Handle type="source" position={Position.Right} id="right-src" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
       <Handle type="source" position={Position.Bottom} id="bottom-src" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
     </div>
@@ -200,9 +204,11 @@ function ReadOnlyGroupNode({ data }) {
 
   return (
     <div style={groupStyle}>
-      {/* 투명 핸들 */}
+      {/* 투명 핸들 - 모든 방향 */}
       <Handle type="target" position={Position.Top} id="top" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
       <Handle type="target" position={Position.Left} id="left" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
+      <Handle type="target" position={Position.Right} id="right" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
+      <Handle type="target" position={Position.Bottom} id="bottom" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
 
       <div style={{
         fontSize: '13px',
@@ -213,6 +219,8 @@ function ReadOnlyGroupNode({ data }) {
         {data.label}
       </div>
 
+      <Handle type="source" position={Position.Top} id="top-src" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
+      <Handle type="source" position={Position.Left} id="left-src" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
       <Handle type="source" position={Position.Right} id="right-src" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
       <Handle type="source" position={Position.Bottom} id="bottom-src" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
     </div>
