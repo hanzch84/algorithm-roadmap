@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { memo, useMemo } from 'react'
 import {
   ReactFlow,
   Background,
@@ -11,6 +11,107 @@ import {
   Position,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
+
+// ========================================
+// 읽기 전용 엣지 컴포넌트 (보정 로직 포함)
+// ========================================
+function ReadOnlyEdge({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  sourcePosition,
+  targetPosition,
+  style = {},
+  markerEnd,
+  data,
+}) {
+  // 핸들 반지름 (핸들 8px, border 2px 고려)
+  const handleRadius = 5
+
+  // 소스 좌표 보정
+  let adjustedSourceX = sourceX
+  let adjustedSourceY = sourceY
+
+  switch (sourcePosition) {
+    case 'right':
+      adjustedSourceX = sourceX - handleRadius
+      break
+    case 'left':
+      adjustedSourceX = sourceX + handleRadius
+      break
+    case 'bottom':
+      adjustedSourceY = sourceY - handleRadius
+      break
+    case 'top':
+      adjustedSourceY = sourceY + handleRadius
+      break
+  }
+
+  // 타겟 좌표 보정
+  let adjustedTargetX = targetX
+  let adjustedTargetY = targetY
+
+  switch (targetPosition) {
+    case 'right':
+      adjustedTargetX = targetX - handleRadius
+      break
+    case 'left':
+      adjustedTargetX = targetX + handleRadius
+      break
+    case 'bottom':
+      adjustedTargetY = targetY - handleRadius
+      break
+    case 'top':
+      adjustedTargetY = targetY + handleRadius
+      break
+  }
+
+  // 기본 곡률 계산
+  const midX = (adjustedSourceX + adjustedTargetX) / 2
+  const midY = (adjustedSourceY + adjustedTargetY) / 2
+
+  const dx = adjustedTargetX - adjustedSourceX
+  const dy = adjustedTargetY - adjustedSourceY
+  const distance = Math.sqrt(dx * dx + dy * dy)
+
+  // 거리에 비례한 곡률 (최소 20, 최대 60)
+  const curvature = Math.min(60, Math.max(20, distance * 0.15))
+
+  // 수직 방향 벡터 (정규화)
+  const perpX = distance > 0 ? -dy / distance : 0
+  const perpY = distance > 0 ? dx / distance : 1
+
+  // 기본 컨트롤 포인트
+  const defaultControlPoint = {
+    x: midX + perpX * curvature,
+    y: midY + perpY * curvature,
+  }
+
+  // 저장된 controlPoint가 있으면 사용
+  const controlPoint = data?.controlPoint || defaultControlPoint
+
+  // 커스텀 베지어 경로 생성
+  const path = `M ${adjustedSourceX} ${adjustedSourceY} Q ${controlPoint.x} ${controlPoint.y} ${adjustedTargetX} ${adjustedTargetY}`
+
+  return (
+    <path
+      id={id}
+      className="react-flow__edge-path"
+      d={path}
+      style={{
+        ...style,
+        stroke: style.stroke || '#E65100',
+        strokeWidth: style.strokeWidth || 2,
+        fill: 'none',
+      }}
+      markerEnd={markerEnd}
+    />
+  )
+}
+
+const MemoizedReadOnlyEdge = memo(ReadOnlyEdge)
 
 // ========================================
 // 읽기 전용 노드 컴포넌트 (Handle 추가)
@@ -103,6 +204,10 @@ function ReadOnlyGroupNode({ data }) {
 const nodeTypes = {
   custom: ReadOnlyNode,
   group: ReadOnlyGroupNode,
+}
+
+const edgeTypes = {
+  custom: MemoizedReadOnlyEdge,
 }
 
 // ========================================
@@ -411,7 +516,7 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
       })
     }
 
-    // 3. 엣지 생성
+    // 3. 엣지 생성 (커스텀 타입 + controlPoint 전달)
     const allNodeIds = flowNodes.map(n => n.id)
     const edgesToUse = (inputEdges && inputEdges.length > 0) ? inputEdges : defaultEdges
 
@@ -427,9 +532,12 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
           target: edge.target,
           sourceHandle: edge.sourceHandle || 'bottom-src',
           targetHandle: edge.targetHandle || 'top',
-          type: 'default',
+          type: 'custom',  // 커스텀 엣지 타입 사용
           style: { stroke: '#E65100', strokeWidth: 2 },
           markerEnd,
+          data: {
+            controlPoint: edge.controlPoint || null,  // 저장된 controlPoint 전달
+          },
         })
       }
     })
@@ -443,6 +551,7 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
         nodes={flowNodes}
         edges={flowEdges}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         fitView
         fitViewOptions={{ padding: 0.1 }}
         minZoom={0.2}
