@@ -12,8 +12,8 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 
-// 핸들 숨김 CSS (React Flow 기본 스타일 오버라이드)
-const hideHandleStyles = `
+// 핸들 숨김 + 엣지 애니메이션 CSS
+const globalStyles = `
   .react-flow__handle.invisible-handle {
     width: 1px !important;
     height: 1px !important;
@@ -28,6 +28,24 @@ const hideHandleStyles = `
   .react-flow__handle.invisible-handle:hover {
     opacity: 0 !important;
     visibility: hidden !important;
+  }
+
+  /* 엣지 하이라이트 애니메이션 */
+  @keyframes edgeFlow {
+    0% { stroke-dashoffset: 24; }
+    100% { stroke-dashoffset: 0; }
+  }
+  
+  @keyframes edgePulse {
+    0%, 100% { stroke-width: 3; }
+    50% { stroke-width: 4; }
+  }
+
+  .edge-highlighted {
+    stroke: #FF5722 !important;
+    stroke-dasharray: 8 4;
+    animation: edgeFlow 0.6s linear infinite, edgePulse 1s ease-in-out infinite;
+    filter: drop-shadow(0 0 3px #FF5722);
   }
 `
 
@@ -57,28 +75,29 @@ function ReadOnlyEdge({
   markerEnd,
   data,
 }) {
-  // 소스: 노드 안쪽으로 (엣지 시작점)
-  const sourceOffset = 5
+  const isHighlighted = data?.isHighlighted
+
+  // 소스: 노드 바깥쪽으로 (엣지 시작점이 노드에 가려지지 않도록)
+  const edgeOffset = 3
   let adjustedSourceX = sourceX
   let adjustedSourceY = sourceY
 
   switch (sourcePosition) {
-    case 'right': adjustedSourceX = sourceX - sourceOffset; break
-    case 'left': adjustedSourceX = sourceX + sourceOffset; break
-    case 'bottom': adjustedSourceY = sourceY - sourceOffset; break
-    case 'top': adjustedSourceY = sourceY + sourceOffset; break
+    case 'right': adjustedSourceX = sourceX + edgeOffset; break  // 오른쪽으로 (노드 바깥)
+    case 'left': adjustedSourceX = sourceX - edgeOffset; break   // 왼쪽으로 (노드 바깥)
+    case 'bottom': adjustedSourceY = sourceY + edgeOffset; break // 아래로 (노드 바깥)
+    case 'top': adjustedSourceY = sourceY - edgeOffset; break    // 위로 (노드 바깥)
   }
 
   // 타겟: 노드 바깥쪽으로 (화살표가 노드에 가려지지 않도록)
-  const arrowOffset = 3
   let adjustedTargetX = targetX
   let adjustedTargetY = targetY
 
   switch (targetPosition) {
-    case 'right': adjustedTargetX = targetX + arrowOffset; break  // 오른쪽으로 (노드 바깥)
-    case 'left': adjustedTargetX = targetX - arrowOffset; break   // 왼쪽으로 (노드 바깥)
-    case 'bottom': adjustedTargetY = targetY + arrowOffset; break // 아래로 (노드 바깥)
-    case 'top': adjustedTargetY = targetY - arrowOffset; break    // 위로 (노드 바깥)
+    case 'right': adjustedTargetX = targetX + edgeOffset; break
+    case 'left': adjustedTargetX = targetX - edgeOffset; break
+    case 'bottom': adjustedTargetY = targetY + edgeOffset; break
+    case 'top': adjustedTargetY = targetY - edgeOffset; break
   }
 
   const midX = (adjustedSourceX + adjustedTargetX) / 2
@@ -101,18 +120,32 @@ function ReadOnlyEdge({
   const path = `M ${adjustedSourceX} ${adjustedSourceY} Q ${controlPoint.x} ${controlPoint.y} ${adjustedTargetX} ${adjustedTargetY}`
 
   return (
-    <path
-      id={id}
-      className="react-flow__edge-path"
-      d={path}
-      style={{
-        ...style,
-        stroke: style.stroke || '#E65100',
-        strokeWidth: style.strokeWidth || 2,
-        fill: 'none',
-      }}
-      markerEnd={markerEnd}
-    />
+    <>
+      {/* 하이라이트 시 글로우 효과용 배경 경로 */}
+      {isHighlighted && (
+        <path
+          d={path}
+          style={{
+            stroke: '#FF5722',
+            strokeWidth: 8,
+            strokeOpacity: 0.2,
+            fill: 'none',
+          }}
+        />
+      )}
+      <path
+        id={id}
+        className={`react-flow__edge-path ${isHighlighted ? 'edge-highlighted' : ''}`}
+        d={path}
+        style={{
+          stroke: isHighlighted ? '#FF5722' : (style.stroke || '#E65100'),
+          strokeWidth: isHighlighted ? 3 : (style.strokeWidth || 2),
+          fill: 'none',
+          transition: isHighlighted ? 'none' : 'stroke 0.3s, stroke-width 0.3s',
+        }}
+        markerEnd={markerEnd}
+      />
+    </>
   )
 }
 
@@ -259,7 +292,7 @@ function ReadOnlyGroupNode({ data }) {
 const nodeTypes = { custom: ReadOnlyNode, group: ReadOnlyGroupNode }
 const edgeTypes = { custom: MemoizedReadOnlyEdge }
 
-// 기본 그룹/위치/엣지 정의 (동일)
+// 기본 그룹/위치/엣지 정의
 const defaultGroups = {
   'sec_basic': { label: '📘 기본 과정', section: '기본', depth: 0, parentId: null, position: { x: -361, y: -29 }, size: { width: 693, height: 765 } },
   'sec_adv': { label: '🚀 고급 과정', section: '고급', depth: 0, parentId: null, position: { x: 352, y: -28 }, size: { width: 334, height: 762 } },
@@ -333,12 +366,14 @@ const defaultPositions = {
 }
 
 const markerEnd = { type: 'arrowclosed', color: '#E65100', width: 12, height: 12 }
+const markerEndHighlighted = { type: 'arrowclosed', color: '#FF5722', width: 14, height: 14 }
 
 // ========================================
 // 메인 컴포넌트
 // ========================================
 export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositions, groups: inputGroups, edges: inputEdges }) {
   const [visitedNodes, setVisitedNodes] = useState(new Set())
+  const [hoveredNodeId, setHoveredNodeId] = useState(null)
 
   useEffect(() => {
     try {
@@ -359,6 +394,17 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
       })
       window.open(link, '_blank', 'noopener,noreferrer')
     }
+  }, [])
+
+  // 노드 호버 핸들러
+  const onNodeMouseEnter = useCallback((event, node) => {
+    if (node.type !== 'group') {
+      setHoveredNodeId(node.id)
+    }
+  }, [])
+
+  const onNodeMouseLeave = useCallback(() => {
+    setHoveredNodeId(null)
   }, [])
 
   const clearVisited = useCallback(() => {
@@ -407,31 +453,39 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
       })
     }
 
-    // 엣지 (노드보다 zIndex 높게 설정)
+    // 엣지 (호버된 노드와 연결된 엣지 하이라이트)
     const allNodeIds = flowNodes.map(n => n.id)
     const edgesToUse = inputEdges?.length > 0 ? inputEdges : defaultEdges
     edgesToUse.forEach((edge, i) => {
       if (!edge || !allNodeIds.includes(edge.source) || !allNodeIds.includes(edge.target)) return
+
+      // 호버된 노드와 연결된 엣지인지 확인
+      const isHighlighted = hoveredNodeId && (edge.source === hoveredNodeId || edge.target === hoveredNodeId)
+
       flowEdges.push({
         id: edge.id || `edge-${i}`,
         source: edge.source, target: edge.target,
         sourceHandle: edge.sourceHandle || 'bottom-src', targetHandle: edge.targetHandle || 'top',
-        type: 'custom', style: { stroke: '#E65100', strokeWidth: 2 }, markerEnd,
-        zIndex: 150,  // 노드(100)보다 높게 설정
-        data: { controlPoint: edge.controlPoint || null },
+        type: 'custom',
+        style: { stroke: isHighlighted ? '#FF5722' : '#E65100', strokeWidth: isHighlighted ? 3 : 2 },
+        markerEnd: isHighlighted ? markerEndHighlighted : markerEnd,
+        zIndex: isHighlighted ? 200 : 150,  // 하이라이트 시 더 위로
+        data: { controlPoint: edge.controlPoint || null, isHighlighted },
       })
     })
 
     return { flowNodes, flowEdges }
-  }, [inputNodes, inputPositions, inputGroups, inputEdges, visitedNodes])
+  }, [inputNodes, inputPositions, inputGroups, inputEdges, visitedNodes, hoveredNodeId])
 
   return (
     <div className="w-full h-full">
-      <style>{hideHandleStyles}</style>
+      <style>{globalStyles}</style>
       <ReactFlow
         nodes={flowNodes} edges={flowEdges}
         nodeTypes={nodeTypes} edgeTypes={edgeTypes}
         onNodeClick={onNodeClick}
+        onNodeMouseEnter={onNodeMouseEnter}
+        onNodeMouseLeave={onNodeMouseLeave}
         fitView fitViewOptions={{ padding: 0.1 }}
         minZoom={0.2} maxZoom={2}
         defaultViewport={{ x: 0, y: 0, zoom: 0.5 }}
@@ -452,6 +506,7 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
           <div className="font-bold mb-1">사용법</div>
           <div>• 드래그: 화면 이동 | 스크롤: 확대/축소</div>
           <div>• 노드 클릭: 링크 열기 🔗</div>
+          <div>• 노드 호버: 연결된 경로 표시</div>
           <div className="mt-2 text-gray-500">
             <span className="inline-block w-3 h-3 rounded mr-1" style={{ backgroundColor: '#E0F2F1', border: '1px solid #00897B' }}></span>미방문
             <span className="inline-block w-3 h-3 rounded mx-1 ml-2" style={{ backgroundColor: '#B2DFDB', border: '1px solid #00695C' }}></span>방문
