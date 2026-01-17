@@ -350,6 +350,7 @@ function buildFlowData(initialNodes, nodePositions, groupData, savedEdges) {
         link: node.link || '',
         section: node.section || '기본',
         group: node.group || '',
+        notionPageId: node.notionPageId,  // Notion 동기화용
       },
     }
 
