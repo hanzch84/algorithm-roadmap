@@ -12,8 +12,38 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 
+// 핸들 숨김 CSS (React Flow 기본 스타일 오버라이드)
+const hideHandleStyles = `
+  .react-flow__handle.invisible-handle {
+    width: 1px !important;
+    height: 1px !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    opacity: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+  }
+  .react-flow__handle.invisible-handle:hover {
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+`
+
+// 보이지 않는 핸들 스타일
+const invisibleHandleStyle = {
+  width: 1,
+  height: 1,
+  opacity: 0,
+  background: 'transparent',
+  border: 'none',
+  pointerEvents: 'none',
+  visibility: 'hidden',
+}
+
 // ========================================
-// 읽기 전용 엣지 컴포넌트 (보정 로직 포함)
+// 읽기 전용 엣지 컴포넌트
 // ========================================
 function ReadOnlyEdge({
   id,
@@ -33,36 +63,20 @@ function ReadOnlyEdge({
   let adjustedSourceY = sourceY
 
   switch (sourcePosition) {
-    case 'right':
-      adjustedSourceX = sourceX - handleRadius
-      break
-    case 'left':
-      adjustedSourceX = sourceX + handleRadius
-      break
-    case 'bottom':
-      adjustedSourceY = sourceY - handleRadius
-      break
-    case 'top':
-      adjustedSourceY = sourceY + handleRadius
-      break
+    case 'right': adjustedSourceX = sourceX - handleRadius; break
+    case 'left': adjustedSourceX = sourceX + handleRadius; break
+    case 'bottom': adjustedSourceY = sourceY - handleRadius; break
+    case 'top': adjustedSourceY = sourceY + handleRadius; break
   }
 
   let adjustedTargetX = targetX
   let adjustedTargetY = targetY
 
   switch (targetPosition) {
-    case 'right':
-      adjustedTargetX = targetX - handleRadius
-      break
-    case 'left':
-      adjustedTargetX = targetX + handleRadius
-      break
-    case 'bottom':
-      adjustedTargetY = targetY - handleRadius
-      break
-    case 'top':
-      adjustedTargetY = targetY + handleRadius
-      break
+    case 'right': adjustedTargetX = targetX - handleRadius; break
+    case 'left': adjustedTargetX = targetX + handleRadius; break
+    case 'bottom': adjustedTargetY = targetY - handleRadius; break
+    case 'top': adjustedTargetY = targetY + handleRadius; break
   }
 
   const midX = (adjustedSourceX + adjustedTargetX) / 2
@@ -71,7 +85,6 @@ function ReadOnlyEdge({
   const dx = adjustedTargetX - adjustedSourceX
   const dy = adjustedTargetY - adjustedSourceY
   const distance = Math.sqrt(dx * dx + dy * dy)
-
   const curvature = Math.min(60, Math.max(20, distance * 0.15))
 
   const perpX = distance > 0 ? -dy / distance : 0
@@ -83,7 +96,6 @@ function ReadOnlyEdge({
   }
 
   const controlPoint = data?.controlPoint || defaultControlPoint
-
   const path = `M ${adjustedSourceX} ${adjustedSourceY} Q ${controlPoint.x} ${controlPoint.y} ${adjustedTargetX} ${adjustedTargetY}`
 
   return (
@@ -114,37 +126,32 @@ function ReadOnlyNode({ data }) {
   const hasLink = !!data.link
   const isVisited = data.isVisited
 
-  // 기본 색상 결정
   let backgroundColor, borderColor, textColor
 
   if (!hasLink) {
-    // 링크 없음: 회색 계열
     backgroundColor = '#F5F5F5'
     borderColor = '#BDBDBD'
     textColor = '#9E9E9E'
   } else if (isVisited) {
-    // 방문함: 보라색 계열
     backgroundColor = isAdvanced ? '#E1BEE7' : '#B2DFDB'
     borderColor = isAdvanced ? '#9C27B0' : '#00695C'
     textColor = isAdvanced ? '#6A1B9A' : '#004D40'
   } else {
-    // 미방문: 기본 색상
     backgroundColor = isAdvanced ? '#EDE7F6' : '#E0F2F1'
     borderColor = isAdvanced ? '#7E57C2' : '#00897B'
     textColor = isAdvanced ? '#4527A0' : '#004D40'
   }
 
-  // 호버 시 밝기 조정
   if (isHovered && hasLink) {
     backgroundColor = isAdvanced ? '#D1C4E9' : '#B2DFDB'
     borderColor = isAdvanced ? '#5E35B1' : '#00695C'
   }
 
-  const style = {
+  const nodeStyle = {
     padding: '6px 12px',
     borderRadius: '8px',
     border: `2px solid ${borderColor}`,
-    backgroundColor: backgroundColor,
+    backgroundColor,
     fontSize: '12px',
     fontWeight: 500,
     color: textColor,
@@ -156,32 +163,22 @@ function ReadOnlyNode({ data }) {
     boxShadow: isHovered && hasLink ? '0 4px 12px rgba(0,0,0,0.15)' : 'none',
   }
 
-  const handleStyle = {
-    width: 6,
-    height: 6,
-    background: borderColor,
-    border: 'none',
-  }
-
   return (
     <div
-      style={style}
+      style={nodeStyle}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      title={hasLink ? `클릭하여 열기: ${data.link}` : '링크 없음'}
+      title={hasLink ? `클릭: ${data.link}` : '링크 없음'}
     >
-      <Handle type="target" position={Position.Top} id="top" style={handleStyle} />
-      <Handle type="target" position={Position.Left} id="left" style={handleStyle} />
+      {/* 투명 핸들 - 엣지 연결용 */}
+      <Handle type="target" position={Position.Top} id="top" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
+      <Handle type="target" position={Position.Left} id="left" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
 
       {data.label}
-      {hasLink && (
-        <span style={{ marginLeft: '4px', fontSize: '10px' }}>
-          {isVisited ? '✓' : '🔗'}
-        </span>
-      )}
+      {hasLink && <span style={{ marginLeft: '4px', fontSize: '10px' }}>{isVisited ? '✓' : '🔗'}</span>}
 
-      <Handle type="source" position={Position.Right} id="right-src" style={handleStyle} />
-      <Handle type="source" position={Position.Bottom} id="bottom-src" style={handleStyle} />
+      <Handle type="source" position={Position.Right} id="right-src" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
+      <Handle type="source" position={Position.Bottom} id="bottom-src" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
     </div>
   )
 }
@@ -192,7 +189,7 @@ function ReadOnlyNode({ data }) {
 function ReadOnlyGroupNode({ data }) {
   const isAdvanced = data.section === '고급'
 
-  const style = {
+  const groupStyle = {
     padding: '8px',
     borderRadius: '16px',
     border: `3px solid ${isAdvanced ? '#7E57C2' : '#00897B'}`,
@@ -201,17 +198,11 @@ function ReadOnlyGroupNode({ data }) {
     height: '100%',
   }
 
-  const handleStyle = {
-    width: 8,
-    height: 8,
-    background: isAdvanced ? '#7E57C2' : '#00897B',
-    border: 'none',
-  }
-
   return (
-    <div style={style}>
-      <Handle type="target" position={Position.Top} id="top" style={handleStyle} />
-      <Handle type="target" position={Position.Left} id="left" style={handleStyle} />
+    <div style={groupStyle}>
+      {/* 투명 핸들 */}
+      <Handle type="target" position={Position.Top} id="top" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
+      <Handle type="target" position={Position.Left} id="left" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
 
       <div style={{
         fontSize: '13px',
@@ -222,399 +213,160 @@ function ReadOnlyGroupNode({ data }) {
         {data.label}
       </div>
 
-      <Handle type="source" position={Position.Right} id="right-src" style={handleStyle} />
-      <Handle type="source" position={Position.Bottom} id="bottom-src" style={handleStyle} />
+      <Handle type="source" position={Position.Right} id="right-src" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
+      <Handle type="source" position={Position.Bottom} id="bottom-src" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
     </div>
   )
 }
 
-const nodeTypes = {
-  custom: ReadOnlyNode,
-  group: ReadOnlyGroupNode,
-}
+const nodeTypes = { custom: ReadOnlyNode, group: ReadOnlyGroupNode }
+const edgeTypes = { custom: MemoizedReadOnlyEdge }
 
-const edgeTypes = {
-  custom: MemoizedReadOnlyEdge,
-}
-
-// ========================================
-// 기본 그룹 정의
-// ========================================
+// 기본 그룹/위치/엣지 정의 (동일)
 const defaultGroups = {
-  'sec_basic': {
-    label: '📘 기본 과정',
-    section: '기본',
-    depth: 0,
-    parentId: null,
-    position: { x: -361, y: -29 },
-    size: { width: 693, height: 765 },
-  },
-  'sec_adv': {
-    label: '🚀 고급 과정',
-    section: '고급',
-    depth: 0,
-    parentId: null,
-    position: { x: 352, y: -28 },
-    size: { width: 334, height: 762 },
-  },
-  'sec_platform': {
-    label: '플랫폼 가입',
-    section: '기본',
-    depth: 1,
-    isSubgroup: true,
-    parentId: 'sec_basic',
-    position: { x: 22, y: 83 },
-    size: { width: 331, height: 153 },
-  },
-  'sec_solved': {
-    label: 'solved.ac',
-    section: '기본',
-    depth: 1,
-    isSubgroup: true,
-    parentId: 'sec_basic',
-    position: { x: 394, y: 83 },
-    size: { width: 272, height: 152 },
-  },
-  'sec_tools': {
-    label: '🔧 코딩 도구',
-    section: '기본',
-    depth: 1,
-    isSubgroup: true,
-    parentId: 'sec_basic',
-    position: { x: 23, y: 244 },
-    size: { width: 643, height: 270 },
-  },
-  'sec_record': {
-    label: '스터디 기록/공유/발표',
-    section: '기본',
-    depth: 1,
-    isSubgroup: true,
-    parentId: 'sec_basic',
-    position: { x: 77, y: 528 },
-    size: { width: 555, height: 104 },
-  },
-  'sec_arena': {
-    label: '대회 참가',
-    section: '기본',
-    depth: 1,
-    isSubgroup: true,
-    parentId: 'sec_basic',
-    position: { x: 47, y: 645 },
-    size: { width: 530, height: 100 },
-  },
-  'sec_tools_ide': {
-    label: 'IDE',
-    section: '기본',
-    depth: 2,
-    isSubgroup: true,
-    parentId: 'sec_tools',
-    position: { x: 21, y: 100 },
-    size: { width: 140, height: 149 },
-  },
-  'sec_tools_online_ide': {
-    label: '온라인 IDE',
-    section: '기본',
-    depth: 2,
-    isSubgroup: true,
-    parentId: 'sec_tools',
-    position: { x: 171, y: 100 },
-    size: { width: 141, height: 148 },
-  },
-  'sec_tools_runner': {
-    label: '온라인 러너',
-    section: '기본',
-    depth: 2,
-    isSubgroup: true,
-    parentId: 'sec_tools',
-    position: { x: 323, y: 99 },
-    size: { width: 139, height: 148 },
-  },
-  'sec_tools_notebook': {
-    label: '노트북',
-    section: '기본',
-    depth: 2,
-    isSubgroup: true,
-    parentId: 'sec_tools',
-    position: { x: 473, y: 99 },
-    size: { width: 151, height: 147 },
-  },
-  'sec_adv_ext': {
-    label: '🧩 크롬 확장 프로그램',
-    section: '고급',
-    depth: 1,
-    isSubgroup: true,
-    parentId: 'sec_adv',
-    position: { x: 57, y: 259 },
-    size: { width: 250, height: 155 },
-  },
-  'sec_adv_usage': {
-    label: '⚡ 고급 활용법',
-    section: '고급',
-    depth: 1,
-    isSubgroup: true,
-    parentId: 'sec_adv',
-    position: { x: 87, y: 49 },
-    size: { width: 187, height: 201 },
-  },
-  'sec_adv_contest': {
-    label: '🌐 온라인 콘테스트',
-    section: '고급',
-    depth: 1,
-    isSubgroup: true,
-    parentId: 'sec_adv',
-    position: { x: 90, y: 591 },
-    size: { width: 150, height: 150 },
-  },
-  'sec_adv_til': {
-    label: '✏️ TIL 고급 작성법',
-    section: '고급',
-    depth: 1,
-    isSubgroup: true,
-    parentId: 'sec_adv',
-    position: { x: 26, y: 426 },
-    size: { width: 286, height: 159 },
-  },
+  'sec_basic': { label: '📘 기본 과정', section: '기본', depth: 0, parentId: null, position: { x: -361, y: -29 }, size: { width: 693, height: 765 } },
+  'sec_adv': { label: '🚀 고급 과정', section: '고급', depth: 0, parentId: null, position: { x: 352, y: -28 }, size: { width: 334, height: 762 } },
+  'sec_platform': { label: '플랫폼 가입', section: '기본', depth: 1, isSubgroup: true, parentId: 'sec_basic', position: { x: 22, y: 83 }, size: { width: 331, height: 153 } },
+  'sec_solved': { label: 'solved.ac', section: '기본', depth: 1, isSubgroup: true, parentId: 'sec_basic', position: { x: 394, y: 83 }, size: { width: 272, height: 152 } },
+  'sec_tools': { label: '🔧 코딩 도구', section: '기본', depth: 1, isSubgroup: true, parentId: 'sec_basic', position: { x: 23, y: 244 }, size: { width: 643, height: 270 } },
+  'sec_record': { label: '스터디 기록/공유/발표', section: '기본', depth: 1, isSubgroup: true, parentId: 'sec_basic', position: { x: 77, y: 528 }, size: { width: 555, height: 104 } },
+  'sec_arena': { label: '대회 참가', section: '기본', depth: 1, isSubgroup: true, parentId: 'sec_basic', position: { x: 47, y: 645 }, size: { width: 530, height: 100 } },
+  'sec_tools_ide': { label: 'IDE', section: '기본', depth: 2, isSubgroup: true, parentId: 'sec_tools', position: { x: 21, y: 100 }, size: { width: 140, height: 149 } },
+  'sec_tools_online_ide': { label: '온라인 IDE', section: '기본', depth: 2, isSubgroup: true, parentId: 'sec_tools', position: { x: 171, y: 100 }, size: { width: 141, height: 148 } },
+  'sec_tools_runner': { label: '온라인 러너', section: '기본', depth: 2, isSubgroup: true, parentId: 'sec_tools', position: { x: 323, y: 99 }, size: { width: 139, height: 148 } },
+  'sec_tools_notebook': { label: '노트북', section: '기본', depth: 2, isSubgroup: true, parentId: 'sec_tools', position: { x: 473, y: 99 }, size: { width: 151, height: 147 } },
+  'sec_adv_ext': { label: '🧩 크롬 확장 프로그램', section: '고급', depth: 1, isSubgroup: true, parentId: 'sec_adv', position: { x: 57, y: 259 }, size: { width: 250, height: 155 } },
+  'sec_adv_usage': { label: '⚡ 고급 활용법', section: '고급', depth: 1, isSubgroup: true, parentId: 'sec_adv', position: { x: 87, y: 49 }, size: { width: 187, height: 201 } },
+  'sec_adv_contest': { label: '🌐 온라인 콘테스트', section: '고급', depth: 1, isSubgroup: true, parentId: 'sec_adv', position: { x: 90, y: 591 }, size: { width: 150, height: 150 } },
+  'sec_adv_til': { label: '✏️ TIL 고급 작성법', section: '고급', depth: 1, isSubgroup: true, parentId: 'sec_adv', position: { x: 26, y: 426 }, size: { width: 286, height: 159 } },
 }
 
-// 노드-그룹 매핑
 const nodeParentMapping = {
-  'node_intro': 'sec_basic',
-  'node_tools_intro': 'sec_tools',
-  'node_boj_setup': 'sec_platform',
-  'node_boj_usage': 'sec_platform',
-  'node_koala_setup': 'sec_platform',
-  'node_koala_usage': 'sec_platform',
-  'node_solved_link': 'sec_solved',
-  'node_solved_usage': 'sec_solved',
-  'tool_vscode': 'sec_tools_ide',
-  'tool_pycharm': 'sec_tools_ide',
-  'tool_replit': 'sec_tools_online_ide',
-  'tool_onlinegdb': 'sec_tools_online_ide',
-  'tool_ideone': 'sec_tools_runner',
-  'tool_tio': 'sec_tools_runner',
-  'tool_colab': 'sec_tools_notebook',
-  'tool_marimo': 'sec_tools_notebook',
-  'node_til': 'sec_record',
-  'node_join': 'sec_record',
-  'node_study': 'sec_record',
-  'node_arena': 'sec_arena',
-  'node_arenajoin': 'sec_arena',
-  'node_arenacoalla': 'sec_arena',
-  'ext_bjcode': 'sec_adv_ext',
-  'ext_bojhub': 'sec_adv_ext',
-  'ext_bojext': 'sec_adv_ext',
-  'ext_testcase': 'sec_adv_ext',
-  'adv_boj': 'sec_adv_usage',
-  'adv_solved': 'sec_adv_usage',
-  'adv_koala': 'sec_adv_usage',
-  'contest_atcoder': 'sec_adv_contest',
-  'contest_codeforces': 'sec_adv_contest',
-  'draw_io': 'sec_adv_til',
-  'excalidraw': 'sec_adv_til',
-  'pythontutor': 'sec_adv_til',
-  'vscode_ext': 'sec_adv_til',
+  'node_intro': 'sec_basic', 'node_tools_intro': 'sec_tools',
+  'node_boj_setup': 'sec_platform', 'node_boj_usage': 'sec_platform',
+  'node_koala_setup': 'sec_platform', 'node_koala_usage': 'sec_platform',
+  'node_solved_link': 'sec_solved', 'node_solved_usage': 'sec_solved',
+  'tool_vscode': 'sec_tools_ide', 'tool_pycharm': 'sec_tools_ide',
+  'tool_replit': 'sec_tools_online_ide', 'tool_onlinegdb': 'sec_tools_online_ide',
+  'tool_ideone': 'sec_tools_runner', 'tool_tio': 'sec_tools_runner',
+  'tool_colab': 'sec_tools_notebook', 'tool_marimo': 'sec_tools_notebook',
+  'node_til': 'sec_record', 'node_join': 'sec_record', 'node_study': 'sec_record',
+  'node_arena': 'sec_arena', 'node_arenajoin': 'sec_arena', 'node_arenacoalla': 'sec_arena',
+  'ext_bjcode': 'sec_adv_ext', 'ext_bojhub': 'sec_adv_ext', 'ext_bojext': 'sec_adv_ext', 'ext_testcase': 'sec_adv_ext',
+  'adv_boj': 'sec_adv_usage', 'adv_solved': 'sec_adv_usage', 'adv_koala': 'sec_adv_usage',
+  'contest_atcoder': 'sec_adv_contest', 'contest_codeforces': 'sec_adv_contest',
+  'draw_io': 'sec_adv_til', 'excalidraw': 'sec_adv_til', 'pythontutor': 'sec_adv_til', 'vscode_ext': 'sec_adv_til',
 }
 
-// 기본 엣지
 const defaultEdges = [
   { id: 'edge-2', source: 'node_boj_setup', target: 'node_boj_usage', sourceHandle: 'right-src', targetHandle: 'left' },
   { id: 'edge-3', source: 'node_koala_setup', target: 'node_koala_usage', sourceHandle: 'right-src', targetHandle: 'left' },
-  { id: 'edge-13', source: 'node_arena', target: 'node_arenajoin', sourceHandle: 'right-src', targetHandle: 'left' },
-  { id: 'edge-14', source: 'node_arenajoin', target: 'node_arenacoalla', sourceHandle: 'right-src', targetHandle: 'left' },
   { id: 'edge-11', source: 'node_til', target: 'node_join', sourceHandle: 'right-src', targetHandle: 'left' },
   { id: 'edge-12', source: 'node_join', target: 'node_study', sourceHandle: 'right-src', targetHandle: 'left' },
+  { id: 'edge-13', source: 'node_arena', target: 'node_arenajoin', sourceHandle: 'right-src', targetHandle: 'left' },
+  { id: 'edge-14', source: 'node_arenajoin', target: 'node_arenacoalla', sourceHandle: 'right-src', targetHandle: 'left' },
 ]
 
-// 기본 노드 위치
 const defaultPositions = {
-  'node_intro': { x: 25, y: 25 },
-  'node_boj_setup': { x: 38, y: 43 },
-  'node_boj_usage': { x: 177, y: 43 },
-  'node_koala_setup': { x: 40, y: 88 },
-  'node_koala_usage': { x: 170, y: 88 },
-  'node_solved_link': { x: 19, y: 44 },
-  'node_solved_usage': { x: 107, y: 89 },
+  'node_intro': { x: 25, y: 25 }, 'node_boj_setup': { x: 38, y: 43 }, 'node_boj_usage': { x: 177, y: 43 },
+  'node_koala_setup': { x: 40, y: 88 }, 'node_koala_usage': { x: 170, y: 88 },
+  'node_solved_link': { x: 19, y: 44 }, 'node_solved_usage': { x: 107, y: 89 },
   'node_tools_intro': { x: 190, y: 43 },
-  'tool_vscode': { x: 25, y: 42 },
-  'tool_pycharm': { x: 25, y: 89 },
-  'tool_replit': { x: 30, y: 42 },
-  'tool_onlinegdb': { x: 21, y: 89 },
-  'tool_ideone': { x: 30, y: 45 },
-  'tool_tio': { x: 31, y: 89 },
-  'tool_colab': { x: 19, y: 46 },
-  'tool_marimo': { x: 35, y: 89 },
-  'node_til': { x: 35, y: 45 },
-  'node_join': { x: 192, y: 45 },
-  'node_study': { x: 355, y: 45 },
-  'node_arena': { x: 30, y: 43 },
-  'node_arenajoin': { x: 195, y: 43 },
-  'node_arenacoalla': { x: 360, y: 43 },
+  'tool_vscode': { x: 25, y: 42 }, 'tool_pycharm': { x: 25, y: 89 },
+  'tool_replit': { x: 30, y: 42 }, 'tool_onlinegdb': { x: 21, y: 89 },
+  'tool_ideone': { x: 30, y: 45 }, 'tool_tio': { x: 31, y: 89 },
+  'tool_colab': { x: 19, y: 46 }, 'tool_marimo': { x: 35, y: 89 },
+  'node_til': { x: 35, y: 45 }, 'node_join': { x: 192, y: 45 }, 'node_study': { x: 355, y: 45 },
+  'node_arena': { x: 30, y: 43 }, 'node_arenajoin': { x: 195, y: 43 }, 'node_arenacoalla': { x: 360, y: 43 },
 }
 
-// 화살표 스타일
-const markerEnd = {
-  type: 'arrowclosed',
-  color: '#E65100',
-  width: 12,
-  height: 12,
-}
+const markerEnd = { type: 'arrowclosed', color: '#E65100', width: 12, height: 12 }
 
 // ========================================
 // 메인 컴포넌트
 // ========================================
 export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositions, groups: inputGroups, edges: inputEdges }) {
-  // 방문한 노드 상태 (localStorage에서 복원)
   const [visitedNodes, setVisitedNodes] = useState(new Set())
 
-  // 컴포넌트 마운트 시 localStorage에서 방문 기록 복원
   useEffect(() => {
     try {
       const saved = localStorage.getItem('roadmap-visited-nodes')
-      if (saved) {
-        setVisitedNodes(new Set(JSON.parse(saved)))
-      }
-    } catch (e) {
-      console.log('방문 기록 로드 실패')
-    }
+      if (saved) setVisitedNodes(new Set(JSON.parse(saved)))
+    } catch (e) { }
   }, [])
 
-  // 노드 클릭 핸들러 (ReactFlow onNodeClick 사용)
   const onNodeClick = useCallback((event, node) => {
     if (node.type === 'group') return
-
     const link = node.data?.link
     if (link) {
-      // 방문 기록 저장
       setVisitedNodes(prev => {
         const newSet = new Set(prev)
         newSet.add(node.id)
-        // localStorage에 저장
-        try {
-          localStorage.setItem('roadmap-visited-nodes', JSON.stringify([...newSet]))
-        } catch (e) {
-          console.log('방문 기록 저장 실패')
-        }
+        try { localStorage.setItem('roadmap-visited-nodes', JSON.stringify([...newSet])) } catch (e) { }
         return newSet
       })
-
-      // 새 창에서 링크 열기
       window.open(link, '_blank', 'noopener,noreferrer')
     }
   }, [])
 
-  // 방문 기록 초기화
   const clearVisited = useCallback(() => {
     setVisitedNodes(new Set())
-    try {
-      localStorage.removeItem('roadmap-visited-nodes')
-    } catch (e) { }
+    try { localStorage.removeItem('roadmap-visited-nodes') } catch (e) { }
   }, [])
 
   const { flowNodes, flowEdges } = useMemo(() => {
     const flowNodes = []
     const flowEdges = []
 
-    // 그룹 데이터 병합
     const groups = { ...defaultGroups }
-    if (inputGroups && Object.keys(inputGroups).length > 0) {
-      Object.keys(inputGroups).forEach(key => {
-        if (groups[key]) {
-          groups[key] = { ...groups[key], ...inputGroups[key] }
-        }
-      })
-    }
+    if (inputGroups) Object.keys(inputGroups).forEach(key => {
+      if (groups[key]) groups[key] = { ...groups[key], ...inputGroups[key] }
+    })
 
-    // 위치 데이터 병합
     const positions = { ...defaultPositions, ...(inputPositions || {}) }
 
-    // 1. 그룹 노드 생성
-    const groupEntries = Object.entries(groups)
-    groupEntries.sort((a, b) => (a[1]?.depth || 0) - (b[1]?.depth || 0))
-
-    groupEntries.forEach(([id, group]) => {
+    // 그룹 노드
+    Object.entries(groups).sort((a, b) => (a[1]?.depth || 0) - (b[1]?.depth || 0)).forEach(([id, group]) => {
       if (!group) return
-      const depth = group.depth || 0
       const node = {
-        id,
-        type: 'group',
+        id, type: 'group',
         position: group.position || { x: 0, y: 0 },
-        style: {
-          width: group.size?.width || 200,
-          height: group.size?.height || 100,
-          zIndex: -10 + depth * 5,
-        },
-        data: {
-          label: group.label || '',
-          section: group.section || '기본',
-        },
-        draggable: false,
-        selectable: false,
+        style: { width: group.size?.width || 200, height: group.size?.height || 100, zIndex: -10 + (group.depth || 0) * 5 },
+        data: { label: group.label || '', section: group.section || '기본' },
+        draggable: false, selectable: false,
       }
-
-      if (group.parentId) {
-        node.parentId = group.parentId
-        node.extent = 'parent'
-      }
-
+      if (group.parentId) { node.parentId = group.parentId; node.extent = 'parent' }
       flowNodes.push(node)
     })
 
-    // 2. 일반 노드 생성
-    if (inputNodes && inputNodes.length > 0) {
-      inputNodes.forEach((node, index) => {
+    // 일반 노드
+    if (inputNodes?.length > 0) {
+      inputNodes.forEach((node, i) => {
         if (!node) return
-
-        const pos = positions[node.id] || { x: 20 + (index % 4) * 120, y: 40 }
-
+        const pos = positions[node.id] || { x: 20 + (i % 4) * 120, y: 40 }
         const flowNode = {
-          id: node.id,
-          type: 'custom',
-          position: pos,
-          zIndex: 100,
-          data: {
-            label: node.name || '',
-            link: node.link || '',
-            section: node.section || '기본',
-            isVisited: visitedNodes.has(node.id),  // 방문 여부 전달
-          },
-          draggable: false,
-          selectable: false,
+          id: node.id, type: 'custom', position: pos, zIndex: 100,
+          data: { label: node.name || '', link: node.link || '', section: node.section || '기본', isVisited: visitedNodes.has(node.id) },
+          draggable: false, selectable: false,
         }
-
         const parentGroupId = nodeParentMapping[node.id]
-        if (parentGroupId && groups[parentGroupId]) {
-          flowNode.parentId = parentGroupId
-          flowNode.extent = 'parent'
-        }
-
+        if (parentGroupId && groups[parentGroupId]) { flowNode.parentId = parentGroupId; flowNode.extent = 'parent' }
         flowNodes.push(flowNode)
       })
     }
 
-    // 3. 엣지 생성
+    // 엣지
     const allNodeIds = flowNodes.map(n => n.id)
-    const edgesToUse = (inputEdges && inputEdges.length > 0) ? inputEdges : defaultEdges
-
-    edgesToUse.forEach((edge, index) => {
-      if (!edge) return
-      const sourceExists = allNodeIds.includes(edge.source)
-      const targetExists = allNodeIds.includes(edge.target)
-
-      if (sourceExists && targetExists) {
-        flowEdges.push({
-          id: edge.id || `edge-${index}`,
-          source: edge.source,
-          target: edge.target,
-          sourceHandle: edge.sourceHandle || 'bottom-src',
-          targetHandle: edge.targetHandle || 'top',
-          type: 'custom',
-          style: { stroke: '#E65100', strokeWidth: 2 },
-          markerEnd,
-          data: {
-            controlPoint: edge.controlPoint || null,
-          },
-        })
-      }
+    const edgesToUse = inputEdges?.length > 0 ? inputEdges : defaultEdges
+    edgesToUse.forEach((edge, i) => {
+      if (!edge || !allNodeIds.includes(edge.source) || !allNodeIds.includes(edge.target)) return
+      flowEdges.push({
+        id: edge.id || `edge-${i}`,
+        source: edge.source, target: edge.target,
+        sourceHandle: edge.sourceHandle || 'bottom-src', targetHandle: edge.targetHandle || 'top',
+        type: 'custom', style: { stroke: '#E65100', strokeWidth: 2 }, markerEnd,
+        data: { controlPoint: edge.controlPoint || null },
+      })
     })
 
     return { flowNodes, flowEdges }
@@ -622,55 +374,38 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
 
   return (
     <div className="w-full h-full">
+      <style>{hideHandleStyles}</style>
       <ReactFlow
-        nodes={flowNodes}
-        edges={flowEdges}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
+        nodes={flowNodes} edges={flowEdges}
+        nodeTypes={nodeTypes} edgeTypes={edgeTypes}
         onNodeClick={onNodeClick}
-        fitView
-        fitViewOptions={{ padding: 0.1 }}
-        minZoom={0.2}
-        maxZoom={2}
+        fitView fitViewOptions={{ padding: 0.1 }}
+        minZoom={0.2} maxZoom={2}
         defaultViewport={{ x: 0, y: 0, zoom: 0.5 }}
-        nodesDraggable={false}
-        nodesConnectable={false}
-        elementsSelectable={false}
-        panOnDrag={true}
-        zoomOnScroll={true}
-        nodeOrigin={[0, 0]}
+        nodesDraggable={false} nodesConnectable={false} elementsSelectable={false}
+        panOnDrag={true} zoomOnScroll={true} nodeOrigin={[0, 0]}
       >
         <Background color="#ddd" gap={20} />
         <Controls showInteractive={false} />
         <MiniMap
           nodeColor={(node) => {
-            if (node.type === 'group') {
-              return node.data?.section === '고급' ? '#D1C4E9' : '#B2DFDB'
-            }
-            // 방문한 노드는 다른 색상
-            if (node.data?.isVisited) {
-              return node.data?.section === '고급' ? '#CE93D8' : '#80CBC4'
-            }
+            if (node.type === 'group') return node.data?.section === '고급' ? '#D1C4E9' : '#B2DFDB'
+            if (node.data?.isVisited) return node.data?.section === '고급' ? '#CE93D8' : '#80CBC4'
             return node.data?.section === '고급' ? '#EDE7F6' : '#E0F2F1'
           }}
           maskColor="rgba(0, 0, 0, 0.1)"
         />
-
         <Panel position="bottom-left" className="bg-white/90 p-3 rounded-lg shadow text-xs">
           <div className="font-bold mb-1">사용법</div>
-          <div>• 마우스 드래그: 화면 이동</div>
-          <div>• 스크롤: 확대/축소</div>
+          <div>• 드래그: 화면 이동 | 스크롤: 확대/축소</div>
           <div>• 노드 클릭: 링크 열기 🔗</div>
           <div className="mt-2 text-gray-500">
-            <span className="inline-block w-3 h-3 rounded mr-1" style={{ backgroundColor: '#E0F2F1', border: '1px solid #00897B' }}></span> 미방문
-            <span className="inline-block w-3 h-3 rounded mx-1 ml-2" style={{ backgroundColor: '#B2DFDB', border: '1px solid #00695C' }}></span> 방문함
-            <span className="inline-block w-3 h-3 rounded mx-1 ml-2" style={{ backgroundColor: '#F5F5F5', border: '1px solid #BDBDBD' }}></span> 링크없음
+            <span className="inline-block w-3 h-3 rounded mr-1" style={{ backgroundColor: '#E0F2F1', border: '1px solid #00897B' }}></span>미방문
+            <span className="inline-block w-3 h-3 rounded mx-1 ml-2" style={{ backgroundColor: '#B2DFDB', border: '1px solid #00695C' }}></span>방문
+            <span className="inline-block w-3 h-3 rounded mx-1 ml-2" style={{ backgroundColor: '#F5F5F5', border: '1px solid #BDBDBD' }}></span>링크없음
           </div>
           {visitedNodes.size > 0 && (
-            <button
-              onClick={clearVisited}
-              className="mt-2 text-blue-600 hover:underline"
-            >
+            <button onClick={clearVisited} className="mt-2 text-blue-600 hover:underline">
               방문 기록 초기화 ({visitedNodes.size}개)
             </button>
           )}
