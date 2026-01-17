@@ -148,19 +148,40 @@ function ReadOnlyNode({ data }) {
   }
 
   const nodeStyle = {
-    padding: '6px 12px',
+    position: 'relative',
+    padding: '8px 12px',
     borderRadius: '8px',
     border: `2px solid ${borderColor}`,
     backgroundColor,
-    fontSize: '12px',
-    fontWeight: 500,
+    fontSize: '14px',
+    fontWeight: 600,
     color: textColor,
     cursor: hasLink ? 'pointer' : 'default',
     minWidth: '80px',
     textAlign: 'center',
+    whiteSpace: 'nowrap',
     transition: 'all 0.2s ease',
     transform: isHovered && hasLink ? 'scale(1.05)' : 'scale(1)',
-    boxShadow: isHovered && hasLink ? '0 4px 12px rgba(0,0,0,0.15)' : 'none',
+    boxShadow: isHovered && hasLink ? '0 4px 12px rgba(0,0,0,0.15)' : '0 1px 2px rgba(0,0,0,0.1)',
+  }
+
+  // 배지 스타일
+  const badgeStyle = {
+    position: 'absolute',
+    top: -8,
+    right: -8,
+    width: 18,
+    height: 18,
+    borderRadius: '50%',
+    backgroundColor: isVisited ? '#4CAF50' : '#2196F3',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '10px',
+    color: 'white',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+    border: '2px solid white',
+    zIndex: 10,
   }
 
   return (
@@ -168,8 +189,15 @@ function ReadOnlyNode({ data }) {
       style={nodeStyle}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      title={hasLink ? `클릭: ${data.link}` : '링크 없음'}
+      title={hasLink ? (isVisited ? '읽음 ✓' : '클릭하여 열기') : '링크 없음'}
     >
+      {/* 링크 배지 - 우측 상단 */}
+      {hasLink && (
+        <div style={badgeStyle}>
+          {isVisited ? '✓' : '🔗'}
+        </div>
+      )}
+
       {/* 투명 핸들 - 엣지 연결용 */}
       <Handle type="target" position={Position.Top} id="top" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
       <Handle type="target" position={Position.Left} id="left" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
@@ -177,7 +205,6 @@ function ReadOnlyNode({ data }) {
       <Handle type="target" position={Position.Bottom} id="bottom" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
 
       {data.label}
-      {hasLink && <span style={{ marginLeft: '4px', fontSize: '10px' }}>{isVisited ? '✓' : '🔗'}</span>}
 
       <Handle type="source" position={Position.Top} id="top-src" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
       <Handle type="source" position={Position.Left} id="left-src" style={invisibleHandleStyle} className="invisible-handle" isConnectable={false} />
@@ -378,7 +405,7 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
       })
     }
 
-    // 엣지 (노드 zIndex 100보다 높게 설정하여 화살표가 가려지지 않도록)
+    // 엣지
     const allNodeIds = flowNodes.map(n => n.id)
     const edgesToUse = inputEdges?.length > 0 ? inputEdges : defaultEdges
     edgesToUse.forEach((edge, i) => {
@@ -388,7 +415,6 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
         source: edge.source, target: edge.target,
         sourceHandle: edge.sourceHandle || 'bottom-src', targetHandle: edge.targetHandle || 'top',
         type: 'custom', style: { stroke: '#E65100', strokeWidth: 2 }, markerEnd,
-        zIndex: 150,  // 노드(100)보다 높게
         data: { controlPoint: edge.controlPoint || null },
       })
     })
