@@ -35,17 +35,11 @@ const globalStyles = `
     0% { stroke-dashoffset: 24; }
     100% { stroke-dashoffset: 0; }
   }
-  
-  @keyframes edgePulse {
-    0%, 100% { stroke-width: 3; }
-    50% { stroke-width: 4; }
-  }
 
   .edge-highlighted {
-    stroke: #FF5722 !important;
     stroke-dasharray: 8 4;
-    animation: edgeFlow 0.6s linear infinite, edgePulse 1s ease-in-out infinite;
-    filter: drop-shadow(0 0 3px #FF5722);
+    animation: edgeFlow 0.6s linear infinite;
+    filter: drop-shadow(0 0 3px #E65100);
   }
 `
 
@@ -126,9 +120,9 @@ function ReadOnlyEdge({
         <path
           d={path}
           style={{
-            stroke: '#FF5722',
-            strokeWidth: 8,
-            strokeOpacity: 0.2,
+            stroke: '#E65100',
+            strokeWidth: 4,
+            strokeOpacity: 0.3,
             fill: 'none',
           }}
         />
@@ -138,10 +132,9 @@ function ReadOnlyEdge({
         className={`react-flow__edge-path ${isHighlighted ? 'edge-highlighted' : ''}`}
         d={path}
         style={{
-          stroke: isHighlighted ? '#FF5722' : (style.stroke || '#E65100'),
-          strokeWidth: isHighlighted ? 3 : (style.strokeWidth || 2),
+          stroke: style.stroke || '#E65100',
+          strokeWidth: style.strokeWidth || 2,
           fill: 'none',
-          transition: isHighlighted ? 'none' : 'stroke 0.3s, stroke-width 0.3s',
         }}
         markerEnd={markerEnd}
       />
@@ -366,7 +359,6 @@ const defaultPositions = {
 }
 
 const markerEnd = { type: 'arrowclosed', color: '#E65100', width: 12, height: 12 }
-const markerEndHighlighted = { type: 'arrowclosed', color: '#FF5722', width: 14, height: 14 }
 
 // ========================================
 // 메인 컴포넌트
@@ -482,8 +474,8 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
         source: edge.source, target: edge.target,
         sourceHandle: edge.sourceHandle || 'bottom-src', targetHandle: edge.targetHandle || 'top',
         type: 'custom',
-        style: { stroke: isHighlighted ? '#FF5722' : '#E65100', strokeWidth: isHighlighted ? 3 : 2 },
-        markerEnd: isHighlighted ? markerEndHighlighted : markerEnd,
+        style: { stroke: '#E65100', strokeWidth: 2 },
+        markerEnd,
         zIndex: isHighlighted ? 200 : 150,
         data: { controlPoint: edge.controlPoint || null, isHighlighted },
       })
