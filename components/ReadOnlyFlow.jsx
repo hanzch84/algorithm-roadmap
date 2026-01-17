@@ -1,6 +1,6 @@
 'use client'
 
-import { memo, useMemo, useState, useEffect, useCallback } from 'react'
+import { memo, useMemo, useState, useEffect, useCallback, useRef } from 'react'
 import {
   ReactFlow,
   Background,
@@ -374,6 +374,7 @@ const markerEndHighlighted = { type: 'arrowclosed', color: '#FF5722', width: 14,
 export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositions, groups: inputGroups, edges: inputEdges }) {
   const [visitedNodes, setVisitedNodes] = useState(new Set())
   const [hoveredNodeId, setHoveredNodeId] = useState(null)
+  const hoverTimeoutRef = useRef(null)
 
   useEffect(() => {
     try {
@@ -396,14 +397,18 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
     }
   }, [])
 
-  // 노드 호버 핸들러
+  // 노드 호버 핸들러 (debounce 적용 - 빠른 이동 시 튀는 현상 방지)
   const onNodeMouseEnter = useCallback((event, node) => {
     if (node.type !== 'group') {
-      setHoveredNodeId(node.id)
+      clearTimeout(hoverTimeoutRef.current)
+      hoverTimeoutRef.current = setTimeout(() => {
+        setHoveredNodeId(node.id)
+      }, 30) // 30ms 딜레이
     }
   }, [])
 
   const onNodeMouseLeave = useCallback(() => {
+    clearTimeout(hoverTimeoutRef.current)
     setHoveredNodeId(null)
   }, [])
 
@@ -412,9 +417,9 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
     try { localStorage.removeItem('roadmap-visited-nodes') } catch (e) { }
   }, [])
 
-  const { flowNodes, flowEdges } = useMemo(() => {
-    const flowNodes = []
-    const flowEdges = []
+  // 노드는 hoveredNodeId와 무관하게 생성 (호버 시 재생성 방지)
+  const flowNodes = useMemo(() => {
+    const nodes = []
 
     const groups = { ...defaultGroups }
     if (inputGroups) Object.keys(inputGroups).forEach(key => {
@@ -434,7 +439,7 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
         draggable: false, selectable: false,
       }
       if (group.parentId) { node.parentId = group.parentId; node.extent = 'parent' }
-      flowNodes.push(node)
+      nodes.push(node)
     })
 
     // 일반 노드
@@ -448,34 +453,44 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
           draggable: false, selectable: false,
         }
         const parentGroupId = nodeParentMapping[node.id]
-        if (parentGroupId && groups[parentGroupId]) { flowNode.parentId = parentGroupId; flowNode.extent = 'parent' }
-        flowNodes.push(flowNode)
+        const mergedGroups = { ...defaultGroups }
+        if (inputGroups) Object.keys(inputGroups).forEach(key => {
+          if (mergedGroups[key]) mergedGroups[key] = { ...mergedGroups[key], ...inputGroups[key] }
+        })
+        if (parentGroupId && mergedGroups[parentGroupId]) { flowNode.parentId = parentGroupId; flowNode.extent = 'parent' }
+        nodes.push(flowNode)
       })
     }
 
-    // 엣지 (호버된 노드와 연결된 엣지 하이라이트)
+    return nodes
+  }, [inputNodes, inputPositions, inputGroups, visitedNodes])
+
+  // 엣지는 별도로 관리 (hoveredNodeId 변경 시 엣지만 업데이트)
+  const flowEdges = useMemo(() => {
+    const edges = []
     const allNodeIds = flowNodes.map(n => n.id)
     const edgesToUse = inputEdges?.length > 0 ? inputEdges : defaultEdges
+
     edgesToUse.forEach((edge, i) => {
       if (!edge || !allNodeIds.includes(edge.source) || !allNodeIds.includes(edge.target)) return
 
       // 호버된 노드와 연결된 엣지인지 확인
       const isHighlighted = hoveredNodeId && (edge.source === hoveredNodeId || edge.target === hoveredNodeId)
 
-      flowEdges.push({
+      edges.push({
         id: edge.id || `edge-${i}`,
         source: edge.source, target: edge.target,
         sourceHandle: edge.sourceHandle || 'bottom-src', targetHandle: edge.targetHandle || 'top',
         type: 'custom',
         style: { stroke: isHighlighted ? '#FF5722' : '#E65100', strokeWidth: isHighlighted ? 3 : 2 },
         markerEnd: isHighlighted ? markerEndHighlighted : markerEnd,
-        zIndex: isHighlighted ? 200 : 150,  // 하이라이트 시 더 위로
+        zIndex: isHighlighted ? 200 : 150,
         data: { controlPoint: edge.controlPoint || null, isHighlighted },
       })
     })
 
-    return { flowNodes, flowEdges }
-  }, [inputNodes, inputPositions, inputGroups, inputEdges, visitedNodes, hoveredNodeId])
+    return edges
+  }, [flowNodes, inputEdges, hoveredNodeId])
 
   return (
     <div className="w-full h-full">
