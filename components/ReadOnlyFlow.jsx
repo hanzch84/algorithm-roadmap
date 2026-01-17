@@ -303,7 +303,15 @@ const markerEnd = {
 // 메인 컴포넌트
 // ========================================
 export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositions, groups: inputGroups, edges: inputEdges }) {
+  // 디버깅: props 확인
+  console.log('=== ReadOnlyFlow Props ===')
+  console.log('inputNodes:', inputNodes?.length, inputNodes)
+  console.log('inputPositions:', inputPositions)
+  console.log('inputGroups:', inputGroups)
+  console.log('inputEdges:', inputEdges)
+
   const { flowNodes, flowEdges } = useMemo(() => {
+    console.log('=== useMemo 시작 ===')
     const flowNodes = []
     const flowEdges = []
 
@@ -352,10 +360,20 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
       flowNodes.push(node)
     })
 
-      // 2. 일반 노드 생성
-      ; (inputNodes || []).forEach((node, index) => {
-        if (!node) return
+    console.log('그룹 노드 생성 완료:', flowNodes.length)
+
+    // 2. 일반 노드 생성
+    console.log('일반 노드 생성 시작, inputNodes:', inputNodes?.length)
+
+    if (inputNodes && inputNodes.length > 0) {
+      inputNodes.forEach((node, index) => {
+        if (!node) {
+          console.log('노드가 null:', index)
+          return
+        }
+
         const pos = positions[node.id] || { x: 20 + (index % 4) * 120, y: 40 }
+        console.log(`노드 생성: ${node.id}, 위치:`, pos)
 
         const flowNode = {
           id: node.id,
@@ -379,29 +397,39 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
 
         flowNodes.push(flowNode)
       })
+    } else {
+      console.log('⚠️ inputNodes가 비어있습니다!')
+    }
+
+    console.log('일반 노드 생성 후 총 flowNodes:', flowNodes.length)
+    console.log('노드 타입별:', flowNodes.map(n => `${n.id}:${n.type}`))
 
     // 3. 엣지 생성
     const allNodeIds = flowNodes.map(n => n.id)
     const edgesToUse = (inputEdges && inputEdges.length > 0) ? inputEdges : defaultEdges
 
-      ; (edgesToUse || []).forEach((edge, index) => {
-        if (!edge) return
-        const sourceExists = allNodeIds.includes(edge.source)
-        const targetExists = allNodeIds.includes(edge.target)
+    edgesToUse.forEach((edge, index) => {
+      if (!edge) return
+      const sourceExists = allNodeIds.includes(edge.source)
+      const targetExists = allNodeIds.includes(edge.target)
 
-        if (sourceExists && targetExists) {
-          flowEdges.push({
-            id: edge.id || `edge-${index}`,
-            source: edge.source,
-            target: edge.target,
-            sourceHandle: edge.sourceHandle || 'bottom-src',
-            targetHandle: edge.targetHandle || 'top',
-            type: 'default',
-            style: { stroke: '#E65100', strokeWidth: 2 },
-            markerEnd,
-          })
-        }
-      })
+      if (sourceExists && targetExists) {
+        flowEdges.push({
+          id: edge.id || `edge-${index}`,
+          source: edge.source,
+          target: edge.target,
+          sourceHandle: edge.sourceHandle || 'bottom-src',
+          targetHandle: edge.targetHandle || 'top',
+          type: 'default',
+          style: { stroke: '#E65100', strokeWidth: 2 },
+          markerEnd,
+        })
+      }
+    })
+
+    console.log('=== useMemo 결과 ===')
+    console.log('총 flowNodes:', flowNodes.length)
+    console.log('총 flowEdges:', flowEdges.length)
 
     return { flowNodes, flowEdges }
   }, [inputNodes, inputPositions, inputGroups, inputEdges])
