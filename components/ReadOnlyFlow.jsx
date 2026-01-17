@@ -1,6 +1,6 @@
 'use client'
 
-import { memo, useMemo } from 'react'
+import { memo, useMemo, useState, useEffect, useCallback } from 'react'
 import {
   ReactFlow,
   Background,
@@ -27,10 +27,8 @@ function ReadOnlyEdge({
   markerEnd,
   data,
 }) {
-  // 핸들 반지름 (핸들 8px, border 2px 고려)
   const handleRadius = 5
 
-  // 소스 좌표 보정
   let adjustedSourceX = sourceX
   let adjustedSourceY = sourceY
 
@@ -49,7 +47,6 @@ function ReadOnlyEdge({
       break
   }
 
-  // 타겟 좌표 보정
   let adjustedTargetX = targetX
   let adjustedTargetY = targetY
 
@@ -68,7 +65,6 @@ function ReadOnlyEdge({
       break
   }
 
-  // 기본 곡률 계산
   const midX = (adjustedSourceX + adjustedTargetX) / 2
   const midY = (adjustedSourceY + adjustedTargetY) / 2
 
@@ -76,23 +72,18 @@ function ReadOnlyEdge({
   const dy = adjustedTargetY - adjustedSourceY
   const distance = Math.sqrt(dx * dx + dy * dy)
 
-  // 거리에 비례한 곡률 (최소 20, 최대 60)
   const curvature = Math.min(60, Math.max(20, distance * 0.15))
 
-  // 수직 방향 벡터 (정규화)
   const perpX = distance > 0 ? -dy / distance : 0
   const perpY = distance > 0 ? dx / distance : 1
 
-  // 기본 컨트롤 포인트
   const defaultControlPoint = {
     x: midX + perpX * curvature,
     y: midY + perpY * curvature,
   }
 
-  // 저장된 controlPoint가 있으면 사용
   const controlPoint = data?.controlPoint || defaultControlPoint
 
-  // 커스텀 베지어 경로 생성
   const path = `M ${adjustedSourceX} ${adjustedSourceY} Q ${controlPoint.x} ${controlPoint.y} ${adjustedTargetX} ${adjustedTargetY}`
 
   return (
@@ -114,44 +105,80 @@ function ReadOnlyEdge({
 const MemoizedReadOnlyEdge = memo(ReadOnlyEdge)
 
 // ========================================
-// 읽기 전용 노드 컴포넌트 (Handle 추가)
+// 읽기 전용 노드 컴포넌트
 // ========================================
 function ReadOnlyNode({ data }) {
+  const [isHovered, setIsHovered] = useState(false)
+
   const isAdvanced = data.section === '고급'
+  const hasLink = !!data.link
+  const isVisited = data.isVisited
+
+  // 기본 색상 결정
+  let backgroundColor, borderColor, textColor
+
+  if (!hasLink) {
+    // 링크 없음: 회색 계열
+    backgroundColor = '#F5F5F5'
+    borderColor = '#BDBDBD'
+    textColor = '#9E9E9E'
+  } else if (isVisited) {
+    // 방문함: 보라색 계열
+    backgroundColor = isAdvanced ? '#E1BEE7' : '#B2DFDB'
+    borderColor = isAdvanced ? '#9C27B0' : '#00695C'
+    textColor = isAdvanced ? '#6A1B9A' : '#004D40'
+  } else {
+    // 미방문: 기본 색상
+    backgroundColor = isAdvanced ? '#EDE7F6' : '#E0F2F1'
+    borderColor = isAdvanced ? '#7E57C2' : '#00897B'
+    textColor = isAdvanced ? '#4527A0' : '#004D40'
+  }
+
+  // 호버 시 밝기 조정
+  if (isHovered && hasLink) {
+    backgroundColor = isAdvanced ? '#D1C4E9' : '#B2DFDB'
+    borderColor = isAdvanced ? '#5E35B1' : '#00695C'
+  }
 
   const style = {
     padding: '6px 12px',
     borderRadius: '8px',
-    border: `2px solid ${isAdvanced ? '#7E57C2' : '#00897B'}`,
-    backgroundColor: isAdvanced ? '#EDE7F6' : '#E0F2F1',
+    border: `2px solid ${borderColor}`,
+    backgroundColor: backgroundColor,
     fontSize: '12px',
     fontWeight: 500,
-    color: isAdvanced ? '#4527A0' : '#004D40',
-    cursor: data.link ? 'pointer' : 'default',
+    color: textColor,
+    cursor: hasLink ? 'pointer' : 'default',
     minWidth: '80px',
     textAlign: 'center',
+    transition: 'all 0.2s ease',
+    transform: isHovered && hasLink ? 'scale(1.05)' : 'scale(1)',
+    boxShadow: isHovered && hasLink ? '0 4px 12px rgba(0,0,0,0.15)' : 'none',
   }
 
   const handleStyle = {
     width: 6,
     height: 6,
-    background: isAdvanced ? '#7E57C2' : '#00897B',
+    background: borderColor,
     border: 'none',
   }
 
-  const handleClick = () => {
-    if (data.link) {
-      window.open(data.link, '_blank')
-    }
-  }
-
   return (
-    <div style={style} onClick={handleClick} title={data.link || ''}>
+    <div
+      style={style}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      title={hasLink ? `클릭하여 열기: ${data.link}` : '링크 없음'}
+    >
       <Handle type="target" position={Position.Top} id="top" style={handleStyle} />
       <Handle type="target" position={Position.Left} id="left" style={handleStyle} />
 
       {data.label}
-      {data.link && <span style={{ marginLeft: '4px', fontSize: '10px' }}>🔗</span>}
+      {hasLink && (
+        <span style={{ marginLeft: '4px', fontSize: '10px' }}>
+          {isVisited ? '✓' : '🔗'}
+        </span>
+      )}
 
       <Handle type="source" position={Position.Right} id="right-src" style={handleStyle} />
       <Handle type="source" position={Position.Bottom} id="bottom-src" style={handleStyle} />
@@ -160,7 +187,7 @@ function ReadOnlyNode({ data }) {
 }
 
 // ========================================
-// 읽기 전용 그룹 노드 컴포넌트 (Handle 추가)
+// 읽기 전용 그룹 노드 컴포넌트
 // ========================================
 function ReadOnlyGroupNode({ data }) {
   const isAdvanced = data.section === '고급'
@@ -436,6 +463,53 @@ const markerEnd = {
 // 메인 컴포넌트
 // ========================================
 export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositions, groups: inputGroups, edges: inputEdges }) {
+  // 방문한 노드 상태 (localStorage에서 복원)
+  const [visitedNodes, setVisitedNodes] = useState(new Set())
+
+  // 컴포넌트 마운트 시 localStorage에서 방문 기록 복원
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('roadmap-visited-nodes')
+      if (saved) {
+        setVisitedNodes(new Set(JSON.parse(saved)))
+      }
+    } catch (e) {
+      console.log('방문 기록 로드 실패')
+    }
+  }, [])
+
+  // 노드 클릭 핸들러 (ReactFlow onNodeClick 사용)
+  const onNodeClick = useCallback((event, node) => {
+    if (node.type === 'group') return
+
+    const link = node.data?.link
+    if (link) {
+      // 방문 기록 저장
+      setVisitedNodes(prev => {
+        const newSet = new Set(prev)
+        newSet.add(node.id)
+        // localStorage에 저장
+        try {
+          localStorage.setItem('roadmap-visited-nodes', JSON.stringify([...newSet]))
+        } catch (e) {
+          console.log('방문 기록 저장 실패')
+        }
+        return newSet
+      })
+
+      // 새 창에서 링크 열기
+      window.open(link, '_blank', 'noopener,noreferrer')
+    }
+  }, [])
+
+  // 방문 기록 초기화
+  const clearVisited = useCallback(() => {
+    setVisitedNodes(new Set())
+    try {
+      localStorage.removeItem('roadmap-visited-nodes')
+    } catch (e) { }
+  }, [])
+
   const { flowNodes, flowEdges } = useMemo(() => {
     const flowNodes = []
     const flowEdges = []
@@ -501,6 +575,7 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
             label: node.name || '',
             link: node.link || '',
             section: node.section || '기본',
+            isVisited: visitedNodes.has(node.id),  // 방문 여부 전달
           },
           draggable: false,
           selectable: false,
@@ -516,7 +591,7 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
       })
     }
 
-    // 3. 엣지 생성 (커스텀 타입 + controlPoint 전달)
+    // 3. 엣지 생성
     const allNodeIds = flowNodes.map(n => n.id)
     const edgesToUse = (inputEdges && inputEdges.length > 0) ? inputEdges : defaultEdges
 
@@ -532,18 +607,18 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
           target: edge.target,
           sourceHandle: edge.sourceHandle || 'bottom-src',
           targetHandle: edge.targetHandle || 'top',
-          type: 'custom',  // 커스텀 엣지 타입 사용
+          type: 'custom',
           style: { stroke: '#E65100', strokeWidth: 2 },
           markerEnd,
           data: {
-            controlPoint: edge.controlPoint || null,  // 저장된 controlPoint 전달
+            controlPoint: edge.controlPoint || null,
           },
         })
       }
     })
 
     return { flowNodes, flowEdges }
-  }, [inputNodes, inputPositions, inputGroups, inputEdges])
+  }, [inputNodes, inputPositions, inputGroups, inputEdges, visitedNodes])
 
   return (
     <div className="w-full h-full">
@@ -552,6 +627,7 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
         edges={flowEdges}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
+        onNodeClick={onNodeClick}
         fitView
         fitViewOptions={{ padding: 0.1 }}
         minZoom={0.2}
@@ -571,6 +647,10 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
             if (node.type === 'group') {
               return node.data?.section === '고급' ? '#D1C4E9' : '#B2DFDB'
             }
+            // 방문한 노드는 다른 색상
+            if (node.data?.isVisited) {
+              return node.data?.section === '고급' ? '#CE93D8' : '#80CBC4'
+            }
             return node.data?.section === '고급' ? '#EDE7F6' : '#E0F2F1'
           }}
           maskColor="rgba(0, 0, 0, 0.1)"
@@ -581,6 +661,19 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositi
           <div>• 마우스 드래그: 화면 이동</div>
           <div>• 스크롤: 확대/축소</div>
           <div>• 노드 클릭: 링크 열기 🔗</div>
+          <div className="mt-2 text-gray-500">
+            <span className="inline-block w-3 h-3 rounded mr-1" style={{ backgroundColor: '#E0F2F1', border: '1px solid #00897B' }}></span> 미방문
+            <span className="inline-block w-3 h-3 rounded mx-1 ml-2" style={{ backgroundColor: '#B2DFDB', border: '1px solid #00695C' }}></span> 방문함
+            <span className="inline-block w-3 h-3 rounded mx-1 ml-2" style={{ backgroundColor: '#F5F5F5', border: '1px solid #BDBDBD' }}></span> 링크없음
+          </div>
+          {visitedNodes.size > 0 && (
+            <button
+              onClick={clearVisited}
+              className="mt-2 text-blue-600 hover:underline"
+            >
+              방문 기록 초기화 ({visitedNodes.size}개)
+            </button>
+          )}
         </Panel>
       </ReactFlow>
     </div>
