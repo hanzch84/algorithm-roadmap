@@ -111,12 +111,10 @@ export default function SharePage() {
 
       <div className="h-[calc(100vh-60px)]">
         <ReadOnlyFlow
-          initialNodes={nodes}
-          savedPositions={{
-            nodes: layoutState?.positions,
-            groups: layoutState?.groups
-          }}
-          savedEdges={layoutState?.edges}
+          nodes={nodes}
+          positions={layoutState?.positions}
+          groups={layoutState?.groups}
+          edges={layoutState?.edges}
         />
       </div>
     </main>
