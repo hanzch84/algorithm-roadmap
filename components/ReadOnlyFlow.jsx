@@ -255,6 +255,42 @@ const nodeParentMapping = {
   'vscode_ext': 'sec_adv_til',
 }
 
+// 기본 엣지
+const defaultEdges = [
+  { id: 'edge-2', source: 'node_boj_setup', target: 'node_boj_usage', sourceHandle: 'right-src', targetHandle: 'left' },
+  { id: 'edge-3', source: 'node_koala_setup', target: 'node_koala_usage', sourceHandle: 'right-src', targetHandle: 'left' },
+  { id: 'edge-13', source: 'node_arena', target: 'node_arenajoin', sourceHandle: 'right-src', targetHandle: 'left' },
+  { id: 'edge-14', source: 'node_arenajoin', target: 'node_arenacoalla', sourceHandle: 'right-src', targetHandle: 'left' },
+  { id: 'edge-11', source: 'node_til', target: 'node_join', sourceHandle: 'right-src', targetHandle: 'left' },
+  { id: 'edge-12', source: 'node_join', target: 'node_study', sourceHandle: 'right-src', targetHandle: 'left' },
+]
+
+// 기본 노드 위치
+const defaultPositions = {
+  'node_intro': { x: 25, y: 25 },
+  'node_boj_setup': { x: 38, y: 43 },
+  'node_boj_usage': { x: 177, y: 43 },
+  'node_koala_setup': { x: 40, y: 88 },
+  'node_koala_usage': { x: 170, y: 88 },
+  'node_solved_link': { x: 19, y: 44 },
+  'node_solved_usage': { x: 107, y: 89 },
+  'node_tools_intro': { x: 190, y: 43 },
+  'tool_vscode': { x: 25, y: 42 },
+  'tool_pycharm': { x: 25, y: 89 },
+  'tool_replit': { x: 30, y: 42 },
+  'tool_onlinegdb': { x: 21, y: 89 },
+  'tool_ideone': { x: 30, y: 45 },
+  'tool_tio': { x: 31, y: 89 },
+  'tool_colab': { x: 19, y: 46 },
+  'tool_marimo': { x: 35, y: 89 },
+  'node_til': { x: 35, y: 45 },
+  'node_join': { x: 192, y: 45 },
+  'node_study': { x: 355, y: 45 },
+  'node_arena': { x: 30, y: 43 },
+  'node_arenajoin': { x: 195, y: 43 },
+  'node_arenacoalla': { x: 360, y: 43 },
+}
+
 // 화살표 스타일
 const markerEnd = {
   type: 'arrowclosed',
@@ -266,20 +302,23 @@ const markerEnd = {
 // ========================================
 // 메인 컴포넌트
 // ========================================
-export default function ReadOnlyFlow({ nodes: inputNodes, positions, groups: inputGroups, edges: inputEdges }) {
+export default function ReadOnlyFlow({ nodes: inputNodes, positions: inputPositions, groups: inputGroups, edges: inputEdges }) {
   const { flowNodes, flowEdges } = useMemo(() => {
     const flowNodes = []
     const flowEdges = []
 
     // 그룹 데이터 병합
     const groups = { ...defaultGroups }
-    if (inputGroups) {
+    if (inputGroups && Object.keys(inputGroups).length > 0) {
       Object.keys(inputGroups).forEach(key => {
         if (groups[key]) {
           groups[key] = { ...groups[key], ...inputGroups[key] }
         }
       })
     }
+
+    // 위치 데이터 병합
+    const positions = { ...defaultPositions, ...(inputPositions || {}) }
 
     // 1. 그룹 노드 생성
     const groupEntries = Object.entries(groups)
@@ -316,7 +355,7 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions, groups: inp
       // 2. 일반 노드 생성
       ; (inputNodes || []).forEach((node, index) => {
         if (!node) return
-        const pos = positions?.[node.id] || { x: 20 + (index % 4) * 120, y: 40 }
+        const pos = positions[node.id] || { x: 20 + (index % 4) * 120, y: 40 }
 
         const flowNode = {
           id: node.id,
@@ -343,16 +382,14 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions, groups: inp
 
     // 3. 엣지 생성
     const allNodeIds = flowNodes.map(n => n.id)
+    const edgesToUse = (inputEdges && inputEdges.length > 0) ? inputEdges : defaultEdges
 
-      ; (inputEdges || []).forEach((edge, index) => {
+      ; (edgesToUse || []).forEach((edge, index) => {
         if (!edge) return
         const sourceExists = allNodeIds.includes(edge.source)
         const targetExists = allNodeIds.includes(edge.target)
 
         if (sourceExists && targetExists) {
-          // 컨트롤 포인트가 있으면 커브 경로, 없으면 직선
-          const hasControlPoint = edge.controlPoint && edge.controlPoint.x && edge.controlPoint.y
-
           flowEdges.push({
             id: edge.id || `edge-${index}`,
             source: edge.source,
@@ -367,7 +404,7 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions, groups: inp
       })
 
     return { flowNodes, flowEdges }
-  }, [inputNodes, positions, inputGroups, inputEdges])
+  }, [inputNodes, inputPositions, inputGroups, inputEdges])
 
   return (
     <div className="w-full h-full">
@@ -403,7 +440,7 @@ export default function ReadOnlyFlow({ nodes: inputNodes, positions, groups: inp
           <div className="font-bold mb-1">사용법</div>
           <div>• 마우스 드래그: 화면 이동</div>
           <div>• 스크롤: 확대/축소</div>
-          <div>• 노드 클릭: 링크 열기</div>
+          <div>• 노드 클릭: 링크 열기 🔗</div>
         </Panel>
       </ReactFlow>
     </div>
