@@ -13,12 +13,12 @@ const RoadmapFlow = dynamic(() => import('../components/RoadmapFlow'), {
   )
 })
 
-// 기본 데이터 (Notion API 실패 시 폴백)
+// 기본 데이터 (Notion 로드 실패 시 폴백용)
 const defaultNodes = [
   { id: 'node_intro', name: '🌐 온라인 저지 소개', group: 'intro', section: '기본', link: '' },
   { id: 'node_boj_setup', name: '백준 가입 및 설정', group: '플랫폼 가입', section: '기본', link: '' },
   { id: 'node_boj_usage', name: '백준 이용 방법', group: '플랫폼 가입', section: '기본', link: '' },
-  { id: 'node_koala_setup', name: '코알라 OJ 가입 및 설정', group: '플랫폼 가입', section: '기본', link: '' },
+  { id: 'node_koala_setup', name: '코알라 OJ 가입', group: '플랫폼 가입', section: '기본', link: '' },
   { id: 'node_koala_usage', name: '코알라 OJ 사용 방법', group: '플랫폼 가입', section: '기본', link: '' },
   { id: 'node_solved_link', name: 'solved.ac 연동하기', group: 'solved.ac', section: '기본', link: '' },
   { id: 'node_solved_usage', name: 'solved.ac 이용 방법', group: 'solved.ac', section: '기본', link: '' },
@@ -26,7 +26,7 @@ const defaultNodes = [
   { id: 'tool_vscode', name: 'VS Code', group: 'IDE', section: '기본', link: '' },
   { id: 'tool_pycharm', name: 'PyCharm', group: 'IDE', section: '기본', link: '' },
   { id: 'tool_replit', name: 'Replit', group: '온라인 IDE', section: '기본', link: '' },
-  { id: 'tool_onlinegdb', name: 'OnlineGDB', group: '온라인 IDE', section: '기본', link: '' },
+  { id: 'tool_onlinegdb', name: 'Codespaces', group: '온라인 IDE', section: '기본', link: '' },
   { id: 'tool_ideone', name: 'Ideone', group: '온라인 러너', section: '기본', link: '' },
   { id: 'tool_tio', name: 'TIO', group: '온라인 러너', section: '기본', link: '' },
   { id: 'tool_colab', name: 'Google Colab', group: '노트북', section: '기본', link: '' },
@@ -54,44 +54,66 @@ const defaultNodes = [
 
 export default function Home() {
   const [nodes, setNodes] = useState(defaultNodes)
-  const [isLoading, setIsLoading] = useState(true)
   const [savedPositions, setSavedPositions] = useState(null)
   const [savedEdges, setSavedEdges] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState(null)
   const fileInputRef = useRef(null)
 
-  // Notion API에서 노드 데이터 가져오기
+  // Notion에서 노드 데이터 가져오기
   useEffect(() => {
-    const fetchNodes = async () => {
+    const fetchNodesFromNotion = async () => {
       try {
+        setIsLoading(true)
         const response = await fetch('/api/notion')
-        if (response.ok) {
-          const notionNodes = await response.json()
-          if (Array.isArray(notionNodes) && notionNodes.length > 0) {
-            setNodes(notionNodes)
-            console.log('✅ Notion에서 노드 로드 완료:', notionNodes.length, '개')
-          }
-        } else {
-          console.warn('Notion API 응답 오류, 기본 데이터 사용')
+
+        if (!response.ok) {
+          throw new Error('Notion API 요청 실패')
         }
+
+        const data = await response.json()
+        console.log('Notion 데이터 로드:', data)
+
+        if (data.nodes && data.nodes.length > 0) {
+          // Notion에서 가져온 노드 사용 (notionPageId 포함)
+          setNodes(data.nodes)
+          console.log('✅ Notion 노드 로드 완료:', data.nodes.length, '개')
+        } else {
+          console.warn('Notion에 노드가 없어서 기본 노드 사용')
+        }
+
+        // 레이아웃 상태도 로드
+        if (data.layoutState) {
+          setSavedPositions({
+            nodes: data.layoutState.positions,
+            groups: data.layoutState.groups
+          })
+          setSavedEdges(data.layoutState.edges || null)
+          console.log('✅ 레이아웃 상태 로드 완료')
+        }
+
+        setLoadError(null)
       } catch (error) {
-        console.error('Notion API 호출 실패, 기본 데이터 사용:', error)
+        console.error('Notion 데이터 로드 실패:', error)
+        setLoadError(error.message)
+        // 실패 시 기본 노드 사용 (이미 설정됨)
       } finally {
         setIsLoading(false)
       }
     }
 
-    fetchNodes()
+    fetchNodesFromNotion()
   }, [])
 
   const handlePositionUpload = (event) => {
     const file = event.target.files?.[0]
     if (!file) return
-    
+
     const reader = new FileReader()
     reader.onload = (e) => {
       try {
         const state = JSON.parse(e.target?.result)
-        
+
         if (state.positions) {
           setSavedPositions({ nodes: state.positions, groups: state.groups })
           setSavedEdges(state.edges || null)
@@ -102,7 +124,7 @@ export default function Home() {
           setSavedPositions({ nodes: state })
           setSavedEdges(null)
         }
-        
+
         const info = []
         if (state.positions) info.push(`노드 ${Object.keys(state.positions).length}개`)
         else if (state.nodes) info.push(`노드 ${Object.keys(state.nodes).length}개`)
@@ -126,6 +148,11 @@ export default function Home() {
             🐨 코알라 알고리즘 스터디 로드맵
           </h1>
           <div className="flex items-center gap-4 text-sm">
+            {loadError && (
+              <span className="text-orange-500 text-xs">
+                ⚠️ Notion 로드 실패 (로컬 데이터 사용)
+              </span>
+            )}
             <span className="flex items-center gap-2">
               <span className="w-3 h-3 rounded bg-[#E0F2F1] border-2 border-[#00897B]"></span>
               기본
@@ -134,9 +161,6 @@ export default function Home() {
               <span className="w-3 h-3 rounded bg-[#EDE7F6] border-2 border-[#7E57C2]"></span>
               고급
             </span>
-            {isLoading && (
-              <span className="text-xs text-gray-400">Notion 로딩 중...</span>
-            )}
             <input
               type="file"
               ref={fileInputRef}
@@ -155,11 +179,17 @@ export default function Home() {
       </header>
 
       <div className="h-[calc(100vh-60px)]">
-        <RoadmapFlow 
-          initialNodes={nodes} 
-          savedPositions={savedPositions}
-          savedEdges={savedEdges}
-        />
+        {isLoading ? (
+          <div className="flex items-center justify-center h-full text-gray-500">
+            Notion 데이터 로딩 중...
+          </div>
+        ) : (
+          <RoadmapFlow
+            initialNodes={nodes}
+            savedPositions={savedPositions}
+            savedEdges={savedEdges}
+          />
+        )}
       </div>
     </main>
   )
